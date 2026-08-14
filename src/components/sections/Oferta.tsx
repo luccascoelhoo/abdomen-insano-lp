@@ -6,26 +6,33 @@ export function Oferta() {
   return (
     <section className="sec sec--dark" id="oferta" style={{ paddingTop: 0 }}>
       <div className="wrap">
-        <Reveal className="offer">
-          <p className="pre">{oferta.intro}</p>
+        <Reveal className="oferta">
+          {/* O 42 vazado atrás do preço, cortado pela borda de baixo. */}
+          <div className="oferta__fantasma" aria-hidden="true">
+            42
+          </div>
 
-          <div className="price-block">
-            <p className="price-day">{oferta.precoDia}</p>
-            <p className="price">
+          <p className="oferta__pre">{oferta.intro}</p>
+
+          <div className="preco-bloco">
+            <p className="preco-dia">{oferta.precoDia}</p>
+            <p className="preco">
               <small>{oferta.precoRotulo}</small>
               {oferta.precoNumero}
             </p>
-            <p className="price-note">{oferta.precoNota}</p>
+            <p className="preco-nota">{oferta.precoNota}</p>
           </div>
 
-          <p className="pre pre--fecho">{oferta.fecho}</p>
+          <p className="oferta__pre" style={{ marginBottom: 34 }}>
+            {oferta.fecho}
+          </p>
 
-          <p className="offer-provoke">{oferta.provocacao}</p>
+          <p className="oferta__provoke">{oferta.provocacao}</p>
           <CtaButton origem="oferta" />
 
-          <div className="seals">
+          <div className="selos">
             {selos.map((selo) => (
-              <div className="seal" key={selo.rotulo}>
+              <div className="selo" key={selo.rotulo}>
                 <b>{selo.rotulo}</b>
                 {selo.valor}
               </div>

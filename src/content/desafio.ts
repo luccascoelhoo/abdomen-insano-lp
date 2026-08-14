@@ -56,17 +56,17 @@ export const selos: Selo[] = [
 
 export const hero = {
   eyebrow: '42 dias · dentro do app',
-  tituloAntes: 'Conquiste o abdômen ',
-  tituloDestaque: 'trincado, estético e seco',
+  /** Uma entrada por linha do cartaz — a terceira é a linha laranja. */
+  tituloLinhas: ['Conquiste o', 'abdômen', 'trincado,', 'estético e seco'],
   subAntes: 'Em 42 dias seus amigos não vão entender nada. Você vai eliminar ',
   subDestaque: 'essa gordura chata do abdômen',
   subDepois: ', conquistar os gomos definidos e uma postura de respeito.',
   provocacaoAntes: 'Você aceita ',
   provocacaoDestaque: 'o desafio?',
   numeros: [
-    { valor: '+5.500', rotulo: 'alunos no desafio' },
-    { valor: '42', rotulo: 'dias de protocolo' },
-    { valor: '1', rotulo: 'ano de acesso' },
+    { valor: 5500, prefixo: '+', rotulo: 'alunos no desafio' },
+    { valor: 42, prefixo: '', rotulo: 'dias de protocolo' },
+    { valor: 1, prefixo: '', rotulo: 'ano de acesso' },
   ],
   malhaCabecalho: { esquerda: 'Malha do desafio', direita: '06 semanas' },
   malhaRodape:

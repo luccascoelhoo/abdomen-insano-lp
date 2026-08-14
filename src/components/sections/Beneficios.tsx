@@ -1,3 +1,4 @@
+import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
 import { beneficios, beneficiosSecao } from '@/content/desafio';
 
@@ -5,26 +6,23 @@ export function Beneficios() {
   return (
     <section className="sec sec--alt">
       <div className="wrap">
-        <Reveal as="p" className="eyebrow">
+        <Reveal as="p" className="rotulo">
           {beneficiosSecao.eyebrow}
         </Reveal>
-        <Reveal as="h2" className="h2">
-          {beneficiosSecao.tituloLinhas[0]}
-          <br />
-          {beneficiosSecao.tituloLinhas[1]}
-        </Reveal>
-        <Reveal as="p" className="lead lead--top">
+        <MaskTitle className="d2" linhas={beneficiosSecao.tituloLinhas} />
+        <Reveal as="p" className="lead" delay={180}>
           {beneficiosSecao.lead}
         </Reveal>
 
-        <Reveal className="benefits">
-          {beneficios.map((b) => (
-            <article className="benefit" key={b.titulo}>
-              <h3>{b.titulo}</h3>
+        <div className="beneficios">
+          {beneficios.map((b, i) => (
+            <Reveal className="beneficio" key={b.titulo} delay={(i % 2) * 90}>
+              <span className="beneficio__n">{String(i + 1).padStart(2, '0')}</span>
+              <h3 className="d3">{b.titulo}</h3>
               <p>{b.texto}</p>
-            </article>
+            </Reveal>
           ))}
-        </Reveal>
+        </div>
       </div>
     </section>
   );

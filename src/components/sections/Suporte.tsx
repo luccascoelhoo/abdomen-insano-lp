@@ -1,17 +1,16 @@
+import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
 import { suporte } from '@/content/desafio';
 
 export function Suporte() {
   return (
-    <section className="sec sec--alt support">
+    <section className="sec suporte">
       <div className="wrap">
-        <Reveal as="p" className="eyebrow eyebrow--center">
+        <Reveal as="p" className="rotulo">
           {suporte.eyebrow}
         </Reveal>
-        <Reveal as="h2" className="h2">
-          {suporte.titulo}
-        </Reveal>
-        <Reveal as="p" className="lead">
+        <MaskTitle className="d3" linhas={[suporte.titulo]} />
+        <Reveal as="p" className="lead" delay={140}>
           {suporte.lead}
         </Reveal>
 
@@ -21,9 +20,9 @@ export function Suporte() {
           Defina NEXT_PUBLIC_WHATSAPP_URL para ligar.
         */}
         {suporte.linkUrl ? (
-          <Reveal as="div">
+          <Reveal as="div" delay={200}>
             <a
-              className="support-link"
+              className="link-suporte"
               href={suporte.linkUrl}
               target="_blank"
               rel="noopener noreferrer"

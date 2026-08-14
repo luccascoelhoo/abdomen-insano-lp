@@ -11,6 +11,31 @@ npm install
 npm run dev     # http://localhost:3000
 ```
 
+## A direção visual (para não voltar ao genérico)
+
+*Cartaz de academia impresso, não painel de SaaS.* Cada decisão abaixo existe para
+fugir da média estatística — que é exatamente o que uma página gerada por prompt
+entrega: papel cinza, Inter, quatro cards iguais em grade, tudo simétrico.
+
+| Decisão | Por quê |
+|---|---|
+| **Big Shoulders** no display, com eixo de tamanho óptico | Tipo de sinalização esportiva, feito para corpo grande. O eixo `opsz` muda o desenho da letra entre o cartaz e a lista — variação real, não texto esticado |
+| **Hanken Grotesk** no texto | Humanista, com calor. Substitui o Inter/Inter Tight, que é a assinatura visual do texto automático |
+| **Martian Mono** na camada de dado | Etiqueta, índice, legenda — só em corpo pequeno com entreletra aberta, como carimbo de ficha |
+| **Papel quente** `#F1EEE7` no lugar do cinza `#F2F2F2` | Cinza neutro lê como tela; papel quente lê como impresso |
+| **Granulado** por filtro SVG sobre a página | Cor chapada é limpa demais para marca de academia. Zero arquivo de imagem |
+| **Nenhuma grade de cards repetida** | Método virou índice grudado + pilares empilhados; benefícios viraram duas colunas desencontradas; depoimentos viraram trilho arrastável; entregáveis viraram lista numerada grande |
+| **Coisas que sangram e tortas** | Numeral fantasma saindo pela direita, malha girada com sombra dura, bônus com meio grau de rotação, assinatura do rodapé cortada pela borda |
+| **Capitular na história do Igor** | Recurso de impresso que gerador nenhum coloca |
+
+### Movimento
+
+Rolagem suave com inércia (**Lenis**), fio de progresso no topo, título que sobe
+linha a linha por trás de uma máscara, malha dos 42 dias preenchendo célula a
+célula, barras das semanas crescendo linha a linha, faixa de argumentos que
+acelera e inverte com a rolagem, contadores, botão com preenchimento que sobe.
+Tudo desligado sob `prefers-reduced-motion`.
+
 ## Onde mexer
 
 | O quê | Onde |

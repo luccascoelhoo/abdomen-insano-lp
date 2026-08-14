@@ -11,6 +11,7 @@ import { Oferta } from '@/components/sections/Oferta';
 import { Rodape } from '@/components/sections/Rodape';
 import { Suporte } from '@/components/sections/Suporte';
 import { Logo } from '@/components/ui/Logo';
+import { Pista } from '@/components/ui/Pista';
 import { StickyCta } from '@/components/ui/StickyCta';
 import { CTA_STICKY_MOBILE } from '@/lib/flags';
 
@@ -18,10 +19,11 @@ export default function Home() {
   return (
     <>
       <header className="topbar">
-        <Logo altura={30} />
+        <Logo altura={26} />
       </header>
 
       <Hero />
+      <Pista />
       <Metodo />
       <Inspira />
       <Depoimentos />

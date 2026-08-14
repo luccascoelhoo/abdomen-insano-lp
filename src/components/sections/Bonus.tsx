@@ -1,3 +1,4 @@
+import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
 import { bonus, bonusSecao } from '@/content/desafio';
 
@@ -5,24 +6,24 @@ export function Bonus() {
   return (
     <section className="sec sec--dark" style={{ paddingTop: 0 }}>
       <div className="wrap">
-        <Reveal as="p" className="eyebrow">
+        <Reveal as="p" className="rotulo rotulo--claro">
           {bonusSecao.eyebrow}
         </Reveal>
-        <Reveal as="h2" className="h2">
-          {bonusSecao.tituloLinhas[0]}
-          <br />
-          {bonusSecao.tituloLinhas[1]}
-        </Reveal>
+        <MaskTitle className="d2" linhas={bonusSecao.tituloLinhas} />
 
-        <Reveal className="bonus-grid">
-          {bonus.map((b) => (
-            <article className={b.largo ? 'bonus bonus--wide' : 'bonus'} key={b.titulo}>
-              <span className="tag">BÔNUS</span>
-              <h3>{b.titulo}</h3>
+        <div className="bonus-grid">
+          {bonus.map((b, i) => (
+            <Reveal
+              className={b.largo ? 'bonus bonus--wide' : 'bonus'}
+              key={b.titulo}
+              delay={i * 70}
+            >
+              <span className="tag">Bônus {String(i + 1).padStart(2, '0')}</span>
+              <h3 className="d3">{b.titulo}</h3>
               <p>{b.texto}</p>
-            </article>
+            </Reveal>
           ))}
-        </Reveal>
+        </div>
       </div>
     </section>
   );
