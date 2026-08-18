@@ -48,6 +48,27 @@ export const oferta = {
     'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida. Vamos destravar uma vida épica, estética, equilibrada e livre.',
 } as const;
 
+/**
+ * Copy do CTA varia por posição — reforça uma faceta diferente da mesma
+ * decisão. Cada botão vira uma declaração de identidade, não uma ação
+ * transacional. Fonte: análise da LP Fitness Sem Neura.
+ */
+export const ctas = {
+  hero: 'Quero botar o abdômen insano',
+  depoimentos: 'Quero ser o próximo',
+  entregaveis: 'Quero começar em 42 dias',
+  bonus: 'Quero esses bônus também',
+  oferta: 'Aceito o desafio',
+  sticky: 'Aceito o desafio',
+  faq: 'Já sei tudo. Aceito o desafio',
+} as const;
+
+/**
+ * Microcopy antifricção — aparece embaixo dos CTAs principais.
+ * Reduz objeção antes do clique (garantia + acesso + preço).
+ */
+export const microCta = 'Garantia de 7 dias · acesso imediato · pagamento único';
+
 export const selos: Selo[] = [
   { rotulo: 'Compra', valor: '100% segura' },
   { rotulo: 'Acesso', valor: 'por 1 ano' },
@@ -71,6 +92,45 @@ export const hero = {
   malhaCabecalho: { esquerda: 'Malha do desafio', direita: '06 semanas' },
   malhaRodape:
     'Cada quadrado é um dia marcado no app. O último é o dia em que ninguém te reconhece.',
+} as const;
+
+export const tensao = {
+  eyebrow: 'A real',
+  tituloLinhas: ['Você já tentou.', 'Muita coisa.'],
+  blocos: [
+    {
+      chave: 'tentativas',
+      lista: [
+        'Corte de carboidrato',
+        'Jejum intermitente',
+        'Prancha todo dia',
+        'Treino em casa com influencer',
+        'Low-carb',
+        'HIIT no YouTube',
+      ],
+      remate: 'Emagreceu o rosto. Os braços. O rosto de novo.',
+      destaque: 'A barriga? Continua igual.',
+    },
+    {
+      chave: 'motivo',
+      titulo: 'Não é falta de força de vontade.',
+      paragrafos: [
+        'Dieta genérica não ataca a gordura que blinda o abdômen.',
+        'Cardio aleatório queima na frequência errada.',
+        'Treinar abdômen todo dia sem estímulo progressivo é passeio.',
+      ],
+      destaque: 'Definição não é disciplina. É protocolo.',
+    },
+    {
+      chave: 'ponte',
+      titulo: 'O seu corpo já tá certo. Falta o mapa.',
+      paragrafos: [
+        'Você não precisa começar do zero, nem virar outra pessoa.',
+        'Precisa dos três eixos certos, sincronizados, por 42 dias.',
+      ],
+      destaque: 'Treino específico. Alimentação simplificada. Cardio calculado.',
+    },
+  ],
 } as const;
 
 export const metodo = {

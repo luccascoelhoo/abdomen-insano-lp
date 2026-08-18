@@ -1,6 +1,7 @@
+import { CtaButton } from '@/components/ui/CtaButton';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
-import { bonus, bonusSecao } from '@/content/desafio';
+import { bonus, bonusSecao, ctas, microCta } from '@/content/desafio';
 
 export function Bonus() {
   return (
@@ -23,6 +24,14 @@ export function Bonus() {
               <p>{b.texto}</p>
             </Reveal>
           ))}
+        </div>
+
+        <div className="cta-fim">
+          <Reveal delay={140}>
+            <CtaButton origem="bonus" microcopy={microCta}>
+              {ctas.bonus}
+            </CtaButton>
+          </Reveal>
         </div>
       </div>
     </section>

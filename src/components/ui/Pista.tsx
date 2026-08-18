@@ -13,10 +13,10 @@ const ITENS = [
 /**
  * Faixa preta com os argumentos correndo na horizontal.
  *
- * A velocidade responde à rolagem: parado ela desliza devagar, e quando a
- * pessoa rola a faixa acelera e inverte o sentido junto com o dedo. É o
- * movimento que dá "corpo" à página — sem ele o preto entre duas seções é só
- * uma tarja.
+ * A base é um trilho que anda continuamente da direita para a esquerda com
+ * um leve balanço em Y (aspecto de anel rolando). A rolagem da página acelera
+ * o movimento e inclina o trilho no sentido do dedo — como se a mão empurrasse
+ * o cilindro. Sem rolagem, o balanço mantém o "vivo" da faixa.
  */
 export function Pista() {
   const trilho = useRef<HTMLDivElement>(null);
@@ -26,11 +26,12 @@ export function Pista() {
     if (!el) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const largura = el.scrollWidth / 2; // o conteúdo está duplicado
+    const largura = el.scrollWidth / 2; // conteúdo duplicado
     let deslocamento = 0;
     let velocidadeRolagem = 0;
     let ultimoY = window.scrollY;
     let quadro = 0;
+    const inicioTempo = performance.now();
 
     const aoRolar = () => {
       const y = window.scrollY;
@@ -38,13 +39,28 @@ export function Pista() {
       ultimoY = y;
     };
 
-    const passo = () => {
-      // Base constante + empurrão da rolagem, que desaparece sozinho.
-      deslocamento -= 0.45 + velocidadeRolagem * 0.28;
+    const passo = (agora: number) => {
+      // Movimento base contínuo + empurrão da rolagem.
+      deslocamento -= 2.2 + velocidadeRolagem * 0.55;
       velocidadeRolagem *= 0.9;
       if (deslocamento <= -largura) deslocamento += largura;
       if (deslocamento > 0) deslocamento -= largura;
-      el.style.transform = `translate3d(${deslocamento}px,0,0)`;
+
+      // Balanço em Y — pequena senoide que dá "vivo" mesmo parado.
+      const t = (agora - inicioTempo) / 1000;
+      const balanco = Math.sin(t * 1.2) * 4;
+
+      // Rotação Y sutil sempre presente (aspecto de anel girando em 3D).
+      const rot = Math.sin(t * 0.9) * 3;
+
+      // Skew responde à velocidade do scroll — cilindro inclina no sentido
+      // do dedo quando a página se move.
+      const skew = Math.max(-8, Math.min(8, velocidadeRolagem * 0.45));
+
+      el.style.transform =
+        `translate3d(${deslocamento}px, ${balanco}px, 0) ` +
+        `rotateX(${rot}deg) skewX(${skew}deg)`;
+
       quadro = requestAnimationFrame(passo);
     };
 

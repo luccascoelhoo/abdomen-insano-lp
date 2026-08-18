@@ -12,11 +12,12 @@ type Props = {
 };
 
 /**
- * Número que sobe até o valor final quando entra na tela.
+ * Número que sobe até o valor final toda vez que entra na tela.
  *
- * O valor final já está no HTML servido — a contagem só reescreve o texto
- * depois que o JavaScript assume. Assim o número certo aparece para quem não
- * tem script e para quem lê a página por leitor de tela.
+ * Se você rolar pra cima e voltar, ele conta de novo — a página respira em
+ * scroll bidirecional em vez de virar peça estática. O valor final já está
+ * no HTML servido, então quem não tem script ou leitor de tela recebe o
+ * número certo direto.
  */
 export function Contador({ ate, prefixo = '', milhar = true, duracao = 1500 }: Props) {
   const ref = useRef<HTMLBRElement>(null);
@@ -31,6 +32,7 @@ export function Contador({ ate, prefixo = '', milhar = true, duracao = 1500 }: P
       window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       !('IntersectionObserver' in window)
     ) {
+      el.textContent = formatar(ate);
       return;
     }
 
@@ -38,11 +40,9 @@ export function Contador({ ate, prefixo = '', milhar = true, duracao = 1500 }: P
     let rede = 0;
 
     /**
-     * Trava de segurança. Uma contagem interrompida no meio deixa um número
-     * ERRADO na tela — "+141 alunos" em vez de "+5.500" — e numa página de
-     * venda isso é pior do que não animar. Então qualquer interrupção
-     * (aba em segundo plano, rAF estrangulado, desmontagem) termina no valor
-     * final, sempre.
+     * Trava de segurança: qualquer interrupção (aba em segundo plano, rAF
+     * estrangulado, unmount) resolve no valor final. Uma contagem parada no
+     * meio deixa "+141 alunos" em vez de "+5.500" — pior que não animar.
      */
     const finalizar = () => {
       if (quadro) cancelAnimationFrame(quadro);
@@ -55,25 +55,41 @@ export function Contador({ ate, prefixo = '', milhar = true, duracao = 1500 }: P
       if (document.hidden) finalizar();
     };
 
+    const iniciar = () => {
+      if (document.hidden) return finalizar();
+      const inicio = performance.now();
+      const passo = (agora: number) => {
+        const t = Math.min(1, (agora - inicio) / duracao);
+        const suave = 1 - Math.pow(1 - t, 3);
+        el.textContent = formatar(Math.round(ate * suave));
+        if (t < 1) quadro = requestAnimationFrame(passo);
+        else finalizar();
+      };
+      quadro = requestAnimationFrame(passo);
+      rede = window.setTimeout(finalizar, duracao + 600);
+    };
+
     const io = new IntersectionObserver(
       (entradas) => {
-        if (!entradas.some((e) => e.isIntersecting)) return;
-        io.disconnect();
-        // Aba já em segundo plano: nem começa, só mostra o número certo.
-        if (document.hidden) return finalizar();
-        const inicio = performance.now();
-        const passo = (agora: number) => {
-          const t = Math.min(1, (agora - inicio) / duracao);
-          // Desacelera no fim para o último dígito "assentar".
-          const suave = 1 - Math.pow(1 - t, 3);
-          el.textContent = formatar(Math.round(ate * suave));
-          if (t < 1) quadro = requestAnimationFrame(passo);
-          else finalizar();
-        };
-        quadro = requestAnimationFrame(passo);
-        rede = window.setTimeout(finalizar, duracao + 600);
+        for (const entrada of entradas) {
+          if (entrada.isIntersecting) {
+            // Cada nova entrada recomeça a contagem — o primeiro frame do rAF
+            // já reescreve pra 0, então não precisa "zerar" antes (evita o
+            // piscar de 0 enquanto o elemento ainda está desmontado da tela).
+            iniciar();
+          } else {
+            // Saiu completamente da tela: reseta o valor pra próxima entrada
+            // começar do zero. Como o elemento não está visível nesse momento,
+            // a mudança não pisca.
+            if (quadro) cancelAnimationFrame(quadro);
+            if (rede) clearTimeout(rede);
+            quadro = 0;
+            rede = 0;
+            el.textContent = formatar(0);
+          }
+        }
       },
-      { threshold: 0.4 },
+      { threshold: [0, 0.25] },
     );
     io.observe(el);
     document.addEventListener('visibilitychange', aoTrocarDeAba);

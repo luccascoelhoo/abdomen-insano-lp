@@ -32,15 +32,17 @@ export function Expert() {
           </Reveal>
         </div>
 
-        <Reveal className="historia">
-          {expert.historia.map((paragrafo) => (
-            <p key={paragrafo.slice(0, 32)}>{paragrafo}</p>
+        <div className="historia">
+          {expert.historia.map((paragrafo, i) => (
+            <Reveal as="p" key={paragrafo.slice(0, 32)} delay={i * 90}>
+              {paragrafo}
+            </Reveal>
           ))}
-          <p className="assinatura">
+          <Reveal as="p" className="assinatura" delay={expert.historia.length * 90}>
             {expert.assinatura}
             <small>{expert.assinaturaCargo}</small>
-          </p>
-        </Reveal>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

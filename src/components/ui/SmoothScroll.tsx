@@ -18,10 +18,13 @@ export function SmoothScroll() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const lenis = new Lenis({
-      duration: 1.05,
-      // Curva de desaceleração: rápida no começo, longa no fim.
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 1.6,
+      // Duração maior = rolagem mais lenta e "cinemática". 1.8 é o ponto onde
+      // dá sensação de peso sem parecer travado.
+      duration: 1.8,
+      // Curva mais suave — começa devagar e desacelera longo no fim.
+      easing: (t: number) => 1 - Math.pow(1 - t, 4),
+      touchMultiplier: 1.3,
+      wheelMultiplier: 0.85,
     });
 
     // Clique em âncora (#oferta) passa a ser conduzido pelo Lenis.

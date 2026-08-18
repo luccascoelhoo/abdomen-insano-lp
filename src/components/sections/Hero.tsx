@@ -1,8 +1,10 @@
 import { Contador } from '@/components/ui/Contador';
-import { Grid42 } from '@/components/ui/Grid42';
+import { CtaButton } from '@/components/ui/CtaButton';
+import { Fantasma42 } from '@/components/ui/Fantasma42';
+import { HeroFoto } from '@/components/ui/HeroFoto';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
-import { hero } from '@/content/desafio';
+import { ctas, hero, microCta } from '@/content/desafio';
 import { PROVOCACOES_CLICAVEIS } from '@/lib/flags';
 
 export function Hero() {
@@ -16,9 +18,7 @@ export function Hero() {
   return (
     <section className="hero">
       {/* Numeral gigante sangrando pela direita, atrás de tudo. */}
-      <div className="hero__fantasma" aria-hidden="true">
-        42
-      </div>
+      <Fantasma42 />
 
       <div className="wrap hero__grid">
         <div>
@@ -49,23 +49,24 @@ export function Hero() {
             )}
           </Reveal>
 
-          <Reveal className="numeros" delay={380}>
+          <Reveal as="div" className="hero__cta" delay={360}>
+            <CtaButton origem="hero" microcopy={microCta}>
+              {ctas.hero}
+            </CtaButton>
+          </Reveal>
+
+          <Reveal className="numeros" delay={440}>
             {hero.numeros.map((n) => (
               <div key={n.rotulo}>
-                <Contador ate={n.valor} prefixo={n.prefixo} />
+                <Contador ate={n.valor} prefixo={n.prefixo} duracao={2200} />
                 <span>{n.rotulo}</span>
               </div>
             ))}
           </Reveal>
         </div>
 
-        <Reveal className="malha" delay={160}>
-          <div className="malha__topo">
-            <span>{hero.malhaCabecalho.esquerda}</span>
-            <span>{hero.malhaCabecalho.direita}</span>
-          </div>
-          <Grid42 />
-          <p className="malha__pe">{hero.malhaRodape}</p>
+        <Reveal className="hero__coluna-direita" delay={160}>
+          <HeroFoto />
         </Reveal>
       </div>
     </section>

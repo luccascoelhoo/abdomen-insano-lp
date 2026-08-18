@@ -1,6 +1,8 @@
+import { CtaButton } from '@/components/ui/CtaButton';
+import { FaqItem } from '@/components/ui/FaqItem';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
-import { faq, faqSecao } from '@/content/desafio';
+import { ctas, faq, faqSecao, microCta } from '@/content/desafio';
 
 export function Faq() {
   return (
@@ -11,21 +13,24 @@ export function Faq() {
         </Reveal>
         <MaskTitle className="d2" linhas={['Perguntas', 'frequentes']} />
 
-        {/* <details> nativo: abre sem JavaScript e já é acessível por teclado. */}
         <Reveal className="faq">
           {faq.map((item, i) => (
-            <details key={item.pergunta}>
-              <summary>
-                <i aria-hidden="true">{String(i + 1).padStart(2, '0')}</i>
-                <span>{item.pergunta}</span>
-                <u aria-hidden="true">+</u>
-              </summary>
-              <div className="resposta">
-                <p>{item.resposta}</p>
-              </div>
-            </details>
+            <FaqItem
+              key={item.pergunta}
+              numero={String(i + 1).padStart(2, '0')}
+              pergunta={item.pergunta}
+              resposta={item.resposta}
+            />
           ))}
         </Reveal>
+
+        <div className="cta-fim">
+          <Reveal delay={140}>
+            <CtaButton origem="faq" microcopy={microCta}>
+              {ctas.faq}
+            </CtaButton>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

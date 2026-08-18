@@ -1,18 +1,12 @@
 import Image from 'next/image';
+import { CtaButton } from '@/components/ui/CtaButton';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Rail } from '@/components/ui/Rail';
 import { Reveal } from '@/components/ui/Reveal';
-import { casos, depoimentos } from '@/content/desafio';
-import { IMAGENS_PRONTAS, PROVOCACOES_CLICAVEIS } from '@/lib/flags';
+import { casos, ctas, depoimentos, microCta } from '@/content/desafio';
+import { IMAGENS_PRONTAS } from '@/lib/flags';
 
 export function Depoimentos() {
-  const provocacao = (
-    <>
-      {depoimentos.provocacaoAntes}
-      <span>{depoimentos.provocacaoDestaque}</span>
-    </>
-  );
-
   return (
     <section className="sec">
       <div className="wrap">
@@ -60,15 +54,11 @@ export function Depoimentos() {
         </Rail>
       </div>
 
-      <div className="wrap">
+      <div className="wrap cta-fim">
         <Reveal as="div" delay={120}>
-          {PROVOCACOES_CLICAVEIS ? (
-            <a className="provoke" href="#oferta">
-              {provocacao}
-            </a>
-          ) : (
-            <p className="provoke">{provocacao}</p>
-          )}
+          <CtaButton origem="depoimentos" microcopy={microCta}>
+            {ctas.depoimentos}
+          </CtaButton>
         </Reveal>
       </div>
     </section>

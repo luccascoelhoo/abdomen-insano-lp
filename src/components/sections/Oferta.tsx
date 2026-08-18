@@ -1,6 +1,7 @@
+import { Contador } from '@/components/ui/Contador';
 import { CtaButton } from '@/components/ui/CtaButton';
 import { Reveal } from '@/components/ui/Reveal';
-import { oferta, selos } from '@/content/desafio';
+import { microCta, oferta, selos } from '@/content/desafio';
 
 export function Oferta() {
   return (
@@ -18,7 +19,7 @@ export function Oferta() {
             <p className="preco-dia">{oferta.precoDia}</p>
             <p className="preco">
               <small>{oferta.precoRotulo}</small>
-              {oferta.precoNumero}
+              <Contador ate={oferta.precoNumero} milhar={false} duracao={1200} />
             </p>
             <p className="preco-nota">{oferta.precoNota}</p>
           </div>
@@ -28,7 +29,7 @@ export function Oferta() {
           </p>
 
           <p className="oferta__provoke">{oferta.provocacao}</p>
-          <CtaButton origem="oferta" />
+          <CtaButton origem="oferta" microcopy={microCta} />
 
           <div className="selos">
             {selos.map((selo) => (

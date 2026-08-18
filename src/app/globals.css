@@ -98,7 +98,7 @@ p:last-child {
 /* Título de seção. */
 .d2 {
   font-size: clamp(2.1rem, 1rem + 4vw, 4.3rem);
-  line-height: 1.02;
+  line-height: 1.06;
   font-variation-settings: "opsz" 60;
 }
 /* Título de bloco. */
@@ -201,12 +201,14 @@ p:last-child {
 .progresso {
   position: fixed;
   inset: 0 0 auto 0;
-  height: 2px;
-  background: var(--orange);
+  height: 4px;
+  background: linear-gradient(90deg, var(--orange), var(--amber));
+  box-shadow: 0 1px 6px rgba(255, 107, 0, 0.55);
   transform: scaleX(0);
   transform-origin: left;
   z-index: 70;
   pointer-events: none;
+  will-change: transform;
 }
 
 /* ---------- topo ---------- */
@@ -419,11 +421,34 @@ a.provoke:focus-visible {
   border-block: 1px solid rgba(241, 238, 231, 0.12);
   position: relative;
   z-index: 2;
+  /* Perspective ativa o eixo Z do trilho — dá o "aro girando". */
+  perspective: 900px;
+  perspective-origin: center;
+}
+.pista::before,
+.pista::after {
+  /* Sombras nas bordas dão profundidade de cilindro rolando. */
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(60px, 8vw, 140px);
+  z-index: 1;
+  pointer-events: none;
+}
+.pista::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--ink), transparent);
+}
+.pista::after {
+  right: 0;
+  background: linear-gradient(-90deg, var(--ink), transparent);
 }
 .pista__trilho {
   display: flex;
   width: max-content;
   will-change: transform;
+  transform-style: preserve-3d;
 }
 .pista__grupo {
   display: flex;
@@ -479,8 +504,35 @@ a.provoke:focus-visible {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: clamp(18px, 2.4vw, 30px);
-  padding-top: clamp(24px, 2.6vw, 34px);
+  padding: clamp(24px, 2.6vw, 34px) clamp(6px, 1.4vw, 16px) clamp(24px, 2.6vw, 34px) clamp(14px, 2vw, 22px);
   border-top: 1px solid var(--line);
+  position: relative;
+  transition:
+    background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pilar::before {
+  /* Barra lateral que "acende" quando o pilar entra em foco. */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--orange);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pilar--ativo {
+  background: linear-gradient(90deg, rgba(255, 107, 0, 0.05), transparent 55%);
+}
+.pilar--ativo::before {
+  transform: scaleY(1);
+}
+.pilar--ativo .pilar__n {
+  color: var(--orange);
+  -webkit-text-stroke: 0;
 }
 .pilar__n {
   font-family: var(--font-display);
@@ -490,6 +542,37 @@ a.provoke:focus-visible {
   line-height: 0.78;
   color: transparent;
   -webkit-text-stroke: 1.4px var(--orange);
+  transition:
+    color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    -webkit-text-stroke 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+.pilar__n::after {
+  /* Check discreto que aparece quando o pilar entra em foco — sinaliza
+     "cumprido" enquanto o leitor passa por ele. */
+  content: '';
+  position: absolute;
+  right: -22px;
+  top: 0.28em;
+  width: 14px;
+  height: 8px;
+  border-left: 2px solid var(--orange);
+  border-bottom: 2px solid var(--orange);
+  transform: rotate(-45deg) scale(0);
+  transform-origin: 20% 80%;
+  opacity: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.18s,
+    opacity 0.35s ease 0.18s;
+}
+.pilar--ativo .pilar__n::after {
+  transform: rotate(-45deg) scale(1);
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pilar__n::after {
+    transition: none;
+  }
 }
 .pilar h3 {
   margin: 0 0 12px;
@@ -884,6 +967,24 @@ a.provoke:focus-visible {
   align-items: flex-start;
   justify-content: center;
   gap: 0.04em;
+  transform-origin: center;
+  animation: preco-pulse 2.8s ease-in-out infinite;
+  will-change: transform, text-shadow;
+}
+@keyframes preco-pulse {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 0 0 0 rgba(255, 107, 0, 0);
+  }
+  50% {
+    transform: scale(1.028);
+    text-shadow: 0 0 42px rgba(255, 107, 0, 0.22);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preco {
+    animation: none;
+  }
 }
 .preco small {
   font-size: 0.26em;
@@ -1231,13 +1332,16 @@ a.provoke:focus-visible {
 
 /* ---------- barra fixa de compra (celular) ---------- */
 .sticky-cta {
+  --progresso: 0;
   position: fixed;
   inset: auto 0 0 0;
   z-index: 50;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  /* padding-left maior no mobile pra não colidir com o indicador do Next em dev
+     nem com a Home Bar do iOS que ocupa o canto esquerdo em landscape. */
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom)) 56px;
   background: rgba(12, 11, 10, 0.95);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 107, 0, 0.4);
@@ -1246,6 +1350,36 @@ a.provoke:focus-visible {
   transition:
     transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
     visibility 0.34s;
+}
+.sticky-cta::before {
+  /* Barra de progresso que corre em cima da borda superior — mostra quanto
+     da página o leitor já consumiu, virando compromisso ("faltam X%"). */
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  height: 3px;
+  width: calc(var(--progresso) * 100%);
+  background: linear-gradient(90deg, var(--orange), var(--amber));
+  box-shadow: 0 0 8px rgba(255, 107, 0, 0.55);
+  transition: width 0.12s linear;
+  pointer-events: none;
+}
+.sticky-cta__lido {
+  position: absolute;
+  top: -18px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 107, 0, 0.85);
+  background: rgba(12, 11, 10, 0.92);
+  padding: 3px 8px 3px 10px;
+  border: 1px solid rgba(255, 107, 0, 0.35);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  pointer-events: none;
 }
 .sticky-cta--on {
   transform: none;
@@ -1292,7 +1426,7 @@ a.provoke:focus-visible {
    nenhum bloco preso em opacity:0.
    ============================================================ */
 @media (scripting: enabled) {
-  /* Revelação genérica. */
+  /* Revelação genérica — refaz na entrada e saída (Reveal.tsx). */
   .rv {
     opacity: 0;
     transform: translateY(24px);
@@ -1304,11 +1438,18 @@ a.provoke:focus-visible {
     opacity: 1;
     transform: none;
   }
+  .rv.out {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
 
   /* Título que sobe por trás de uma máscara, linha a linha. */
   .mask {
     display: block;
     overflow: hidden;
+    /* Respiro entre linhas — evita que descender + ascender colem
+       ("funciona" + "essa" viravam "funcionaessa" em viewport apertado). */
+    padding: 0.08em 0 0.12em;
   }
   .mask > span {
     display: block;
@@ -1317,6 +1458,9 @@ a.provoke:focus-visible {
   }
   .mask.in > span {
     transform: none;
+  }
+  .mask.out > span {
+    transform: translateY(105%);
   }
 
   /* Malha: nasce vazia e preenche célula a célula. */
@@ -1376,3 +1520,423 @@ a.provoke:focus-visible {
     transform: none;
   }
 }
+
+/* ============================================================
+   HeroFoto — foto vertical do resultado + malha caindo por cima
+   conforme a rolagem. Substitui o Grid42 no hero.
+   ============================================================ */
+.herofoto {
+  display: grid;
+  gap: 12px;
+}
+.herofoto__topo {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.herofoto__quadro {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--ink);
+  isolation: isolate;
+}
+.herofoto__img {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.herofoto__img img {
+  object-fit: cover;
+  object-position: center 20%;
+}
+.herofoto__placeholder {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 107, 0, 0.12), transparent 55%),
+    linear-gradient(180deg, #1a1815 0%, #0c0b0a 100%);
+  display: grid;
+  place-items: center;
+}
+.herofoto__placeholder-texto {
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  padding: 20px;
+}
+.herofoto__placeholder-texto b {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.herofoto__placeholder-texto span {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.herofoto__malha {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 6px;
+  padding: 14px;
+}
+.herofoto__malha .c {
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  border-radius: 4px;
+  background: var(--orange);
+  color: var(--paper);
+  font-weight: 700;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  will-change: opacity, transform;
+}
+.herofoto__malha .c--last {
+  background: #f0c419; /* amarelo do dia 42 */
+  color: var(--ink);
+}
+.herofoto__pe {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  padding-top: 4px;
+}
+@media (max-width: 780px) {
+  .herofoto__quadro {
+    aspect-ratio: 4 / 5;
+  }
+  .herofoto__malha {
+    gap: 4px;
+    padding: 10px;
+  }
+  .herofoto__malha .c {
+    font-size: 0.5rem;
+  }
+}
+
+/* ============================================================
+   TENSAO — bloco preto entre Hero e Método.
+   Nomeia o problema real antes da solução. Contraste alto e
+   entrada em cascata dá o "peso emocional" de virar a página.
+   ============================================================ */
+.tensao {
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: clamp(60px, 8vw, 120px);
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+}
+.tensao::before {
+  /* Faixa laranja fina no topo dá o "corte" pra pista preta acima. */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange) 30%, var(--orange) 70%, transparent);
+  opacity: 0.55;
+}
+.tensao__rotulo {
+  color: var(--orange);
+}
+.tensao__rotulo::before {
+  background: var(--orange);
+}
+.tensao__titulo {
+  color: var(--paper);
+  margin-top: 8px;
+  max-width: 22ch;
+}
+.tensao__titulo .linha--2 {
+  color: var(--orange);
+}
+.tensao__blocos {
+  margin-top: clamp(40px, 5vw, 68px);
+  display: grid;
+  gap: clamp(44px, 5.5vw, 80px);
+}
+@media (min-width: 900px) {
+  .tensao__blocos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+.tensao__bloco {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tensao--ativa .tensao__bloco {
+  opacity: 1;
+  transform: none;
+}
+.tensao__lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tensao__lista li {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: 'opsz' 48;
+  text-transform: uppercase;
+  font-size: clamp(1.1rem, 0.9rem + 0.7vw, 1.5rem);
+  color: rgba(241, 238, 231, 0.42);
+  letter-spacing: -0.005em;
+  line-height: 1.15;
+  padding-left: 22px;
+  position: relative;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.35s ease;
+}
+.tensao--ativa .tensao__lista li {
+  opacity: 1;
+  transform: none;
+}
+.tensao__lista li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 10px;
+  height: 1.5px;
+  background: rgba(255, 107, 0, 0.55);
+}
+.tensao__subtitulo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(1.35rem, 1rem + 1.2vw, 1.9rem);
+  line-height: 1.1;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+}
+.tensao__paragrafo,
+.tensao__remate {
+  color: rgba(241, 238, 231, 0.72);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin: 0 0 10px;
+}
+.tensao__remate {
+  margin-top: 4px;
+}
+.tensao__destaque {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 107, 0, 0.25);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: 'opsz' 56;
+  text-transform: uppercase;
+  font-size: clamp(1.1rem, 0.9rem + 0.9vw, 1.55rem);
+  line-height: 1.15;
+  color: var(--orange);
+  letter-spacing: -0.005em;
+}
+
+/* ============================================================
+   Índice do Método — pequena "sumário" dos pilares na coluna
+   sticky da esquerda. Só aparece no desktop.
+   ============================================================ */
+.metodo__indice {
+  display: none;
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  gap: 12px;
+  flex-direction: column;
+}
+@media (min-width: 940px) {
+  .metodo__indice {
+    display: flex;
+  }
+}
+.metodo__indice-item {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.metodo__indice-item b {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 48;
+  font-size: 1.1rem;
+  color: var(--muted);
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   CTA — variações por posição, wrapper com microcopy embaixo,
+   e wrapper "fim de seção" que centraliza o botão.
+   ============================================================ */
+.cta-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  max-width: 380px;
+}
+.cta-microcopy {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+.hero__cta {
+  margin-top: 22px;
+  max-width: 520px;
+}
+/* CTA do hero é mais compacto — texto longo cabe em uma linha só. */
+.hero__cta .cta {
+  font-size: clamp(1rem, 0.85rem + 0.6vw, 1.28rem);
+  padding: 20px 26px;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+}
+.hero__cta .cta-wrap {
+  max-width: 520px;
+}
+.cta-fim {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(32px, 4vw, 56px);
+}
+
+/* ============================================================
+   Micro-interações: hover em cards. Sensação tátil sem exagero —
+   apenas o suficiente pra o cursor sentir que ali é clicável.
+   ============================================================ */
+.beneficio {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.beneficio:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px -14px rgba(23, 21, 15, 0.18);
+}
+.bonus {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s;
+}
+.bonus:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 107, 0, 0.5);
+}
+.caso {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.caso:hover {
+  transform: rotate(-0.6deg) scale(1.02);
+}
+
+/* ============================================================
+   FAQ com collapse suave — substitui o <details> nativo.
+   ============================================================ */
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+.faq-item__botao {
+  all: unset;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 14px;
+  padding: clamp(16px, 1.6vw, 22px) 4px;
+  cursor: pointer;
+  width: 100%;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: clamp(1rem, 0.9rem + 0.3vw, 1.1rem);
+  font-weight: 600;
+  line-height: 1.35;
+  transition: background 0.25s;
+}
+.faq-item__botao:hover {
+  background: rgba(255, 107, 0, 0.04);
+}
+.faq-item__botao:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.faq-item__botao i {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.faq-item__botao u {
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--orange);
+  line-height: 1;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-item[data-open='true'] .faq-item__botao u {
+  transform: rotate(180deg);
+}
+.faq-item__corpo {
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-item__conteudo {
+  padding: 0 4px 22px calc(0.6rem + 14px + 24px); /* alinha com o texto da pergunta */
+  color: #46413a;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+.faq-item__conteudo p {
+  margin: 0;
+}
+
+
+
+

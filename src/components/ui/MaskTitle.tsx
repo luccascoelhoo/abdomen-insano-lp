@@ -14,6 +14,8 @@ type Props = {
    * Array (e não função) porque isto atravessa a fronteira servidor→cliente.
    */
   classesLinha?: readonly (string | undefined)[];
+  /** Se true (padrão), refaz a animação toda vez que entra na tela. */
+  reanima?: boolean;
 };
 
 /**
@@ -23,8 +25,17 @@ type Props = {
  * linha nasce embaixo do próprio recorte e desliza para o lugar, com atraso
  * entre elas. Sem JavaScript, o CSS da máscara nem existe e o título já está
  * no lugar.
+ *
+ * Modo `reanima` (padrão): quando o título sai da tela, ele volta pro estado
+ * escondido, e refaz a entrada se rolar de volta. Faz a página respirar.
  */
-export function MaskTitle({ linhas, className, as: Tag = 'h2', classesLinha }: Props) {
+export function MaskTitle({
+  linhas,
+  className,
+  as: Tag = 'h2',
+  classesLinha,
+  reanima = true,
+}: Props) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -33,6 +44,8 @@ export function MaskTitle({ linhas, className, as: Tag = 'h2', classesLinha }: P
     const partes = Array.from(el.querySelectorAll<HTMLElement>('.mask'));
 
     const revelar = () => partes.forEach((p) => p.classList.add('in'));
+    const esconder = () => partes.forEach((p) => p.classList.remove('in'));
+
     if (
       window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       !('IntersectionObserver' in window)
@@ -43,15 +56,20 @@ export function MaskTitle({ linhas, className, as: Tag = 'h2', classesLinha }: P
 
     const io = new IntersectionObserver(
       (entradas) => {
-        if (!entradas.some((e) => e.isIntersecting)) return;
-        io.disconnect();
-        revelar();
+        for (const entrada of entradas) {
+          if (entrada.isIntersecting) {
+            revelar();
+            if (!reanima) io.disconnect();
+          } else if (reanima) {
+            esconder();
+          }
+        }
       },
       { threshold: 0.15, rootMargin: '0px 0px -6% 0px' },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [reanima]);
 
   return (
     <Tag ref={ref as never} className={className}>
