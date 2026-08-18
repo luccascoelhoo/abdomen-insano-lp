@@ -1030,6 +1030,17 @@ a.provoke:focus-visible {
   overflow: hidden;
   isolation: isolate;
   transition: color 0.3s ease;
+  /* Quebra de linha no meio de CTA fica com cara de bug — copies como
+     "QUERO COMEÇAR EM 42 DIAS" viravam duas linhas em telas apertadas. */
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  /* Mobile: encolhe padding e fonte pra caber as copies mais longas
+     ("Já sei tudo. Aceito o desafio" = 29 chars) sem estourar. */
+  .cta {
+    font-size: clamp(0.92rem, 3.4vw, 1.2rem);
+    padding: 20px 18px;
+  }
 }
 .cta::before {
   content: "";
@@ -1416,6 +1427,20 @@ a.provoke:focus-visible {
   font-size: 1.05rem;
 }
 
+/* Layout da máscara vale sempre — mesmo sem JavaScript. Se `.mask` cair pro
+   default inline, spans adjacentes colam ("perguntas frequentes" vira
+   "perguntasfrequentes") porque não há whitespace entre spans no JSX.
+   Só a animação (translateY) fica gated por script. */
+.mask {
+  display: block;
+  overflow: hidden;
+  /* Respiro entre linhas — evita que descender + ascender colem. */
+  padding: 0.08em 0 0.12em;
+}
+.mask > span {
+  display: block;
+}
+
 /* ============================================================
    MOVIMENTO
 
@@ -1441,16 +1466,9 @@ a.provoke:focus-visible {
     transform: translateY(-16px);
   }
 
-  /* Título que sobe por trás de uma máscara, linha a linha. */
-  .mask {
-    display: block;
-    overflow: hidden;
-    /* Respiro entre linhas — evita que descender + ascender colem
-       ("funciona" + "essa" viravam "funcionaessa" em viewport apertado). */
-    padding: 0.08em 0 0.12em;
-  }
+  /* Só a animação da máscara depende de JS — o layout de linha por linha
+     precisa valer sempre (ver bloco .mask fora do @media logo abaixo). */
   .mask > span {
-    display: block;
     transform: translateY(105%);
     transition: transform 0.95s cubic-bezier(0.19, 1, 0.22, 1);
   }
