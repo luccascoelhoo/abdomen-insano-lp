@@ -968,21 +968,19 @@ a.provoke:focus-visible {
   justify-content: center;
   gap: 0.04em;
   transform-origin: center;
+}
+/* Pulse do preço só entra quando o Reveal .oferta ganha .in ao aparecer.
+   Evita repaint gigante do texto rodando em loop com a section fora da tela.
+   Sem text-shadow (repaint caro em texto grande); só transform (composited). */
+.oferta.in .preco {
   animation: preco-pulse 2.8s ease-in-out infinite;
-  will-change: transform, text-shadow;
 }
 @keyframes preco-pulse {
-  0%, 100% {
-    transform: scale(1);
-    text-shadow: 0 0 0 rgba(255, 107, 0, 0);
-  }
-  50% {
-    transform: scale(1.028);
-    text-shadow: 0 0 42px rgba(255, 107, 0, 0.22);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .preco {
+  .oferta.in .preco {
     animation: none;
   }
 }

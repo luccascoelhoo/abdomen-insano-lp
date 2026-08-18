@@ -31,6 +31,7 @@ export function Pista() {
     let velocidadeRolagem = 0;
     let ultimoY = window.scrollY;
     let quadro = 0;
+    let visivel = false;
     const inicioTempo = performance.now();
 
     const aoRolar = () => {
@@ -61,14 +62,26 @@ export function Pista() {
         `translate3d(${deslocamento}px, ${balanco}px, 0) ` +
         `rotateX(${rot}deg) skewX(${skew}deg)`;
 
-      quadro = requestAnimationFrame(passo);
+      quadro = visivel ? requestAnimationFrame(passo) : 0;
     };
 
+    // O rAF só roda quando a faixa está visível — do contrário fica queimando
+    // CPU pra animar um trilho que ninguém enxerga. Reativa cedo (rootMargin
+    // 200px) pra faixa já entrar em movimento antes de aparecer.
+    const io = new IntersectionObserver(
+      ([entrada]) => {
+        visivel = entrada.isIntersecting;
+        if (visivel && !quadro) quadro = requestAnimationFrame(passo);
+      },
+      { rootMargin: '200px 0px' },
+    );
+    io.observe(el);
+
     window.addEventListener('scroll', aoRolar, { passive: true });
-    quadro = requestAnimationFrame(passo);
     return () => {
       window.removeEventListener('scroll', aoRolar);
-      cancelAnimationFrame(quadro);
+      io.disconnect();
+      if (quadro) cancelAnimationFrame(quadro);
     };
   }, []);
 
