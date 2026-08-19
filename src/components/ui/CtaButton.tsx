@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { oferta } from '@/content/desafio';
+import { anexarParametros, lerUtm } from '@/lib/utm';
 
 declare global {
   interface Window {
@@ -36,6 +37,21 @@ export function CtaButton({
   microcopy,
 }: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
+  const [href, setHref] = useState<string>(oferta.checkoutUrl);
+
+  useEffect(() => {
+    const utm = lerUtm();
+    const returnUrl = `${window.location.origin}/obrigado`;
+    setHref(
+      anexarParametros(oferta.checkoutUrl, {
+        ...utm,
+        redirect_url: returnUrl,
+        return_url: returnUrl,
+        thank_you_url: returnUrl,
+        origem,
+      }),
+    );
+  }, [origem]);
 
   useEffect(() => {
     const el = ref.current;
@@ -93,7 +109,7 @@ export function CtaButton({
     <a
       ref={ref}
       className={className}
-      href={oferta.checkoutUrl}
+      href={href}
       rel="noopener"
       data-origem={origem}
       onClick={() => {

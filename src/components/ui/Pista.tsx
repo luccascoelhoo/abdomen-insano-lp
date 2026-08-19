@@ -10,23 +10,30 @@ const ITENS = [
   '1 real por dia',
 ];
 
+// Renderiza várias cópias do grupo. O wrap-around só fica invisível se, no
+// momento em que o trilho reseta -largura → 0, ainda houver pelo menos um
+// viewport de conteúdo à direita da posição visível. Duas cópias não bastam
+// em telas médias/grandes.
+const COPIAS = 6;
+
 /**
  * Faixa preta com os argumentos correndo na horizontal.
  *
- * A base é um trilho que anda continuamente da direita para a esquerda com
- * um leve balanço em Y (aspecto de anel rolando). A rolagem da página acelera
- * o movimento e inclina o trilho no sentido do dedo — como se a mão empurrasse
- * o cilindro. Sem rolagem, o balanço mantém o "vivo" da faixa.
+ * O trilho anda continuamente da direita para a esquerda com um leve balanço
+ * em Y (aspecto de anel rolando). A rolagem da página acelera o movimento e
+ * inclina o trilho no sentido do dedo. Sem rolagem, o balanço mantém o "vivo".
  */
 export function Pista() {
   const trilho = useRef<HTMLDivElement>(null);
+  const grupoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = trilho.current;
-    if (!el) return;
+    const grupo = grupoRef.current;
+    if (!el || !grupo) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const largura = el.scrollWidth / 2; // conteúdo duplicado
+    let largura = grupo.offsetWidth;
     let deslocamento = 0;
     let velocidadeRolagem = 0;
     let ultimoY = window.scrollY;
@@ -34,29 +41,36 @@ export function Pista() {
     let visivel = false;
     const inicioTempo = performance.now();
 
+    const remedir = () => {
+      largura = grupo.offsetWidth;
+    };
+
     const aoRolar = () => {
       const y = window.scrollY;
-      velocidadeRolagem = y - ultimoY;
+      // Fling do trackpad pode entregar delta de 300+px num evento só. Sem
+      // clamp o trilho pula centenas de pixels num frame, deixando o
+      // wrap-around visível e o movimento espasmódico.
+      const delta = y - ultimoY;
+      velocidadeRolagem = Math.max(-60, Math.min(60, delta));
       ultimoY = y;
     };
 
     const passo = (agora: number) => {
-      // Movimento base contínuo + empurrão da rolagem.
-      deslocamento -= 2.2 + velocidadeRolagem * 0.55;
-      velocidadeRolagem *= 0.9;
-      if (deslocamento <= -largura) deslocamento += largura;
-      if (deslocamento > 0) deslocamento -= largura;
+      deslocamento -= 2.2 + velocidadeRolagem * 0.35;
+      velocidadeRolagem *= 0.86;
 
-      // Balanço em Y — pequena senoide que dá "vivo" mesmo parado.
+      // Modulo mantém o deslocamento em (-largura, 0] mesmo se um único
+      // frame passar de -largura em várias vezes. Sem isso, `+= largura`
+      // solto deixa o trilho preso em áreas fora da cópia por vários frames.
+      if (largura > 0) {
+        const norm = ((deslocamento % largura) + largura) % largura;
+        deslocamento = norm === 0 ? 0 : norm - largura;
+      }
+
       const t = (agora - inicioTempo) / 1000;
       const balanco = Math.sin(t * 1.2) * 4;
-
-      // Rotação Y sutil sempre presente (aspecto de anel girando em 3D).
       const rot = Math.sin(t * 0.9) * 3;
-
-      // Skew responde à velocidade do scroll — cilindro inclina no sentido
-      // do dedo quando a página se move.
-      const skew = Math.max(-8, Math.min(8, velocidadeRolagem * 0.45));
+      const skew = Math.max(-6, Math.min(6, velocidadeRolagem * 0.35));
 
       el.style.transform =
         `translate3d(${deslocamento}px, ${balanco}px, 0) ` +
@@ -65,9 +79,6 @@ export function Pista() {
       quadro = visivel ? requestAnimationFrame(passo) : 0;
     };
 
-    // O rAF só roda quando a faixa está visível — do contrário fica queimando
-    // CPU pra animar um trilho que ninguém enxerga. Reativa cedo (rootMargin
-    // 200px) pra faixa já entrar em movimento antes de aparecer.
     const io = new IntersectionObserver(
       ([entrada]) => {
         visivel = entrada.isIntersecting;
@@ -78,31 +89,32 @@ export function Pista() {
     io.observe(el);
 
     window.addEventListener('scroll', aoRolar, { passive: true });
+    window.addEventListener('resize', remedir);
     return () => {
       window.removeEventListener('scroll', aoRolar);
+      window.removeEventListener('resize', remedir);
       io.disconnect();
       if (quadro) cancelAnimationFrame(quadro);
     };
   }, []);
 
-  const grupo = (chave: string) => (
-    <div className="pista__grupo" key={chave}>
-      {ITENS.map((item, i) => (
-        <span key={`${chave}-${item}`} className="pista__grupo">
-          <span className={i % 2 ? 'pista__item pista__item--vazado' : 'pista__item'}>
-            {item}
-          </span>
-          <span className="pista__ponto" />
-        </span>
-      ))}
-    </div>
-  );
+  const conteudo = ITENS.map((item, i) => (
+    <span key={item} className="pista__grupo">
+      <span className={i % 2 ? 'pista__item pista__item--vazado' : 'pista__item'}>
+        {item}
+      </span>
+      <span className="pista__ponto" />
+    </span>
+  ));
 
   return (
     <div className="pista" aria-hidden="true">
       <div className="pista__trilho" ref={trilho}>
-        {grupo('a')}
-        {grupo('b')}
+        {Array.from({ length: COPIAS }, (_, k) => (
+          <div className="pista__grupo" key={k} ref={k === 0 ? grupoRef : null}>
+            {conteudo}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -69,6 +69,20 @@ export const ctas = {
  */
 export const microCta = 'Garantia de 7 dias · acesso imediato · pagamento único';
 
+/**
+ * Barra fina no topo da página — bloco 1 do modelo Mateus Dias.
+ * Serve pra criar contexto/urgência antes mesmo da headline.
+ * Copy neutra por padrão; ajuste `aviso` pra reforçar prazo/turma/vaga
+ * quando for verdade — não invente escassez.
+ */
+export const alerta = {
+  rotulo: 'Etapa 1 de 2',
+  aviso: 'Leia a página até o fim antes de aceitar o desafio',
+  destaque: 'R$42 · garantia de 7 dias',
+  ctaTexto: 'Aceitar agora',
+  ctaHref: '#oferta',
+} as const;
+
 export const selos: Selo[] = [
   { rotulo: 'Compra', valor: '100% segura' },
   { rotulo: 'Acesso', valor: 'por 1 ano' },
@@ -265,6 +279,30 @@ export const bonusSecao = {
   tituloLinhas: ['Ainda preparei uns', 'bônus surreais pra você'],
 } as const;
 
+/**
+ * Ancoragem — bloco novo antes da Oferta. Compara R$42 com o custo real
+ * das alternativas do mercado fitness. Vem do estudo Ícaro Carvalho:
+ * "mostrar o quanto a pessoa perde ao não comprar / pagar mais em outras
+ * frentes". Números são estimativas médias do mercado — ajustar se souber
+ * o ticket real da região do público.
+ */
+export const ancoragem = {
+  eyebrow: 'A conta que ninguém faz',
+  tituloLinhas: ['O que você já paga', 'pra não sair do lugar'],
+  lead: 'Se você já tentou de tudo e continua sem resultado, provavelmente já queimou muito mais que R$42 por mês. Faz a conta:',
+  linhas: [
+    { rotulo: 'Personal por hora', valor: 'R$ 120', obs: 'em média · 2x semana = R$ 960/mês' },
+    { rotulo: 'Academia decente', valor: 'R$ 150', obs: 'por mês, todo mês, sem plano' },
+    { rotulo: 'Consulta nutri', valor: 'R$ 300', obs: 'primeira · retorno em 30 dias' },
+    { rotulo: 'Curso fitness aleatório', valor: 'R$ 497', obs: 'que você não terminou' },
+  ],
+  vsRotulo: 'Desafio Abdômen Insano',
+  vsValor: 'R$ 42',
+  vsObs: 'pagamento único · 1 ano de acesso · garantia de 7 dias',
+  remate:
+    'É menos que um lanche com refri. Só que dessa vez o resultado dura mais que a digestão.',
+} as const;
+
 export const bonus: Bonus[] = [
   {
     titulo: 'Protocolo de sono e recuperação dos atletas',
@@ -385,13 +423,35 @@ export const faq: Pergunta[] = [
   },
 ];
 
+/**
+ * Reafirmação — bloco final do modelo Mateus. Aparece depois do FAQ e
+ * fecha o loop de vendas: recapitula o que a pessoa recebe, o preço, a
+ * garantia, e devolve o CTA. Quem chegou até aqui já quer clicar — o bloco
+ * remove a última fricção.
+ */
+export const reafirmacao = {
+  eyebrow: 'Recapitulando',
+  tituloLinhas: ['Você já viu tudo.', 'Falta só aceitar.'],
+  itens: [
+    'Aplicativo exclusivo + trilha de 42 dias',
+    'Alimentação simplificada por nutricionista',
+    'Cardio calculado, sem passeio',
+    'Bônus: sono dos atletas, sobrevivência social, treinos naturais',
+    '1 ano de acesso — 42 dias de desafio + 11 meses de bônus',
+    'Garantia incondicional de 7 dias',
+  ],
+  fecho: 'Menos que um lanche com refri. R$42, pagamento único.',
+} as const;
+
 export const suporte = {
   eyebrow: 'Suporte',
   titulo: 'Ficou alguma dúvida?',
-  lead: 'Fala com a nossa equipe agora mesmo.',
-  linkTexto: 'Falar com o suporte',
-  /** TROQUE PELO LINK DO WHATSAPP — hoje aponta pro topo, o que é um link quebrado. */
+  lead: 'Fala com a nossa equipe agora mesmo — responde em minutos, durante horário comercial.',
+  linkTexto: 'Falar no WhatsApp',
   linkUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL ?? '',
+  /** Fallback quando o link do WhatsApp ainda não foi configurado. */
+  emailContato: process.env.NEXT_PUBLIC_EMAIL_SUPORTE ?? 'suporte@desafioabdomeninsano.com.br',
+  emailTexto: 'Escrever pro suporte',
 } as const;
 
 export const rodape = {

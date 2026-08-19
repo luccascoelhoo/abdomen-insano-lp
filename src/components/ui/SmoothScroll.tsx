@@ -16,6 +16,11 @@ import { useEffect } from 'react';
  */
 export function SmoothScroll() {
   useEffect(() => {
+    // TESTE DE JANK — desligado unconditionally pra confirmar se o Lenis é o
+    // culpado do frame drop no trackpad. Se sim, decidir: remover de vez ou
+    // voltar com config mais leve (duration 0.8, wheelMultiplier 1.0).
+    return;
+    // eslint-disable-next-line no-unreachable
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
     if (window.innerWidth < 900) return;

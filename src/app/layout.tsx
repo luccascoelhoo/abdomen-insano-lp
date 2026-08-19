@@ -4,6 +4,7 @@ import './globals.css';
 import { Grain } from '@/components/ui/Grain';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
+import { UtmCatcher } from '@/components/ui/UtmCatcher';
 import { faq, marca, oferta } from '@/content/desafio';
 
 /**
@@ -106,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${display.variable} ${corpo.variable} ${dado.variable}`}>
       <body>
+        <UtmCatcher />
         <SmoothScroll />
         <ScrollProgress />
         <Grain />

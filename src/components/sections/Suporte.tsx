@@ -14,13 +14,8 @@ export function Suporte() {
           {suporte.lead}
         </Reveal>
 
-        {/*
-          Sem link configurado, nada é renderizado — melhor não ter botão do que
-          ter um botão morto, que é o que está no ar hoje (href="#").
-          Defina NEXT_PUBLIC_WHATSAPP_URL para ligar.
-        */}
-        {suporte.linkUrl ? (
-          <Reveal as="div" delay={200}>
+        <Reveal as="div" delay={200}>
+          {suporte.linkUrl ? (
             <a
               className="link-suporte"
               href={suporte.linkUrl}
@@ -29,8 +24,12 @@ export function Suporte() {
             >
               {suporte.linkTexto}
             </a>
-          </Reveal>
-        ) : null}
+          ) : (
+            <a className="link-suporte link-suporte--email" href={`mailto:${suporte.emailContato}`}>
+              {suporte.emailTexto} <span>{suporte.emailContato}</span>
+            </a>
+          )}
+        </Reveal>
       </div>
     </section>
   );

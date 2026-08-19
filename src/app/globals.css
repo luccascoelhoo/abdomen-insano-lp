@@ -221,6 +221,84 @@ p:last-child {
   z-index: 2;
 }
 
+/* Barra de alerta — bloco 1 do modelo Mateus Dias. Marca o topo com um
+   aviso persistente e um micro-CTA. Copy vem de content/desafio.ts. */
+.barra-alerta {
+  background: linear-gradient(90deg, var(--orange), var(--amber));
+  color: #0c0b0a;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 8px var(--pad);
+  position: relative;
+  z-index: 3;
+  border-bottom: 1px solid rgba(12, 11, 10, 0.28);
+}
+.barra-alerta__wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 26px);
+  flex-wrap: wrap;
+}
+.barra-alerta__rotulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #0c0b0a;
+}
+.barra-alerta__ponto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0c0b0a;
+  animation: barra-alerta-pulso 1.6s ease-in-out infinite;
+}
+@keyframes barra-alerta-pulso {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .barra-alerta__ponto { animation: none; }
+}
+.barra-alerta__aviso {
+  opacity: 0.85;
+}
+.barra-alerta__destaque {
+  font-weight: 700;
+  padding-left: 12px;
+  border-left: 1px solid rgba(12, 11, 10, 0.35);
+}
+.barra-alerta__cta {
+  color: #0c0b0a;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+}
+.barra-alerta__cta:hover {
+  opacity: 0.7;
+}
+/* Mobile: mantém rótulo+destaque+CTA. Esconde o aviso longo pra não empilhar. */
+@media (max-width: 640px) {
+  .barra-alerta {
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    padding: 7px 12px;
+  }
+  .barra-alerta__wrap {
+    gap: 10px;
+  }
+  .barra-alerta__aviso {
+    display: none;
+  }
+}
+
 /* ============================================================
    HERÓI
    Coluna de texto larga, o cartão da malha invadindo por cima e
@@ -1285,12 +1363,35 @@ a.provoke:focus-visible {
 .link-suporte:hover {
   color: var(--orange);
 }
+.link-suporte--email {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 28px;
+  border: 1.5px solid var(--line);
+  border-bottom-width: 2px;
+  border-bottom-color: var(--orange);
+  background: #fff;
+}
+.link-suporte--email span {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--muted);
+  font-family: var(--font-body);
+}
 
 .footer {
   background: var(--ink);
   color: rgba(241, 238, 231, 0.55);
   padding-top: clamp(56px, 7vw, 88px);
   overflow: hidden;
+}
+@media (max-width: 899px) {
+  /* Respiro embaixo pro sticky CTA não cobrir o legal do rodapé. */
+  .footer {
+    padding-bottom: 96px;
+  }
 }
 .footer__nav {
   display: flex;
@@ -1439,6 +1540,231 @@ a.provoke:focus-visible {
 }
 .mask > span {
   display: block;
+}
+
+/* ============================================================
+   DEPOIMENTOS — scroll horizontal pinned (desktop)
+   Section fica alta o bastante pro browser rolar por várias telas;
+   dentro, um sticky de 100vh mantém o trilho na tela e o JS puxa
+   as fotos pela esquerda enquanto o scroll avança.
+   ============================================================ */
+.dep-pin {
+  /* Sem ativação do JS a section não deve ocupar altura extra — o mobile
+     usa o fallback .depoimentos-mobile e nem renderiza esse trilho visível.
+     JS injeta a altura só quando `.dep-pin--ativo` está aplicado. */
+  display: none;
+}
+@media (min-width: 900px) {
+  .dep-pin {
+    display: block;
+    position: relative;
+    /* Escurece o fundo pra dar peso cinematográfico ao segmento pinned. */
+    background: linear-gradient(180deg, transparent, rgba(12, 11, 10, 0.02));
+  }
+  .dep-pin__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .dep-pin__stage {
+    width: 100%;
+    padding: 0 var(--pad);
+  }
+  .dep-pin__trilho {
+    display: flex;
+    gap: clamp(20px, 2vw, 32px);
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+  .dep-pin__trilho .caso {
+    flex: 0 0 clamp(320px, 30vw, 460px);
+    scroll-snap-align: none;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .dep-pin__trilho .caso:hover {
+    transform: translateY(-4px);
+  }
+  /* No desktop, esconde a versão mobile (Rail) — o pinning cobre. */
+  .depoimentos-mobile,
+  .depoimentos-sec .rail__dica {
+    display: none;
+  }
+}
+
+/* ============================================================
+   ANCORAGEM DE PREÇO
+   Bloco antes da Oferta que compara R$42 com o mercado.
+   ============================================================ */
+.ancoragem {
+  background: var(--ink);
+  color: var(--paper);
+}
+.ancoragem__titulo {
+  color: var(--paper);
+  margin-top: 8px;
+  max-width: 22ch;
+}
+.ancoragem .lead {
+  color: rgba(241, 238, 231, 0.72);
+  max-width: 60ch;
+  margin-top: 18px;
+  margin-bottom: clamp(30px, 4vw, 46px);
+}
+.ancoragem__tabela {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid rgba(241, 238, 231, 0.16);
+}
+.ancoragem__linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "rotulo valor"
+    "obs    obs";
+  align-items: baseline;
+  gap: 4px 18px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(241, 238, 231, 0.14);
+}
+@media (min-width: 720px) {
+  .ancoragem__linha {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr) auto;
+    grid-template-areas: "rotulo obs valor";
+    gap: 22px;
+    padding: 24px 0;
+  }
+}
+.ancoragem__rotulo {
+  grid-area: rotulo;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: 'opsz' 48;
+  text-transform: uppercase;
+  font-size: clamp(1.1rem, 0.9rem + 0.7vw, 1.5rem);
+  color: var(--paper);
+  letter-spacing: -0.005em;
+  line-height: 1.15;
+}
+.ancoragem__valor {
+  grid-area: valor;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 56;
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2.2rem);
+  color: rgba(241, 238, 231, 0.5);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.ancoragem__obs {
+  grid-area: obs;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(241, 238, 231, 0.42);
+}
+/* A nossa linha — quebra o padrão riscando visualmente a diferença. */
+.ancoragem__linha--nossa {
+  background: linear-gradient(90deg, rgba(255, 107, 0, 0.16), transparent 70%);
+  border-bottom: 2px solid var(--orange);
+  padding: 26px 14px;
+  margin-top: 6px;
+}
+@media (min-width: 720px) {
+  .ancoragem__linha--nossa {
+    padding: 30px 18px;
+  }
+}
+.ancoragem__linha--nossa .ancoragem__rotulo {
+  color: var(--orange);
+}
+.ancoragem__linha--nossa .ancoragem__valor {
+  color: var(--paper);
+  font-size: clamp(2rem, 1.4rem + 2vw, 3.4rem);
+}
+.ancoragem__linha--nossa .ancoragem__obs {
+  color: rgba(241, 238, 231, 0.72);
+}
+.ancoragem__remate {
+  margin-top: clamp(28px, 3vw, 40px);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: 'opsz' 48;
+  font-size: clamp(1.1rem, 0.9rem + 0.7vw, 1.5rem);
+  color: var(--paper);
+  line-height: 1.25;
+  max-width: 30ch;
+}
+
+/* ============================================================
+   REAFIRMAÇÃO
+   Bloco final depois do FAQ que recapitula a oferta e devolve o CTA.
+   ============================================================ */
+.reafirmacao {
+  background: var(--ink);
+  color: var(--paper);
+}
+.reafirmacao__titulo {
+  color: var(--paper);
+  margin-top: 8px;
+  max-width: 22ch;
+}
+.reafirmacao__titulo .linha--2 {
+  color: var(--orange);
+}
+.reafirmacao__lista {
+  list-style: none;
+  padding: 0;
+  margin: clamp(28px, 4vw, 48px) 0 clamp(20px, 3vw, 32px);
+  display: grid;
+  gap: 14px;
+}
+@media (min-width: 720px) {
+  .reafirmacao__lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 40px;
+  }
+}
+.reafirmacao__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: 'opsz' 40;
+  text-transform: uppercase;
+  font-size: clamp(0.95rem, 0.82rem + 0.5vw, 1.15rem);
+  color: rgba(241, 238, 231, 0.88);
+  letter-spacing: -0.003em;
+  line-height: 1.25;
+}
+.reafirmacao__marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--orange);
+  color: var(--orange);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.reafirmacao__fecho {
+  margin: clamp(24px, 3vw, 36px) 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: 'opsz' 56;
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.75rem);
+  color: var(--paper);
+  line-height: 1.2;
+  max-width: 30ch;
 }
 
 /* ============================================================
@@ -1953,6 +2279,297 @@ a.provoke:focus-visible {
   margin: 0;
 }
 
+/* ============================================================
+   PÁGINA /OBRIGADO — cadastro pós-compra + liberação dos apps
 
+   O usuário chega aqui direto do checkout. A tela nunca pode
+   parecer "outra página do site" — o desenho ecoa a LP mas com
+   respiro maior, foco absoluto no formulário. Zero animação
+   distraente: quem chegou aqui pagou; agora só quer terminar.
+   ============================================================ */
+.obrigado {
+  min-height: 100vh;
+  padding: clamp(60px, 8vw, 96px) 0 clamp(80px, 10vw, 140px);
+  background: var(--paper);
+  color: var(--text);
+  position: relative;
+  isolation: isolate;
+}
+.obrigado::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 40% at 100% 0%, rgba(255, 107, 0, 0.08), transparent 70%),
+    radial-gradient(50% 40% at 0% 100%, rgba(245, 179, 1, 0.06), transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+.obrigado--fim {
+  background: var(--ink);
+  color: var(--paper);
+}
+.obrigado--fim::before {
+  background:
+    radial-gradient(60% 45% at 50% 0%, rgba(255, 107, 0, 0.22), transparent 70%),
+    radial-gradient(70% 45% at 50% 100%, rgba(245, 179, 1, 0.08), transparent 70%);
+}
+.obrigado--intro .wrap {
+  max-width: 720px;
+  text-align: center;
+}
+.obrigado__titulo {
+  margin-top: clamp(20px, 2vw, 28px);
+}
+.obrigado__titulo--claro {
+  color: var(--paper);
+}
+.obrigado__titulo .obrigado__ok {
+  color: var(--orange);
+}
+.obrigado__grid {
+  display: grid;
+  gap: clamp(40px, 5vw, 72px);
+}
+@media (min-width: 960px) {
+  .obrigado__grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+.obrigado__passos {
+  list-style: none;
+  margin: clamp(30px, 4vw, 46px) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.obrigado__passos li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.obrigado__passos b {
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 48;
+  font-size: 1.5rem;
+  color: var(--orange);
+  min-width: 34px;
+}
+.obrigado__spinner {
+  margin: clamp(30px, 4vw, 46px) auto 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 107, 0, 0.18);
+  border-top-color: var(--orange);
+  animation: obrigado-spin 0.9s linear infinite;
+}
+@keyframes obrigado-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.obrigado__lead-claro {
+  color: rgba(241, 238, 231, 0.78);
+  max-width: 56ch;
+}
+.obrigado__email {
+  color: var(--amber);
+  font-weight: 700;
+  word-break: break-all;
+}
 
+/* ---------- FORMULÁRIO ---------- */
+.cadastro {
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: clamp(24px, 3vw, 36px);
+  display: grid;
+  gap: 16px;
+  box-shadow: 0 24px 60px -30px rgba(12, 11, 10, 0.35);
+}
+.campo {
+  display: grid;
+  gap: 6px;
+}
+.campo > span {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.campo > em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.campo input {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 0;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+.campo input:hover {
+  border-color: rgba(23, 21, 15, 0.32);
+}
+.campo input:focus {
+  border-color: var(--orange);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+}
+.campo input:disabled {
+  background: rgba(23, 21, 15, 0.05);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.campo-linha {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 560px) {
+  .campo-linha {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.cadastro__erro {
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  background: rgba(255, 107, 0, 0.08);
+  border-left: 3px solid var(--orange);
+  color: var(--text);
+  font-size: 0.94rem;
+}
+.cadastro__nota {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.cadastro__nota a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cta--cheio {
+  width: 100%;
+  max-width: none;
+}
 
+/* ---------- BOTÕES DAS LOJAS ---------- */
+.apps {
+  margin-top: clamp(30px, 4vw, 50px);
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .apps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 22px 24px;
+  background: #fff;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1.5px solid #fff;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.app::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--orange);
+  transform: translateY(101%);
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: -1;
+}
+.app:hover::before {
+  transform: translateY(0);
+}
+.app:hover {
+  color: #fff;
+}
+.app__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+.app__nome {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 60;
+  text-transform: uppercase;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+.app__aviso {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.app--breve {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px dashed rgba(241, 238, 231, 0.32);
+  color: rgba(241, 238, 231, 0.72);
+  cursor: default;
+}
+.app--breve::before {
+  display: none;
+}
+.app--breve:hover {
+  color: rgba(241, 238, 231, 0.65);
+}
+.obrigado__proximos {
+  margin-top: clamp(40px, 5vw, 64px);
+  padding: clamp(22px, 3vw, 32px);
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 3px solid var(--orange);
+}
+.obrigado__proximos h2 {
+  margin: 0 0 14px;
+  color: var(--paper);
+}
+.obrigado__proximos ol {
+  margin: 0;
+  padding: 0 0 0 22px;
+  color: rgba(241, 238, 231, 0.82);
+  line-height: 1.6;
+}
+.obrigado__proximos ol li + li {
+  margin-top: 8px;
+}
+.obrigado__proximos b {
+  color: var(--amber);
+}

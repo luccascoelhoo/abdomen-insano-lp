@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { CtaButton } from '@/components/ui/CtaButton';
+import { DepoimentosPin } from '@/components/ui/DepoimentosPin';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Rail } from '@/components/ui/Rail';
 import { Reveal } from '@/components/ui/Reveal';
@@ -8,7 +9,7 @@ import { IMAGENS_PRONTAS } from '@/lib/flags';
 
 export function Depoimentos() {
   return (
-    <section className="sec">
+    <section className="sec depoimentos-sec">
       <div className="wrap">
         <Reveal as="p" className="rotulo">
           {depoimentos.eyebrow}
@@ -17,13 +18,19 @@ export function Depoimentos() {
         <Reveal as="p" className="lead" delay={180}>
           {depoimentos.lead}
         </Reveal>
+      </div>
 
+      {/* Desktop: scroll horizontal pinned. O DepoimentosPin faz o layout do
+          trilho e mede o scroll pra puxar as fotos enquanto a section está
+          na tela. Só ativa em >= 900px (CSS .dep-pin__trilho controla). */}
+      <DepoimentosPin />
+
+      {/* Mobile: trilho arrastável nativo. O DepoimentosPin acima esconde
+          esta faixa no desktop via CSS pra evitar duplicação. */}
+      <div className="wrap depoimentos-mobile">
         <Reveal as="p" className="rail__dica" delay={240}>
           arraste para o lado
         </Reveal>
-      </div>
-
-      <div className="wrap">
         <Rail>
           {casos.map((caso, i) => (
             <figure className="caso" key={caso.arquivo}>
@@ -33,7 +40,7 @@ export function Depoimentos() {
                   alt={caso.alt}
                   width={caso.width}
                   height={caso.height}
-                  sizes="(min-width: 900px) 340px, 62vw"
+                  sizes="62vw"
                   loading="lazy"
                 />
               ) : (

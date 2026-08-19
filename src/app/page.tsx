@@ -1,3 +1,4 @@
+import { Ancoragem } from '@/components/sections/Ancoragem';
 import { Beneficios } from '@/components/sections/Beneficios';
 import { Bonus } from '@/components/sections/Bonus';
 import { Depoimentos } from '@/components/sections/Depoimentos';
@@ -8,6 +9,7 @@ import { Hero } from '@/components/sections/Hero';
 import { Inspira } from '@/components/sections/Inspira';
 import { Metodo } from '@/components/sections/Metodo';
 import { Oferta } from '@/components/sections/Oferta';
+import { Reafirmacao } from '@/components/sections/Reafirmacao';
 import { Rodape } from '@/components/sections/Rodape';
 import { Suporte } from '@/components/sections/Suporte';
 import { Logo } from '@/components/ui/Logo';
@@ -30,9 +32,11 @@ export default function Home() {
       <Beneficios />
       <Entregaveis />
       <Bonus />
+      <Ancoragem />
       <Oferta />
       <Expert />
       <Faq />
+      <Reafirmacao />
       <Suporte />
       <Rodape />
 

@@ -69,18 +69,19 @@ export function Contador({ ate, prefixo = '', milhar = true, duracao = 1500 }: P
       rede = window.setTimeout(finalizar, duracao + 600);
     };
 
+    // Flag pra distinguir "primeira observação do IO" (não deve resetar) de
+    // "sai depois de já ter entrado" (aí sim reseta pra recomeçar quando
+    // reentrar). Sem isso, se o contador nasce fora do viewport, o primeiro
+    // callback vem com isIntersecting=false, o valor é reescrito pra 0 e
+    // fica assim até o usuário rolar até ele — feio.
+    let jaEntrou = false;
     const io = new IntersectionObserver(
       (entradas) => {
         for (const entrada of entradas) {
           if (entrada.isIntersecting) {
-            // Cada nova entrada recomeça a contagem — o primeiro frame do rAF
-            // já reescreve pra 0, então não precisa "zerar" antes (evita o
-            // piscar de 0 enquanto o elemento ainda está desmontado da tela).
+            jaEntrou = true;
             iniciar();
-          } else {
-            // Saiu completamente da tela: reseta o valor pra próxima entrada
-            // começar do zero. Como o elemento não está visível nesse momento,
-            // a mudança não pisca.
+          } else if (jaEntrou) {
             if (quadro) cancelAnimationFrame(quadro);
             if (rede) clearTimeout(rede);
             quadro = 0;
