@@ -998,7 +998,7 @@ a.provoke:focus-visible {
 .oferta {
   position: relative;
   border: 1px solid rgba(255, 107, 0, 0.55);
-  padding: clamp(30px, 5vw, 72px);
+  padding: clamp(28px, 4vw, 56px) clamp(24px, 4vw, 56px);
   text-align: center;
   overflow: hidden;
 }
@@ -1024,7 +1024,7 @@ a.provoke:focus-visible {
   margin-inline: auto;
 }
 .preco-bloco {
-  margin: clamp(34px, 4vw, 52px) 0;
+  margin: clamp(24px, 3vw, 40px) 0;
 }
 .preco-dia {
   font-family: var(--font-mono);
@@ -1032,20 +1032,54 @@ a.provoke:focus-visible {
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--amber);
+  margin: 0 0 6px;
+}
+/* "De R$497 por" — ficha de comparação acima do preço final.
+   Fica pequeno de propósito: quem lê rápido pega o 42; quem para
+   um segundo entende que era caro. */
+.preco-de {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(241, 238, 231, 0.5);
+  margin: 18px 0 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+}
+.preco-de s {
+  color: rgba(241, 238, 231, 0.55);
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 40;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--orange);
+  text-decoration-skip-ink: none;
+  letter-spacing: 0.02em;
+  line-height: 1;
 }
 .preco {
   font-family: var(--font-display);
   font-weight: 900;
   font-variation-settings: "opsz" 72;
-  font-size: clamp(6rem, 3rem + 20vw, 15rem);
-  line-height: 0.78;
+  /* Menor que antes (15rem → 10.5rem no teto). O 42 seguia esmagando
+     tudo o resto da seção pra fora do viewport no desktop. */
+  font-size: clamp(5.2rem, 3rem + 12vw, 10.5rem);
+  line-height: 0.82;
   color: var(--paper);
-  margin: 16px 0 12px;
+  margin: 8px 0 10px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   gap: 0.04em;
   transform-origin: center;
+  /* Tabular impede a largura do bloco de "dançar" enquanto o
+     ContadorReverso vai de 497 → 300 → 150 → 42 (3 → 3 → 3 → 2 dígitos). */
+  font-variant-numeric: tabular-nums;
 }
 /* Pulse do preço só entra quando o Reveal .oferta ganha .in ao aparecer.
    Evita repaint gigante do texto rodando em loop com a section fora da tela.
@@ -1080,10 +1114,10 @@ a.provoke:focus-visible {
   font-weight: 800;
   font-variation-settings: "opsz" 48;
   text-transform: uppercase;
-  font-size: clamp(1.4rem, 1rem + 1.8vw, 2.4rem);
+  font-size: clamp(1.3rem, 1rem + 1.4vw, 2rem);
   line-height: 1;
   color: var(--amber);
-  margin: 0 0 clamp(20px, 2.4vw, 30px);
+  margin: 0 0 clamp(16px, 2vw, 22px);
 }
 
 /* Botão: preenchimento que sobe de baixo no hover. */

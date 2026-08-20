@@ -39,6 +39,19 @@ export const oferta = {
   precoRotulo: 'R$',
   precoDia: 'Por apenas 1 real por dia',
   precoNota: 'Pagamento único · acesso por 1 ano',
+  /**
+   * Valor "de" que aparece riscado antes do preço real. Referência: o curso
+   * fitness aleatório que aparece na tabela de Ancoragem — o número precisa
+   * bater com aquele bloco pra o leitor conectar as duas seções.
+   */
+  precoDe: 497,
+  precoDeRotulo: 'de R$497 por',
+  /**
+   * Marcos que o contador atravessa ao descer. Cada valor é um preço de
+   * referência que o público já viu na página (personal, academia, nutri,
+   * curso), pra a queda ter significado — não é um número aleatório caindo.
+   */
+  precoMarcos: [300, 150, 120, 42],
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
   ctaTexto: 'Aceito o desafio',
   provocacao: 'Você aceita o desafio?',
