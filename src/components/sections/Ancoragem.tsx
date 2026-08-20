@@ -15,9 +15,6 @@ export function Ancoragem() {
   return (
     <section className="sec sec--dark ancoragem">
       <div className="wrap">
-        <Reveal as="p" className="rotulo rotulo--claro">
-          {ancoragem.eyebrow}
-        </Reveal>
         <MaskTitle
           as="h2"
           className="d2 ancoragem__titulo"

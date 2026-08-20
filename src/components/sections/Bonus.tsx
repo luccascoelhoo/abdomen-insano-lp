@@ -1,15 +1,11 @@
-import { CtaButton } from '@/components/ui/CtaButton';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
-import { bonus, bonusSecao, ctas, microCta } from '@/content/desafio';
+import { bonus, bonusSecao } from '@/content/desafio';
 
 export function Bonus() {
   return (
     <section className="sec sec--dark" style={{ paddingTop: 0 }}>
       <div className="wrap">
-        <Reveal as="p" className="rotulo rotulo--claro">
-          {bonusSecao.eyebrow}
-        </Reveal>
         <MaskTitle className="d2" linhas={bonusSecao.tituloLinhas} />
 
         <div className="bonus-grid">
@@ -24,14 +20,6 @@ export function Bonus() {
               <p>{b.texto}</p>
             </Reveal>
           ))}
-        </div>
-
-        <div className="cta-fim">
-          <Reveal delay={140}>
-            <CtaButton origem="bonus" microcopy={microCta}>
-              {ctas.bonus}
-            </CtaButton>
-          </Reveal>
         </div>
       </div>
     </section>

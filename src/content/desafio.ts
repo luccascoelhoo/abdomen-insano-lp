@@ -10,6 +10,8 @@ export type Pilar = {
   titulo: string;
   paragrafos: string[];
   aviso?: { rotulo: string; texto: string };
+  /** Foto do topo do card (opcional; sem ela renderiza um degradê quente). */
+  foto?: { src: string; alt: string };
 };
 
 export type Semana = { rotulo: string; titulo: string };
@@ -39,19 +41,6 @@ export const oferta = {
   precoRotulo: 'R$',
   precoDia: 'Por apenas 1 real por dia',
   precoNota: 'Pagamento único · acesso por 1 ano',
-  /**
-   * Valor "de" que aparece riscado antes do preço real. Referência: o curso
-   * fitness aleatório que aparece na tabela de Ancoragem — o número precisa
-   * bater com aquele bloco pra o leitor conectar as duas seções.
-   */
-  precoDe: 497,
-  precoDeRotulo: 'de R$497 por',
-  /**
-   * Marcos que o contador atravessa ao descer. Cada valor é um preço de
-   * referência que o público já viu na página (personal, academia, nutri,
-   * curso), pra a queda ter significado — não é um número aleatório caindo.
-   */
-  precoMarcos: [300, 150, 120, 42],
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
   ctaTexto: 'Aceito o desafio',
   provocacao: 'Você aceita o desafio?',
@@ -62,18 +51,12 @@ export const oferta = {
 } as const;
 
 /**
- * Copy do CTA varia por posição — reforça uma faceta diferente da mesma
- * decisão. Cada botão vira uma declaração de identidade, não uma ação
- * transacional. Fonte: análise da LP Fitness Sem Neura.
+ * Único CTA da página vive na seção Oferta.
+ * Removidos: hero/depoimentos/entregaveis/bonus/faq/sticky pra concentrar
+ * a decisão em um único ponto da jornada.
  */
 export const ctas = {
-  hero: 'Quero botar o abdômen insano',
-  depoimentos: 'Quero ser o próximo',
-  entregaveis: 'Quero começar em 42 dias',
-  bonus: 'Quero esses bônus também',
   oferta: 'Aceito o desafio',
-  sticky: 'Aceito o desafio',
-  faq: 'Já sei tudo. Aceito o desafio',
 } as const;
 
 /**
@@ -82,20 +65,6 @@ export const ctas = {
  */
 export const microCta = 'Garantia de 7 dias · acesso imediato · pagamento único';
 
-/**
- * Barra fina no topo da página — bloco 1 do modelo Mateus Dias.
- * Serve pra criar contexto/urgência antes mesmo da headline.
- * Copy neutra por padrão; ajuste `aviso` pra reforçar prazo/turma/vaga
- * quando for verdade — não invente escassez.
- */
-export const alerta = {
-  rotulo: 'Etapa 1 de 2',
-  aviso: 'Leia a página até o fim antes de aceitar o desafio',
-  destaque: 'R$42 · garantia de 7 dias',
-  ctaTexto: 'Aceitar agora',
-  ctaHref: '#oferta',
-} as const;
-
 export const selos: Selo[] = [
   { rotulo: 'Compra', valor: '100% segura' },
   { rotulo: 'Acesso', valor: 'por 1 ano' },
@@ -103,7 +72,6 @@ export const selos: Selo[] = [
 ];
 
 export const hero = {
-  eyebrow: '42 dias · dentro do app',
   /** Uma entrada por linha do cartaz — a terceira é a linha laranja. */
   tituloLinhas: ['Conquiste o', 'abdômen', 'trincado,', 'estético e seco'],
   subAntes: 'Em 42 dias seus amigos não vão entender nada. Você vai eliminar ',
@@ -111,87 +79,42 @@ export const hero = {
   subDepois: ', conquistar os gomos definidos e uma postura de respeito.',
   provocacaoAntes: 'Você aceita ',
   provocacaoDestaque: 'o desafio?',
-  numeros: [
-    { valor: 5500, prefixo: '+', rotulo: 'alunos no desafio' },
-    { valor: 42, prefixo: '', rotulo: 'dias de protocolo' },
-    { valor: 1, prefixo: '', rotulo: 'ano de acesso' },
-  ],
-  malhaCabecalho: { esquerda: 'Malha do desafio', direita: '06 semanas' },
-  malhaRodape:
-    'Cada quadrado é um dia marcado no app. O último é o dia em que ninguém te reconhece.',
-} as const;
-
-export const tensao = {
-  eyebrow: 'A real',
-  tituloLinhas: ['Você já tentou.', 'Muita coisa.'],
-  blocos: [
-    {
-      chave: 'tentativas',
-      lista: [
-        'Corte de carboidrato',
-        'Jejum intermitente',
-        'Prancha todo dia',
-        'Treino em casa com influencer',
-        'Low-carb',
-        'HIIT no YouTube',
-      ],
-      remate: 'Emagreceu o rosto. Os braços. O rosto de novo.',
-      destaque: 'A barriga? Continua igual.',
-    },
-    {
-      chave: 'motivo',
-      titulo: 'Não é falta de força de vontade.',
-      paragrafos: [
-        'Dieta genérica não ataca a gordura que blinda o abdômen.',
-        'Cardio aleatório queima na frequência errada.',
-        'Treinar abdômen todo dia sem estímulo progressivo é passeio.',
-      ],
-      destaque: 'Definição não é disciplina. É protocolo.',
-    },
-    {
-      chave: 'ponte',
-      titulo: 'O seu corpo já tá certo. Falta o mapa.',
-      paragrafos: [
-        'Você não precisa começar do zero, nem virar outra pessoa.',
-        'Precisa dos três eixos certos, sincronizados, por 42 dias.',
-      ],
-      destaque: 'Treino específico. Alimentação simplificada. Cardio calculado.',
-    },
-  ],
 } as const;
 
 export const metodo = {
-  eyebrow: 'O método',
   titulo: 'Como funciona essa parada?',
   lead: 'Eu e meu time montamos um planejamento à prova de falhas. Em 42 dias, basta cumprir o planejamento para conquistar o abdômen insano.',
 } as const;
 
 export const pilares: Pilar[] = [
   {
-    numero: '01 — TREINO',
-    titulo: 'Treino avançado',
+    numero: '01',
+    titulo: 'Treino Mensal',
     paragrafos: [
-      'Você recebe uma trilha de treinos progressivos semana a semana, direto no aplicativo.',
+      'Você vai receber uma trilha de treinos de abdômen novos e progressivos a cada mês, direto na plataforma.',
     ],
     aviso: {
       rotulo: 'Acredite',
       texto:
-        'Não adianta apenas treinar. É preciso intensificar os exercícios seguindo uma estratégia eficiente e validada.',
+        'Não adianta apenas treinar, é preciso intensificar os exercícios, seguindo uma estratégia eficiente e validada.',
     },
+    foto: { src: '/img/metodo-01.jpg', alt: 'Treino abdominal em ação' },
   },
   {
-    numero: '02 — ALIMENTAÇÃO',
-    titulo: 'Alimentação simplificada',
+    numero: '02',
+    titulo: 'Alimentação Simplificada',
     paragrafos: [
-      'Cansei de ver gente dificultando essa parte tão simples. Você recebe um protocolo criado por uma nutricionista experiente para aprender a comer certo sem virar escravo de dieta rigorosa.',
+      'Cansei de ver gente dificultando essa parte tão simples. A cada mês você vai ter um protocolo criado por uma nutricionista experiente para aprender a comer certo sem precisar virar escravo de dietas rigorosas.',
     ],
+    foto: { src: '/img/metodo-02.jpg', alt: 'Prato colorido de alimentação equilibrada' },
   },
   {
-    numero: '03 — CARDIO',
-    titulo: 'O elemento fundamental',
+    numero: '03',
+    titulo: 'O Elemento Fundamental',
     paragrafos: [
-      'Você vai acelerar a queima de gordura de forma consistente e saudável. Quando você une a tríade — treino avançado, alimentação simplificada e um cardio estratégico e calculado — o abdômen insano deixa de ser sonho distante.',
+      'Você vai derreter até 3x mais gordura de forma rápida e saudável. Quando você une a tríade: treino avançado, alimentação simplificada e aeróbios funcionais e calculados, o abdômen insano não é mais um sonho distante, é uma realidade!',
     ],
+    foto: { src: '/img/metodo-03.jpg', alt: 'Corredores em pista ao amanhecer' },
   },
 ];
 
@@ -212,7 +135,6 @@ export const inspira = {
 } as const;
 
 export const depoimentos = {
-  eyebrow: 'Resultados reais',
   tituloLinhas: ['Tá todo mundo botando', 'o abdômen insano'],
   lead: 'Você é o próximo. Mais de 5.500 alunos já estão dentro do desafio.',
   provocacaoAntes: 'Quero botar ',
@@ -245,7 +167,6 @@ export const casos: Caso[] = [
 ];
 
 export const beneficiosSecao = {
-  eyebrow: 'Muito além do espelho',
   tituloLinhas: ['Por que um abdômen', 'insano é essencial?'],
   lead: 'Além da estética, um abdômen forte traz benefícios que vão muito além de se sentir melhor se olhando no espelho.',
 } as const;
@@ -274,7 +195,6 @@ export const beneficios: Beneficio[] = [
 ];
 
 export const entregaveisSecao = {
-  eyebrow: 'O que você recebe',
   titulo: 'Depois dos 42 dias, ninguém vai te reconhecer',
   lead: 'A galera vai te respeitar muito mais, você vira referência pros seus amigos. Acredite: o abdômen insano muda tudo.',
 } as const;
@@ -288,7 +208,6 @@ export const entregaveis: string[] = [
 ];
 
 export const bonusSecao = {
-  eyebrow: 'Fora tudo isso',
   tituloLinhas: ['Ainda preparei uns', 'bônus surreais pra você'],
 } as const;
 
@@ -300,7 +219,6 @@ export const bonusSecao = {
  * o ticket real da região do público.
  */
 export const ancoragem = {
-  eyebrow: 'A conta que ninguém faz',
   tituloLinhas: ['O que você já paga', 'pra não sair do lugar'],
   lead: 'Se você já tentou de tudo e continua sem resultado, provavelmente já queimou muito mais que R$42 por mês. Faz a conta:',
   linhas: [
@@ -346,7 +264,6 @@ export const bonus: Bonus[] = [
 ];
 
 export const expert = {
-  eyebrow: 'Quem está do seu lado',
   tituloLinhas: ['O idealizador do', 'Desafio Abdômen Insano'],
   antesTitulo: 'ANTES',
   antes: ['Zuado pela magreza', 'Fraco mentalmente', 'Preguiçoso'],
@@ -367,7 +284,6 @@ export const expert = {
 } as const;
 
 export const faqSecao = {
-  eyebrow: 'Tira-dúvidas',
   titulo: 'Perguntas frequentes',
 } as const;
 
@@ -436,28 +352,7 @@ export const faq: Pergunta[] = [
   },
 ];
 
-/**
- * Reafirmação — bloco final do modelo Mateus. Aparece depois do FAQ e
- * fecha o loop de vendas: recapitula o que a pessoa recebe, o preço, a
- * garantia, e devolve o CTA. Quem chegou até aqui já quer clicar — o bloco
- * remove a última fricção.
- */
-export const reafirmacao = {
-  eyebrow: 'Recapitulando',
-  tituloLinhas: ['Você já viu tudo.', 'Falta só aceitar.'],
-  itens: [
-    'Aplicativo exclusivo + trilha de 42 dias',
-    'Alimentação simplificada por nutricionista',
-    'Cardio calculado, sem passeio',
-    'Bônus: sono dos atletas, sobrevivência social, treinos naturais',
-    '1 ano de acesso — 42 dias de desafio + 11 meses de bônus',
-    'Garantia incondicional de 7 dias',
-  ],
-  fecho: 'Menos que um lanche com refri. R$42, pagamento único.',
-} as const;
-
 export const suporte = {
-  eyebrow: 'Suporte',
   titulo: 'Ficou alguma dúvida?',
   lead: 'Fala com a nossa equipe agora mesmo — responde em minutos, durante horário comercial.',
   linkTexto: 'Falar no WhatsApp',

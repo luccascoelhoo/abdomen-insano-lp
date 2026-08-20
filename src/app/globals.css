@@ -88,10 +88,11 @@ p:last-child {
   font-weight: 800;
   letter-spacing: -0.005em;
 }
-/* Cartaz: o maior corpo da página, ultracondensado e colado. */
+/* Cartaz do hero: menor que antes — a headline "CONQUISTE O ABDÔMEN
+   TRINCADO, ESTÉTICO E SECO" estava esmagando tudo com 6.6rem no teto. */
 .d1 {
-  font-size: clamp(2.7rem, 0.5rem + 7.6vw, 6.6rem);
-  line-height: 1;
+  font-size: clamp(1.8rem, 0.6rem + 3.6vw, 3.2rem);
+  line-height: 1.02;
   font-weight: 900;
   font-variation-settings: "opsz" 72;
 }
@@ -212,91 +213,68 @@ p:last-child {
 }
 
 /* ---------- topo ---------- */
-.topbar {
-  background: var(--ink);
-  padding: 14px var(--pad);
-  display: flex;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
+/* Logo mora dentro do hero, colada acima do título — vive no fluxo do
+   texto, não numa faixa separada. */
+.hero__logo {
+  display: block;
+  height: 88px;
+  width: auto;
+  margin: 0 0 clamp(20px, 3vw, 32px);
+}
+@media (max-width: 640px) {
+  .hero__logo {
+    height: 64px;
+  }
 }
 
-/* Barra de alerta — bloco 1 do modelo Mateus Dias. Marca o topo com um
-   aviso persistente e um micro-CTA. Copy vem de content/desafio.ts. */
-.barra-alerta {
-  background: linear-gradient(90deg, var(--orange), var(--amber));
-  color: #0c0b0a;
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  padding: 8px var(--pad);
-  position: relative;
-  z-index: 3;
-  border-bottom: 1px solid rgba(12, 11, 10, 0.28);
-}
-.barra-alerta__wrap {
-  max-width: 1240px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(10px, 2vw, 26px);
-  flex-wrap: wrap;
-}
-.barra-alerta__rotulo {
+/* Pill de prova social com avatares empilhados, estilo Zyla. */
+.prova-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  color: #0c0b0a;
+  gap: 14px;
+  padding: 5px 18px 5px 6px;
+  background: rgba(23, 21, 15, 0.06);
+  border: 1px solid rgba(23, 21, 15, 0.1);
+  border-radius: 999px;
+  margin-bottom: clamp(18px, 2vw, 26px);
 }
-.barra-alerta__ponto {
-  width: 8px;
-  height: 8px;
+.prova-pill__avatares {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.prova-pill__av {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: #0c0b0a;
-  animation: barra-alerta-pulso 1.6s ease-in-out infinite;
+  border: 2px solid var(--paper);
+  margin-left: -8px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
-@keyframes barra-alerta-pulso {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(0.75); }
+.prova-pill__av:first-child {
+  margin-left: 0;
 }
-@media (prefers-reduced-motion: reduce) {
-  .barra-alerta__ponto { animation: none; }
+.prova-pill__av--1 {
+  background-image: url('/img/avatar-1.jpg');
 }
-.barra-alerta__aviso {
-  opacity: 0.85;
+.prova-pill__av--2 {
+  background-image: url('/img/avatar-2.jpg');
 }
-.barra-alerta__destaque {
+.prova-pill__av--3 {
+  background-image: url('/img/avatar-3.jpg');
+}
+.prova-pill__av--4 {
+  background-image: url('/img/avatar-4.jpg');
+}
+.prova-pill__txt {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.2;
+}
+.prova-pill__txt b {
   font-weight: 700;
-  padding-left: 12px;
-  border-left: 1px solid rgba(12, 11, 10, 0.35);
-}
-.barra-alerta__cta {
-  color: #0c0b0a;
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
-  font-weight: 700;
-  transition: opacity 0.2s ease;
-}
-.barra-alerta__cta:hover {
-  opacity: 0.7;
-}
-/* Mobile: mantém rótulo+destaque+CTA. Esconde o aviso longo pra não empilhar. */
-@media (max-width: 640px) {
-  .barra-alerta {
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
-    padding: 7px 12px;
-  }
-  .barra-alerta__wrap {
-    gap: 10px;
-  }
-  .barra-alerta__aviso {
-    display: none;
-  }
 }
 
 /* ============================================================
@@ -306,7 +284,7 @@ p:last-child {
    ============================================================ */
 .hero {
   position: relative;
-  padding-block: clamp(48px, 7vw, 104px) clamp(64px, 8vw, 120px);
+  padding-block: clamp(20px, 2.5vw, 32px) clamp(28px, 3.5vw, 48px);
   overflow: hidden;
 }
 /* Numeral fantasma sangrando pela direita. */
@@ -327,12 +305,15 @@ p:last-child {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: clamp(44px, 6vw, 76px);
+  gap: clamp(32px, 5vw, 64px);
 }
 @media (min-width: 1000px) {
   .hero__grid {
-    grid-template-columns: minmax(0, 1.32fr) minmax(0, 0.68fr);
-    align-items: start;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    align-items: center;
+  }
+  .hero__coluna-direita {
+    align-self: center;
   }
 }
 .hero h1 {
@@ -350,8 +331,8 @@ p:last-child {
   letter-spacing: -0.015em;
 }
 .hero__sub {
-  margin-top: clamp(26px, 3vw, 38px);
-  font-size: clamp(1.05rem, 1rem + 0.55vw, 1.32rem);
+  margin-top: clamp(18px, 2vw, 26px);
+  font-size: clamp(1rem, 0.95rem + 0.35vw, 1.18rem);
   line-height: 1.5;
   max-width: 40ch;
   color: #3b3730;
@@ -364,7 +345,7 @@ p:last-child {
 
 /* Provocação: sublinhado que corre da esquerda no hover. */
 .provoke {
-  margin-top: clamp(30px, 3.4vw, 44px);
+  margin-top: clamp(20px, 2.4vw, 32px);
   display: inline-flex;
   align-items: baseline;
   gap: 12px;
@@ -372,7 +353,7 @@ p:last-child {
   font-weight: 800;
   font-variation-settings: "opsz" 40;
   text-transform: uppercase;
-  font-size: clamp(1.3rem, 1rem + 1.5vw, 2.1rem);
+  font-size: clamp(1.15rem, 0.95rem + 1vw, 1.7rem);
   line-height: 1;
   color: var(--text);
   text-decoration: none;
@@ -490,191 +471,104 @@ a.provoke:focus-visible {
   --fill-txt: #0c0b0a;
 }
 
-/* ---------- pista rolante ---------- */
-.pista {
-  background: var(--ink);
-  color: var(--paper);
-  padding: clamp(14px, 1.6vw, 20px) 0;
-  overflow: hidden;
-  border-block: 1px solid rgba(241, 238, 231, 0.12);
+/* ============================================================
+   MÉTODO — seção escura com mosaico de 3 cards (01 alto à
+   esquerda, 02 e 03 empilhados à direita), inspirado no print
+   da área de membros. Título e lead em cima, cards embaixo.
+   ============================================================ */
+.metodo-dark {
+  background: var(--paper);
+  color: var(--text);
+}
+.metodo-dark .d2 {
+  color: var(--text);
+}
+.lead--claro {
+  color: var(--muted);
+}
+.metodo-dark__cab {
+  max-width: 720px;
+  margin-bottom: clamp(36px, 5vw, 60px);
+}
+.metodo-dark__mosaico {
+  display: grid;
+  gap: clamp(18px, 2vw, 26px);
+}
+@media (min-width: 960px) {
+  .metodo-dark__mosaico {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-auto-rows: min-content;
+  }
+  /* Card 01 é alto — ocupa as duas linhas da coluna esquerda. */
+  .card-metodo--01 {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .card-metodo--02 {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .card-metodo--03 {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+.card-metodo {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: clamp(18px, 2vw, 26px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2vw, 26px);
+}
+.card-metodo__foto {
   position: relative;
-  z-index: 2;
-  /* Perspective ativa o eixo Z do trilho — dá o "aro girando". */
-  perspective: 900px;
-  perspective-origin: center;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  /* Fallback quando ainda não tem a foto do card: degradê quente. */
+  background:
+    radial-gradient(120% 80% at 30% 30%, rgba(255, 107, 0, 0.5), transparent 60%),
+    linear-gradient(135deg, #f2c48a 0%, #d8cab0 100%);
 }
-.pista::before,
-.pista::after {
-  /* Sombras nas bordas dão profundidade de cilindro rolando. */
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: clamp(60px, 8vw, 140px);
-  z-index: 1;
-  pointer-events: none;
+.card-metodo--01 .card-metodo__foto {
+  aspect-ratio: 4 / 3;
 }
-.pista::before {
-  left: 0;
-  background: linear-gradient(90deg, var(--ink), transparent);
+.card-metodo__foto img {
+  object-fit: cover;
 }
-.pista::after {
-  right: 0;
-  background: linear-gradient(-90deg, var(--ink), transparent);
-}
-.pista__trilho {
+.card-metodo__corpo {
   display: flex;
-  width: max-content;
-  will-change: transform;
-  transform-style: preserve-3d;
+  flex-direction: column;
+  gap: 14px;
 }
-.pista__grupo {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-}
-.pista__item {
+.card-metodo__titulo {
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 800;
-  font-variation-settings: "opsz" 56;
-  text-transform: uppercase;
-  font-size: clamp(1.5rem, 1rem + 1.8vw, 2.6rem);
-  line-height: 1;
-  padding-inline: clamp(18px, 2.4vw, 34px);
-  white-space: nowrap;
+  font-variation-settings: "opsz" 48;
+  font-size: clamp(1.15rem, 0.9rem + 0.9vw, 1.6rem);
+  color: var(--ink);
+  line-height: 1.15;
 }
-.pista__item--vazado {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(241, 238, 231, 0.55);
-}
-.pista__ponto {
-  width: 9px;
-  height: 9px;
-  background: var(--orange);
-  flex: 0 0 auto;
-  transform: rotate(45deg);
-}
-
-/* ============================================================
-   MÉTODO — índice grudado à esquerda, pilares empilhados à
-   direita. Sai do grid de três cards iguais.
-   ============================================================ */
-.metodo__grid {
-  display: grid;
-  gap: clamp(44px, 5vw, 72px);
-  margin-top: clamp(44px, 5vw, 72px);
-}
-@media (min-width: 940px) {
-  .metodo__grid {
-    grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
-    align-items: start;
-  }
-  .metodo__fixo {
-    position: sticky;
-    top: clamp(40px, 12vh, 120px);
-  }
-}
-.pilares {
-  display: grid;
-  gap: clamp(28px, 3.4vw, 46px);
-}
-.pilar {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: clamp(18px, 2.4vw, 30px);
-  padding: clamp(24px, 2.6vw, 34px) clamp(6px, 1.4vw, 16px) clamp(24px, 2.6vw, 34px) clamp(14px, 2vw, 22px);
-  border-top: 1px solid var(--line);
-  position: relative;
-  transition:
-    background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.pilar::before {
-  /* Barra lateral que "acende" quando o pilar entra em foco. */
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--orange);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.pilar--ativo {
-  background: linear-gradient(90deg, rgba(255, 107, 0, 0.05), transparent 55%);
-}
-.pilar--ativo::before {
-  transform: scaleY(1);
-}
-.pilar--ativo .pilar__n {
-  color: var(--orange);
-  -webkit-text-stroke: 0;
-}
-.pilar__n {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-variation-settings: "opsz" 72;
-  font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4.2rem);
-  line-height: 0.78;
-  color: transparent;
-  -webkit-text-stroke: 1.4px var(--orange);
-  transition:
-    color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    -webkit-text-stroke 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  position: relative;
-}
-.pilar__n::after {
-  /* Check discreto que aparece quando o pilar entra em foco — sinaliza
-     "cumprido" enquanto o leitor passa por ele. */
-  content: '';
-  position: absolute;
-  right: -22px;
-  top: 0.28em;
-  width: 14px;
-  height: 8px;
-  border-left: 2px solid var(--orange);
-  border-bottom: 2px solid var(--orange);
-  transform: rotate(-45deg) scale(0);
-  transform-origin: 20% 80%;
-  opacity: 0;
-  transition:
-    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.18s,
-    opacity 0.35s ease 0.18s;
-}
-.pilar--ativo .pilar__n::after {
-  transform: rotate(-45deg) scale(1);
-  opacity: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .pilar__n::after {
-    transition: none;
-  }
-}
-.pilar h3 {
-  margin: 0 0 12px;
-}
-.pilar p {
+.card-metodo p {
+  margin: 0;
   color: #46413a;
-  font-size: 0.99rem;
+  font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.02rem);
+  line-height: 1.55;
 }
-.pilar__nota {
-  margin-top: 18px;
-  padding: 14px 16px;
+.card-metodo__aviso {
+  margin-top: 4px !important;
+  padding: 12px 14px;
   background: rgba(245, 179, 1, 0.14);
   border-left: 3px solid var(--amber);
-  font-size: 0.94rem;
-  color: #3b3730;
+  border-radius: 4px;
 }
-.pilar__nota b {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-  color: #6a5300;
+.card-metodo__aviso b {
+  color: #8a6a00;
+  font-weight: 700;
 }
 
 /* ---------- linha do tempo das 6 semanas ---------- */
@@ -730,6 +624,39 @@ a.provoke:focus-visible {
   }
 }
 .semana--fim h4 {
+  color: var(--orange);
+}
+/* Quando a trilha vive DENTRO do card-metodo TREINO (fusão via 3B do doc),
+   fica compacta e adaptada ao fundo claro do card. */
+.card-metodo .semanas {
+  margin-top: 6px;
+  border-top: 1px dashed var(--line);
+}
+.card-metodo .semana {
+  padding: clamp(10px, 1.4vw, 14px) 0;
+  border-bottom: 1px dashed var(--line);
+}
+@media (min-width: 760px) {
+  .card-metodo .semana {
+    grid-template-columns: 44px minmax(0, 1fr) 120px;
+  }
+}
+.card-metodo .semana__n {
+  color: var(--muted);
+}
+.card-metodo .semana h4 {
+  font-size: clamp(0.95rem, 0.8rem + 0.4vw, 1.15rem);
+  color: var(--text);
+}
+.card-metodo .semana__barra {
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--orange) 0 calc(100% / 7 - 4px),
+    transparent calc(100% / 7 - 4px) calc(100% / 7)
+  );
+}
+.card-metodo .semana--fim h4 {
   color: var(--orange);
 }
 
@@ -1026,81 +953,70 @@ a.provoke:focus-visible {
 .preco-bloco {
   margin: clamp(24px, 3vw, 40px) 0;
 }
-.preco-dia {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--amber);
-  margin: 0 0 6px;
-}
-/* "De R$497 por" — ficha de comparação acima do preço final.
-   Fica pequeno de propósito: quem lê rápido pega o 42; quem para
-   um segundo entende que era caro. */
-.preco-de {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(241, 238, 231, 0.5);
-  margin: 18px 0 2px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  line-height: 1;
-}
-.preco-de s {
-  color: rgba(241, 238, 231, 0.55);
-  font-family: var(--font-display);
-  font-variation-settings: 'opsz' 40;
-  font-weight: 700;
-  font-size: 1.05rem;
-  text-decoration-thickness: 2px;
-  text-decoration-color: var(--orange);
-  text-decoration-skip-ink: none;
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-.preco {
+/* Headline dominante — "POR APENAS 1 REAL POR DIA". O que precisa entrar
+   primeiro na retina. Mesma escala do antigo preço grande. */
+.preco-headline {
   font-family: var(--font-display);
   font-weight: 900;
   font-variation-settings: "opsz" 72;
-  /* Menor que antes (15rem → 10.5rem no teto). O 42 seguia esmagando
-     tudo o resto da seção pra fora do viewport no desktop. */
-  font-size: clamp(5.2rem, 3rem + 12vw, 10.5rem);
-  line-height: 0.82;
+  font-size: clamp(2.6rem, 1.4rem + 6.4vw, 5.6rem);
+  line-height: 0.92;
   color: var(--paper);
-  margin: 8px 0 10px;
+  margin: 0 0 14px;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 0.04em;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
   transform-origin: center;
-  /* Tabular impede a largura do bloco de "dançar" enquanto o
-     ContadorReverso vai de 497 → 300 → 150 → 42 (3 → 3 → 3 → 2 dígitos). */
-  font-variant-numeric: tabular-nums;
 }
-/* Pulse do preço só entra quando o Reveal .oferta ganha .in ao aparecer.
-   Evita repaint gigante do texto rodando em loop com a section fora da tela.
-   Sem text-shadow (repaint caro em texto grande); só transform (composited). */
-.oferta.in .preco {
+.preco-headline span {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-variation-settings: normal;
+  font-size: 0.62rem;
+  letter-spacing: 0.26em;
+  color: var(--amber);
+}
+.preco-headline b {
+  color: var(--orange);
+  font-weight: 900;
+}
+/* Pulse discreto na headline — só depois que o Reveal .oferta ganha .in,
+   pra não rodar animação com a section fora da tela. */
+.oferta.in .preco-headline {
   animation: preco-pulse 2.8s ease-in-out infinite;
 }
 @keyframes preco-pulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.025); }
+  50% { transform: scale(1.02); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .oferta.in .preco {
+  .oferta.in .preco-headline {
     animation: none;
   }
 }
-.preco small {
-  font-size: 0.26em;
+/* Preço R$42 estático embaixo, confirmando a matemática "1 real × 42 dias". */
+.preco-confirma {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "opsz" 56;
+  font-size: clamp(1.6rem, 1rem + 2.4vw, 2.6rem);
+  line-height: 1;
+  color: rgba(241, 238, 231, 0.72);
+  margin: 0 0 10px;
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.08em;
+}
+.preco-confirma small {
+  font-size: 0.5em;
   color: var(--orange);
-  margin-top: 0.32em;
+  margin-top: 0.24em;
   font-variation-settings: "opsz" 40;
+  font-weight: 700;
 }
 .preco-nota {
   font-family: var(--font-mono);
@@ -1735,73 +1651,6 @@ a.provoke:focus-visible {
 }
 
 /* ============================================================
-   REAFIRMAÇÃO
-   Bloco final depois do FAQ que recapitula a oferta e devolve o CTA.
-   ============================================================ */
-.reafirmacao {
-  background: var(--ink);
-  color: var(--paper);
-}
-.reafirmacao__titulo {
-  color: var(--paper);
-  margin-top: 8px;
-  max-width: 22ch;
-}
-.reafirmacao__titulo .linha--2 {
-  color: var(--orange);
-}
-.reafirmacao__lista {
-  list-style: none;
-  padding: 0;
-  margin: clamp(28px, 4vw, 48px) 0 clamp(20px, 3vw, 32px);
-  display: grid;
-  gap: 14px;
-}
-@media (min-width: 720px) {
-  .reafirmacao__lista {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px 40px;
-  }
-}
-.reafirmacao__item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 14px;
-  align-items: baseline;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-variation-settings: 'opsz' 40;
-  text-transform: uppercase;
-  font-size: clamp(0.95rem, 0.82rem + 0.5vw, 1.15rem);
-  color: rgba(241, 238, 231, 0.88);
-  letter-spacing: -0.003em;
-  line-height: 1.25;
-}
-.reafirmacao__marca {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: 1.5px solid var(--orange);
-  color: var(--orange);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.reafirmacao__fecho {
-  margin: clamp(24px, 3vw, 36px) 0;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: 'opsz' 56;
-  font-size: clamp(1.2rem, 1rem + 1vw, 1.75rem);
-  color: var(--paper);
-  line-height: 1.2;
-  max-width: 30ch;
-}
-
-/* ============================================================
    MOVIMENTO
 
    Tudo que esconde conteúdo vive dentro de (scripting: enabled).
@@ -1902,25 +1751,27 @@ a.provoke:focus-visible {
    conforme a rolagem. Substitui o Grid42 no hero.
    ============================================================ */
 .herofoto {
-  display: grid;
-  gap: 12px;
-}
-.herofoto__topo {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .herofoto__quadro {
   position: relative;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
+  width: 100%;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: 18px;
   background: var(--ink);
   isolation: isolate;
+}
+@media (min-width: 1000px) {
+  /* Desktop: 4/5 (não estica pro quadrado que corta o corpo). Cabe no fold
+     junto com o texto, mostrando o modelo até a cintura. */
+  .herofoto__quadro {
+    aspect-ratio: 4 / 5;
+    height: auto;
+    min-height: 0;
+  }
 }
 .herofoto__img {
   position: absolute;
@@ -1929,7 +1780,7 @@ a.provoke:focus-visible {
 }
 .herofoto__img img {
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center 15%;
 }
 .herofoto__placeholder {
   position: absolute;
@@ -1962,222 +1813,10 @@ a.provoke:focus-visible {
   text-transform: uppercase;
   opacity: 0.6;
 }
-.herofoto__malha {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 1fr;
-  gap: 6px;
-  padding: 14px;
-}
-.herofoto__malha .c {
-  display: grid;
-  place-items: center;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  border-radius: 4px;
-  background: var(--orange);
-  color: var(--paper);
-  font-weight: 700;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  will-change: opacity, transform;
-}
-.herofoto__malha .c--last {
-  background: #f0c419; /* amarelo do dia 42 */
-  color: var(--ink);
-}
-.herofoto__pe {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  line-height: 1.5;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-  padding-top: 4px;
-}
 @media (max-width: 780px) {
   .herofoto__quadro {
     aspect-ratio: 4 / 5;
   }
-  .herofoto__malha {
-    gap: 4px;
-    padding: 10px;
-  }
-  .herofoto__malha .c {
-    font-size: 0.5rem;
-  }
-}
-
-/* ============================================================
-   TENSAO — bloco preto entre Hero e Método.
-   Nomeia o problema real antes da solução. Contraste alto e
-   entrada em cascata dá o "peso emocional" de virar a página.
-   ============================================================ */
-.tensao {
-  background: var(--ink);
-  color: var(--paper);
-  padding-block: clamp(60px, 8vw, 120px);
-  position: relative;
-  overflow: hidden;
-  z-index: 2;
-}
-.tensao::before {
-  /* Faixa laranja fina no topo dá o "corte" pra pista preta acima. */
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--orange) 30%, var(--orange) 70%, transparent);
-  opacity: 0.55;
-}
-.tensao__rotulo {
-  color: var(--orange);
-}
-.tensao__rotulo::before {
-  background: var(--orange);
-}
-.tensao__titulo {
-  color: var(--paper);
-  margin-top: 8px;
-  max-width: 22ch;
-}
-.tensao__titulo .linha--2 {
-  color: var(--orange);
-}
-.tensao__blocos {
-  margin-top: clamp(40px, 5vw, 68px);
-  display: grid;
-  gap: clamp(44px, 5.5vw, 80px);
-}
-@media (min-width: 900px) {
-  .tensao__blocos {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: start;
-  }
-}
-.tensao__bloco {
-  opacity: 0;
-  transform: translateY(28px);
-  transition:
-    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.tensao--ativa .tensao__bloco {
-  opacity: 1;
-  transform: none;
-}
-.tensao__lista {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.tensao__lista li {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-variation-settings: 'opsz' 48;
-  text-transform: uppercase;
-  font-size: clamp(1.1rem, 0.9rem + 0.7vw, 1.5rem);
-  color: rgba(241, 238, 231, 0.42);
-  letter-spacing: -0.005em;
-  line-height: 1.15;
-  padding-left: 22px;
-  position: relative;
-  opacity: 0;
-  transform: translateX(-12px);
-  transition:
-    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    color 0.35s ease;
-}
-.tensao--ativa .tensao__lista li {
-  opacity: 1;
-  transform: none;
-}
-.tensao__lista li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.62em;
-  width: 10px;
-  height: 1.5px;
-  background: rgba(255, 107, 0, 0.55);
-}
-.tensao__subtitulo {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: clamp(1.35rem, 1rem + 1.2vw, 1.9rem);
-  line-height: 1.1;
-  margin: 0 0 16px;
-  letter-spacing: -0.01em;
-  color: var(--paper);
-}
-.tensao__paragrafo,
-.tensao__remate {
-  color: rgba(241, 238, 231, 0.72);
-  font-size: 1rem;
-  line-height: 1.55;
-  margin: 0 0 10px;
-}
-.tensao__remate {
-  margin-top: 4px;
-}
-.tensao__destaque {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 107, 0, 0.25);
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: 'opsz' 56;
-  text-transform: uppercase;
-  font-size: clamp(1.1rem, 0.9rem + 0.9vw, 1.55rem);
-  line-height: 1.15;
-  color: var(--orange);
-  letter-spacing: -0.005em;
-}
-
-/* ============================================================
-   Índice do Método — pequena "sumário" dos pilares na coluna
-   sticky da esquerda. Só aparece no desktop.
-   ============================================================ */
-.metodo__indice {
-  display: none;
-  margin-top: 28px;
-  padding-top: 22px;
-  border-top: 1px solid var(--line);
-  gap: 12px;
-  flex-direction: column;
-}
-@media (min-width: 940px) {
-  .metodo__indice {
-    display: flex;
-  }
-}
-.metodo__indice-item {
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  align-items: baseline;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.metodo__indice-item b {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-variation-settings: 'opsz' 48;
-  font-size: 1.1rem;
-  color: var(--muted);
-  letter-spacing: -0.01em;
 }
 
 /* ============================================================

@@ -1,10 +1,8 @@
-import { Contador } from '@/components/ui/Contador';
-import { CtaButton } from '@/components/ui/CtaButton';
 import { Fantasma42 } from '@/components/ui/Fantasma42';
 import { HeroFoto } from '@/components/ui/HeroFoto';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
-import { ctas, hero, microCta } from '@/content/desafio';
+import { hero } from '@/content/desafio';
 import { PROVOCACOES_CLICAVEIS } from '@/lib/flags';
 
 export function Hero() {
@@ -22,9 +20,25 @@ export function Hero() {
 
       <div className="wrap hero__grid">
         <div>
-          <Reveal as="p" className="rotulo">
-            {hero.eyebrow}
-          </Reveal>
+          {/* Logo colada acima do título, mesma coluna do texto. */}
+          <img
+            className="hero__logo"
+            src="/img/logo-desafio-preta.png"
+            alt="Desafio Abdômen Insano"
+          />
+
+          {/* Prova social em pill com avatares empilhados, estilo Zyla. */}
+          <div className="prova-pill" aria-label="Mais de 5500 alunos já estão no desafio">
+            <span className="prova-pill__avatares" aria-hidden="true">
+              <span className="prova-pill__av prova-pill__av--1" />
+              <span className="prova-pill__av prova-pill__av--2" />
+              <span className="prova-pill__av prova-pill__av--3" />
+              <span className="prova-pill__av prova-pill__av--4" />
+            </span>
+            <span className="prova-pill__txt">
+              <b>+5.500 alunos</b> já estão no desafio
+            </span>
+          </div>
 
           <MaskTitle
             as="h1"
@@ -39,6 +53,8 @@ export function Hero() {
             {hero.subDepois}
           </Reveal>
 
+          {/* Provocação vira link textual pra oferta (não botão) — empurra
+              a leitura sem duplicar o único CTA da página. */}
           <Reveal as="div" delay={300}>
             {PROVOCACOES_CLICAVEIS ? (
               <a className="provoke" href="#oferta">
@@ -47,21 +63,6 @@ export function Hero() {
             ) : (
               <p className="provoke">{provocacao}</p>
             )}
-          </Reveal>
-
-          <Reveal as="div" className="hero__cta" delay={360}>
-            <CtaButton origem="hero" microcopy={microCta}>
-              {ctas.hero}
-            </CtaButton>
-          </Reveal>
-
-          <Reveal className="numeros" delay={440}>
-            {hero.numeros.map((n) => (
-              <div key={n.rotulo}>
-                <Contador ate={n.valor} prefixo={n.prefixo} duracao={2200} />
-                <span>{n.rotulo}</span>
-              </div>
-            ))}
           </Reveal>
         </div>
 

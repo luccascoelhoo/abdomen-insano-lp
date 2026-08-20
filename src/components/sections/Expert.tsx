@@ -6,9 +6,6 @@ export function Expert() {
   return (
     <section className="sec sec--alt">
       <div className="wrap">
-        <Reveal as="p" className="rotulo">
-          {expert.eyebrow}
-        </Reveal>
         <MaskTitle className="d2" linhas={expert.tituloLinhas} />
 
         <div className="antes-depois">

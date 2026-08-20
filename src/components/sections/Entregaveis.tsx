@@ -1,16 +1,12 @@
-import { CtaButton } from '@/components/ui/CtaButton';
 import { MaskTitle } from '@/components/ui/MaskTitle';
 import { Reveal } from '@/components/ui/Reveal';
-import { ctas, entregaveis, entregaveisSecao, microCta } from '@/content/desafio';
+import { entregaveis, entregaveisSecao } from '@/content/desafio';
 
 export function Entregaveis() {
   return (
     <section className="sec sec--dark">
       <div className="wrap entrega">
         <div>
-          <Reveal as="p" className="rotulo rotulo--claro">
-            {entregaveisSecao.eyebrow}
-          </Reveal>
           <MaskTitle
             className="d2"
             linhas={['Depois dos', '42 dias,', 'ninguém vai', 'te reconhecer']}
@@ -28,14 +24,6 @@ export function Entregaveis() {
             </Reveal>
           ))}
         </ul>
-      </div>
-
-      <div className="wrap cta-fim">
-        <Reveal delay={200}>
-          <CtaButton origem="entregaveis" microcopy={microCta}>
-            {ctas.entregaveis}
-          </CtaButton>
-        </Reveal>
       </div>
     </section>
   );

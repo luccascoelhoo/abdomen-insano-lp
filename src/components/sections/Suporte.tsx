@@ -6,9 +6,6 @@ export function Suporte() {
   return (
     <section className="sec suporte">
       <div className="wrap">
-        <Reveal as="p" className="rotulo">
-          {suporte.eyebrow}
-        </Reveal>
         <MaskTitle className="d3" linhas={[suporte.titulo]} />
         <Reveal as="p" className="lead" delay={140}>
           {suporte.lead}

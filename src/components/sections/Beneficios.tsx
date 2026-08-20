@@ -6,9 +6,6 @@ export function Beneficios() {
   return (
     <section className="sec sec--alt">
       <div className="wrap">
-        <Reveal as="p" className="rotulo">
-          {beneficiosSecao.eyebrow}
-        </Reveal>
         <MaskTitle className="d2" linhas={beneficiosSecao.tituloLinhas} />
         <Reveal as="p" className="lead" delay={180}>
           {beneficiosSecao.lead}
