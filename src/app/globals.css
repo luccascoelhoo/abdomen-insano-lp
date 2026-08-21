@@ -730,7 +730,7 @@ a.provoke:focus-visible {
 }
 .caso figcaption {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 8px;
   padding: 12px 4px 4px;
   font-family: var(--font-mono);
@@ -738,6 +738,7 @@ a.provoke:focus-visible {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
 .caso figcaption span {
   color: var(--orange);
@@ -781,41 +782,113 @@ a.provoke:focus-visible {
 }
 
 /* ============================================================
-   BENEFÍCIOS — duas colunas desencontradas
+   BENEFÍCIOS — card claro com grid 2x2 e ícones laranja
    ============================================================ */
-.beneficios {
-  margin-top: clamp(44px, 5vw, 72px);
+.beneficios-card {
+  background: #fbfaf7;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: clamp(28px, 3.4vw, 56px);
+  color: var(--ink);
+}
+.beneficios-card__header {
   display: grid;
-  gap: clamp(30px, 4vw, 56px);
+  gap: clamp(16px, 2vw, 32px);
+  margin-bottom: clamp(28px, 3vw, 44px);
 }
-@media (min-width: 800px) {
-  .beneficios {
-    grid-template-columns: 1fr 1fr;
+@media (min-width: 820px) {
+  .beneficios-card__header {
+    grid-template-columns: 1.15fr 1fr;
+    align-items: start;
   }
-  /* O desencontro: a coluna da direita começa mais embaixo. */
-  .beneficios > :nth-child(even) {
-    margin-top: clamp(40px, 6vw, 96px);
+  .beneficios-card__lead {
+    text-align: right;
+    padding-top: 10px;
   }
 }
-.beneficio {
-  border-top: 2px solid var(--ink);
-  padding-top: clamp(18px, 2vw, 26px);
+.beneficios-card__titulo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 48;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-size: clamp(2rem, 1.2rem + 3.4vw, 3.4rem);
+  margin: 0;
+  color: var(--ink);
 }
-.beneficio h3 {
-  margin: 0 0 12px;
+.beneficios-card__titulo span {
+  color: var(--orange);
 }
-.beneficio p {
-  color: #46413a;
-  font-size: 0.99rem;
+.beneficios-card__lead {
+  color: #5a544a;
+  font-size: clamp(0.9rem, 0.82rem + 0.4vw, 1rem);
+  line-height: 1.55;
+  max-width: 48ch;
   margin: 0;
 }
-.beneficio__n {
-  font-family: var(--font-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.2em;
+@media (min-width: 820px) {
+  .beneficios-card__lead {
+    margin-left: auto;
+  }
+}
+.beneficios-grid {
+  display: grid;
+  gap: clamp(14px, 1.6vw, 22px);
+}
+@media (min-width: 700px) {
+  .beneficios-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.beneficio-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: clamp(22px, 2.4vw, 30px);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.beneficio-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 107, 0, 0.4);
+  box-shadow: 0 12px 28px -18px rgba(23, 21, 15, 0.18);
+}
+.beneficio-card__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--orange);
+  color: #fff;
+  margin-bottom: 18px;
+}
+.beneficio-card__icone img {
+  width: 34px;
+  height: 34px;
+  /* transforma o traço preto do OpenMoji em branco */
+  filter: brightness(0) invert(1);
+}
+.beneficio-card__titulo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 32;
+  text-transform: none;
+  letter-spacing: -0.01em;
   color: var(--orange);
-  display: block;
-  margin-bottom: 14px;
+  font-size: clamp(1.2rem, 1rem + 0.7vw, 1.4rem);
+  line-height: 1.1;
+  margin: 0 0 10px;
+}
+.beneficio-card__texto {
+  color: #46413a;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0;
 }
 
 /* ============================================================
@@ -925,7 +998,7 @@ a.provoke:focus-visible {
 .oferta {
   position: relative;
   border: 1px solid rgba(255, 107, 0, 0.55);
-  padding: clamp(28px, 4vw, 56px) clamp(24px, 4vw, 56px);
+  padding: clamp(22px, 2.6vw, 38px) clamp(20px, 3vw, 44px);
   text-align: center;
   overflow: hidden;
 }
@@ -951,7 +1024,7 @@ a.provoke:focus-visible {
   margin-inline: auto;
 }
 .preco-bloco {
-  margin: clamp(24px, 3vw, 40px) 0;
+  margin: clamp(14px, 1.8vw, 22px) 0;
 }
 /* Headline dominante — "POR APENAS 1 REAL POR DIA". O que precisa entrar
    primeiro na retina. Mesma escala do antigo preço grande. */
@@ -959,10 +1032,10 @@ a.provoke:focus-visible {
   font-family: var(--font-display);
   font-weight: 900;
   font-variation-settings: "opsz" 72;
-  font-size: clamp(2.6rem, 1.4rem + 6.4vw, 5.6rem);
+  font-size: clamp(2rem, 1.1rem + 4.4vw, 4rem);
   line-height: 0.92;
   color: var(--paper);
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -983,6 +1056,16 @@ a.provoke:focus-visible {
   color: var(--orange);
   font-weight: 900;
 }
+/* "/dia" fica menor e em bege/paper — o foco visual é R$1. */
+.preco-headline b i {
+  font-style: normal;
+  font-size: 0.42em;
+  font-weight: 700;
+  color: rgba(241, 238, 231, 0.6);
+  letter-spacing: 0.02em;
+  vertical-align: baseline;
+  margin-left: 0.06em;
+}
 /* Pulse discreto na headline — só depois que o Reveal .oferta ganha .in,
    pra não rodar animação com a section fora da tela. */
 .oferta.in .preco-headline {
@@ -1002,10 +1085,10 @@ a.provoke:focus-visible {
   font-family: var(--font-display);
   font-weight: 800;
   font-variation-settings: "opsz" 56;
-  font-size: clamp(1.6rem, 1rem + 2.4vw, 2.6rem);
+  font-size: clamp(1.3rem, 0.95rem + 1.6vw, 2rem);
   line-height: 1;
   color: rgba(241, 238, 231, 0.72);
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   display: inline-flex;
   align-items: flex-start;
   justify-content: center;
@@ -1030,10 +1113,10 @@ a.provoke:focus-visible {
   font-weight: 800;
   font-variation-settings: "opsz" 48;
   text-transform: uppercase;
-  font-size: clamp(1.3rem, 1rem + 1.4vw, 2rem);
+  font-size: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
   line-height: 1;
   color: var(--amber);
-  margin: 0 0 clamp(16px, 2vw, 22px);
+  margin: 0 0 clamp(12px, 1.4vw, 18px);
 }
 
 /* Botão: preenchimento que sobe de baixo no hover. */
@@ -1094,7 +1177,7 @@ a.provoke:focus-visible {
   gap: 1px;
   background: rgba(241, 238, 231, 0.14);
   border: 1px solid rgba(241, 238, 231, 0.14);
-  margin-top: clamp(30px, 4vw, 44px);
+  margin-top: clamp(18px, 2.2vw, 26px);
 }
 @media (min-width: 640px) {
   .selos {
@@ -1103,9 +1186,9 @@ a.provoke:focus-visible {
 }
 .selo {
   background: var(--ink);
-  padding: 20px 14px;
+  padding: 12px 14px;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(241, 238, 231, 0.78);
@@ -1156,6 +1239,25 @@ a.provoke:focus-visible {
   text-transform: uppercase;
   margin: 0 0 22px;
   font-weight: 700;
+}
+.coluna__foto {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  margin: 0 0 20px;
+  background: #000;
+}
+.coluna__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+  filter: contrast(1.02);
+}
+.coluna--antes .coluna__foto {
+  filter: grayscale(0.35);
 }
 .coluna--antes h3 {
   color: rgba(241, 238, 231, 0.5);
@@ -1342,6 +1444,30 @@ a.provoke:focus-visible {
   .footer {
     padding-bottom: 96px;
   }
+}
+.footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.footer__brand-icone {
+  width: clamp(64px, 6.6vw, 88px);
+  height: auto;
+  border-radius: 999px;
+}
+.footer__brand-nome {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 40;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+  font-size: clamp(1.4rem, 0.9rem + 1.6vw, 2rem);
+  line-height: 1;
+}
+.footer__brand-nome b {
+  color: var(--orange);
+  font-weight: 900;
 }
 .footer__nav {
   display: flex;
@@ -1860,19 +1986,6 @@ a.provoke:focus-visible {
   margin-top: clamp(32px, 4vw, 56px);
 }
 
-/* ============================================================
-   Micro-interações: hover em cards. Sensação tátil sem exagero —
-   apenas o suficiente pra o cursor sentir que ali é clicável.
-   ============================================================ */
-.beneficio {
-  transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.beneficio:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 26px -14px rgba(23, 21, 15, 0.18);
-}
 .bonus {
   transition:
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),

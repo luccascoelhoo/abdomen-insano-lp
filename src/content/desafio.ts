@@ -32,17 +32,16 @@ export const marca = {
   titulo: 'Desafio Abdômen Insano — 42 dias para o abdômen trincado',
   descricao:
     'Em 42 dias você elimina a gordura chata do abdômen e conquista os gomos definidos. Treino avançado, alimentação simplificada e cardio calculado, tudo dentro do app. Por R$42.',
-  logo: '/img/logo-desafio.png',
+  logo: '/img/logo-desafio.svg',
 } as const;
 
 export const oferta = {
   precoNumero: 42,
   precoMoeda: 'BRL',
   precoRotulo: 'R$',
-  precoDia: 'Por apenas 1 real por dia',
-  precoNota: 'Pagamento único · acesso por 1 ano',
+  precoDia: 'Por apenas R$1/dia',
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
-  ctaTexto: 'Aceito o desafio',
+  ctaTexto: 'Aceito',
   provocacao: 'Você aceita o desafio?',
   intro:
     'Na boa? Eu poderia cobrar caro por esse desafio, porque ele funciona. Mas não vou cobrar caro. Você vai botar o abdômen trincado e sentir a autoconfiança dos deuses.',
@@ -56,7 +55,7 @@ export const oferta = {
  * a decisão em um único ponto da jornada.
  */
 export const ctas = {
-  oferta: 'Aceito o desafio',
+  oferta: 'Aceito',
 } as const;
 
 /**
@@ -141,29 +140,26 @@ export const depoimentos = {
   provocacaoDestaque: 'o abdômen insano',
 } as const;
 
-const caso = (n: number, feminino: boolean, height: number): Caso => {
+const caso = (n: number, feminino: boolean): Caso => {
   const id = String(n).padStart(2, '0');
   const artigo = feminino ? 'Aluna' : 'Aluno';
   return {
-    arquivo: `/img/caso-${id}.jpg`,
+    arquivo: `/img/caso-${id}.webp`,
     alt: `${artigo} do desafio antes e depois`,
     legenda: `${artigo} do desafio`,
-    width: 900,
-    height,
+    width: 1000,
+    height: 1000,
   };
 };
 
 export const casos: Caso[] = [
-  caso(1, false, 900),
-  caso(2, false, 900),
-  caso(3, false, 900),
-  caso(4, false, 726),
-  caso(5, false, 900),
-  caso(6, false, 900),
-  caso(7, true, 841),
-  caso(8, false, 900),
-  caso(9, false, 900),
-  caso(10, true, 841),
+  caso(1, false),
+  caso(2, false),
+  caso(3, false),
+  caso(4, false),
+  caso(5, false),
+  caso(6, false),
+  caso(7, false),
 ];
 
 export const beneficiosSecao = {
@@ -279,8 +275,8 @@ export const expert = {
   ],
   assinatura: 'Igor Correa',
   assinaturaCargo: 'Idealizador do Desafio Abdômen Insano',
-  fotoAntes: '/img/igor-antes.jpg',
-  fotoHoje: '/img/igor-hoje.jpg',
+  fotoAntes: '/img/igor-antes.webp',
+  fotoHoje: '/img/igor-hoje.webp',
 } as const;
 
 export const faqSecao = {

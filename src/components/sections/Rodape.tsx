@@ -1,12 +1,23 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { Logo } from '@/components/ui/Logo';
 import { rodape } from '@/content/desafio';
 
 export function Rodape() {
   return (
     <footer className="footer">
       <div className="wrap">
-        <Logo altura={30} />
+        <div className="footer__brand">
+          <Image
+            src="/img/logo-icone-laranja.svg"
+            alt="Ícone Abdômen Insano"
+            width={88}
+            height={88}
+            className="footer__brand-icone"
+          />
+          <span className="footer__brand-nome">
+            Abdômen <b>Insano</b>
+          </span>
+        </div>
         <nav className="footer__nav">
           {rodape.navegacao.map((item) => (
             <Link key={item.href} href={item.href}>

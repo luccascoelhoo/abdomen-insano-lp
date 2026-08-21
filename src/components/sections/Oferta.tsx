@@ -12,24 +12,22 @@ export function Oferta() {
             42
           </div>
 
-          <p className="oferta__pre">{oferta.intro}</p>
-
           <div className="preco-bloco">
-            {/* Headline dominante — o doc pede "POR APENAS 1 REAL POR DIA"
-                como o gatilho principal. R$42 vem embaixo só como
-                confirmação matemática do "1 real × 42 dias". */}
+            {/* Headline curta e forte: R$1/dia. R$42 vira a confirmação
+                matemática embaixo (1 real × 42 dias). */}
             <p className="preco-headline">
               <span>Por apenas</span>
-              <b>1 real por dia</b>
+              <b>
+                R$1<i>/dia</i>
+              </b>
             </p>
             <p className="preco-confirma">
               <small>{oferta.precoRotulo}</small>
               {oferta.precoNumero}
             </p>
-            <p className="preco-nota">{oferta.precoNota}</p>
           </div>
 
-          <p className="oferta__pre" style={{ marginBottom: 34 }}>
+          <p className="oferta__pre" style={{ marginBottom: 18 }}>
             {oferta.fecho}
           </p>
 

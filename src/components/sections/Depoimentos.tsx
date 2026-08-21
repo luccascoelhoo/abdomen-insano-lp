@@ -50,7 +50,7 @@ export function Depoimentos() {
                 </div>
               )}
               <figcaption>
-                {caso.legenda} <span>antes → depois</span>
+                <span>antes → depois</span>
               </figcaption>
             </figure>
           ))}

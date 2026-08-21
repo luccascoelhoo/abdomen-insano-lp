@@ -51,7 +51,6 @@ export const metadata: Metadata = {
   title: marca.titulo,
   description: marca.descricao,
   alternates: { canonical: '/' },
-  icons: { icon: marca.logo },
   openGraph: {
     type: 'website',
     url: '/',
