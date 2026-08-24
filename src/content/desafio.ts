@@ -41,21 +41,49 @@ export const oferta = {
   precoRotulo: 'R$',
   precoDia: 'Por apenas R$1/dia',
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
-  ctaTexto: 'Aceito',
+  ctaTexto: 'Aceito o desafio!',
   provocacao: 'Você aceita o desafio?',
   intro:
     'Na boa? Eu poderia cobrar caro por esse desafio, porque ele funciona. Mas não vou cobrar caro. Você vai botar o abdômen trincado e sentir a autoconfiança dos deuses.',
   fecho:
     'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida. Vamos destravar uma vida épica, estética, equilibrada e livre.',
+  tituloAcesso: 'Desbloqueie o seu acesso:',
+  tempoLimitado: 'Oferta por tempo limitado.',
 } as const;
 
 /**
- * Único CTA da página vive na seção Oferta.
- * Removidos: hero/depoimentos/entregaveis/bonus/faq/sticky pra concentrar
- * a decisão em um único ponto da jornada.
+ * Lista de itens dentro do card da Oferta — o "o que você recebe".
+ * Copia adaptada do print da página modelo, com os itens que realmente
+ * fazem parte do desafio hoje.
+ */
+export const ofertaItens: string[] = [
+  'Novos treinos de abdômen todo mês',
+  'Cardápios alimentares simplificados',
+  'Trilha completa dos 42 dias',
+  'O elemento fundamental (tríade que derrete até 3x mais gordura)',
+  'Treinos dos maiores fisiculturistas naturais',
+  'Grupo VIP no WhatsApp',
+  'Protocolo de sono e recuperação dos atletas',
+  'Guia "Sobrevivência Social" (happy hour, churrasco, rodízio)',
+  '1 ano completo de acesso ao app',
+];
+
+/**
+ * Selos de garantia embaixo do card da Oferta — mesma tríade do print.
+ * Cada um vira uma coluna com ícone laranja + texto centralizado.
+ */
+export const ofertaGarantias = [
+  { icone: 'compra', titulo: 'Compra 100% segura', linha: 'via Cakto' },
+  { icone: 'acesso', titulo: 'Acesso por 1 ano', linha: 'ao desafio dentro do app' },
+  { icone: 'garantia', titulo: 'Garantia incondicional', linha: 'de 7 dias' },
+] as const;
+
+/**
+ * Único CTA da página vive na seção Oferta. Copy vem do print da página
+ * modelo (Ícaro/Igor) — verbo forte no comando: "quero botar".
  */
 export const ctas = {
-  oferta: 'Aceito',
+  oferta: 'Quero botar o abdômen insano',
 } as const;
 
 /**
@@ -64,10 +92,14 @@ export const ctas = {
  */
 export const microCta = 'Garantia de 7 dias · acesso imediato · pagamento único';
 
+/**
+ * Strip de números destacados embaixo do CTA da Oferta — mesma estrutura
+ * do print da página modelo: valor gigante em cima, legenda mono embaixo.
+ */
 export const selos: Selo[] = [
-  { rotulo: 'Compra', valor: '100% segura' },
-  { rotulo: 'Acesso', valor: 'por 1 ano' },
-  { rotulo: 'Garantia', valor: 'incondicional de 7 dias' },
+  { rotulo: '+5.500', valor: 'alunos no desafio' },
+  { rotulo: '42', valor: 'dias de protocolo' },
+  { rotulo: '1', valor: 'ano de acesso' },
 ];
 
 export const hero = {
@@ -205,29 +237,6 @@ export const entregaveis: string[] = [
 
 export const bonusSecao = {
   tituloLinhas: ['Ainda preparei uns', 'bônus surreais pra você'],
-} as const;
-
-/**
- * Ancoragem — bloco novo antes da Oferta. Compara R$42 com o custo real
- * das alternativas do mercado fitness. Vem do estudo Ícaro Carvalho:
- * "mostrar o quanto a pessoa perde ao não comprar / pagar mais em outras
- * frentes". Números são estimativas médias do mercado — ajustar se souber
- * o ticket real da região do público.
- */
-export const ancoragem = {
-  tituloLinhas: ['O que você já paga', 'pra não sair do lugar'],
-  lead: 'Se você já tentou de tudo e continua sem resultado, provavelmente já queimou muito mais que R$42 por mês. Faz a conta:',
-  linhas: [
-    { rotulo: 'Personal por hora', valor: 'R$ 120', obs: 'em média · 2x semana = R$ 960/mês' },
-    { rotulo: 'Academia decente', valor: 'R$ 150', obs: 'por mês, todo mês, sem plano' },
-    { rotulo: 'Consulta nutri', valor: 'R$ 300', obs: 'primeira · retorno em 30 dias' },
-    { rotulo: 'Curso fitness aleatório', valor: 'R$ 497', obs: 'que você não terminou' },
-  ],
-  vsRotulo: 'Desafio Abdômen Insano',
-  vsValor: 'R$ 42',
-  vsObs: 'pagamento único · 1 ano de acesso · garantia de 7 dias',
-  remate:
-    'É menos que um lanche com refri. Só que dessa vez o resultado dura mais que a digestão.',
 } as const;
 
 export const bonus: Bonus[] = [

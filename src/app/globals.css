@@ -490,9 +490,17 @@ a.provoke:focus-visible {
   max-width: 720px;
   margin-bottom: clamp(36px, 5vw, 60px);
 }
+/* Container envolvendo o mosaico, no mesmo padrão do card grande de
+   Benefícios: paper-2 quase branco, borda sutil, cantos arredondados. */
+.metodo-dark__card {
+  background: #fbfaf7;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: clamp(20px, 2.6vw, 40px);
+}
 .metodo-dark__mosaico {
   display: grid;
-  gap: clamp(18px, 2vw, 26px);
+  gap: clamp(14px, 1.6vw, 22px);
 }
 @media (min-width: 960px) {
   .metodo-dark__mosaico {
@@ -514,13 +522,22 @@ a.provoke:focus-visible {
   }
 }
 .card-metodo {
-  background: var(--paper-2);
+  background: #fff;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 14px;
   padding: clamp(18px, 2vw, 26px);
   display: flex;
   flex-direction: column;
   gap: clamp(18px, 2vw, 26px);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.card-metodo:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 107, 0, 0.4);
+  box-shadow: 0 12px 28px -18px rgba(23, 21, 15, 0.18);
 }
 .card-metodo__foto {
   position: relative;
@@ -547,27 +564,28 @@ a.provoke:focus-visible {
 .card-metodo__titulo {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "opsz" 48;
-  font-size: clamp(1.15rem, 0.9rem + 0.9vw, 1.6rem);
-  color: var(--ink);
+  font-weight: 900;
+  font-variation-settings: "opsz" 40;
+  font-size: clamp(1.2rem, 1rem + 0.9vw, 1.6rem);
+  color: var(--orange);
   line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 .card-metodo p {
   margin: 0;
   color: #46413a;
-  font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.02rem);
+  font-size: clamp(0.92rem, 0.88rem + 0.2vw, 1rem);
   line-height: 1.55;
 }
 .card-metodo__aviso {
   margin-top: 4px !important;
   padding: 12px 14px;
-  background: rgba(245, 179, 1, 0.14);
-  border-left: 3px solid var(--amber);
+  background: rgba(255, 107, 0, 0.08);
+  border-left: 3px solid var(--orange);
   border-radius: 4px;
 }
 .card-metodo__aviso b {
-  color: #8a6a00;
+  color: var(--orange);
   font-weight: 700;
 }
 
@@ -661,17 +679,21 @@ a.provoke:focus-visible {
 }
 
 /* ============================================================
-   INSPIRA — citação de página inteira
+   INSPIRA — citação de página inteira + retrato do Igor
    ============================================================ */
 .inspira {
   display: grid;
   gap: clamp(30px, 4vw, 56px);
+  align-items: center;
 }
 @media (min-width: 940px) {
   .inspira {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr);
-    align-items: end;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
   }
+}
+.inspira__texto {
+  display: grid;
+  gap: clamp(22px, 2.4vw, 34px);
 }
 .inspira__frase {
   font-family: var(--font-display);
@@ -688,8 +710,33 @@ a.provoke:focus-visible {
   color: var(--orange);
 }
 .inspira__corpo {
-  max-width: 40ch;
+  max-width: 44ch;
   font-size: clamp(1.02rem, 1rem + 0.4vw, 1.2rem);
+}
+.inspira__foto {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+  max-width: 460px;
+  width: 100%;
+  justify-self: center;
+}
+.inspira__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+}
+/* Vinheta sutil pra integrar com o fundo escuro da seção. */
+.inspira__foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(12, 11, 10, 0.55) 100%);
+  pointer-events: none;
 }
 
 /* ============================================================
@@ -939,184 +986,333 @@ a.provoke:focus-visible {
 }
 
 /* ============================================================
-   BÔNUS — cartões levemente tortos, alternando
+   BÔNUS — 2 colunas: bullets com checkmark + selo laranja
    ============================================================ */
-.bonus-grid {
-  margin-top: clamp(44px, 5vw, 72px);
+.bonus-layout {
   display: grid;
-  gap: clamp(16px, 2vw, 26px);
+  gap: clamp(36px, 4vw, 60px);
+  align-items: center;
 }
-@media (min-width: 860px) {
-  .bonus-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (min-width: 940px) {
+  .bonus-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   }
 }
-.bonus {
-  background: var(--ink-soft);
-  border: 1px solid rgba(241, 238, 231, 0.1);
-  padding: clamp(24px, 3vw, 38px);
-  transition:
-    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.45s ease;
-}
-.bonus:nth-child(odd) {
-  transform: rotate(-0.5deg);
-}
-.bonus:nth-child(even) {
-  transform: rotate(0.4deg);
-}
-.bonus:hover {
-  transform: rotate(0deg) translateY(-6px);
-  border-color: rgba(255, 107, 0, 0.55);
-}
-.bonus .tag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.54rem;
-  letter-spacing: 0.22em;
-  color: var(--amber);
-  border: 1px solid rgba(245, 179, 1, 0.4);
-  padding: 5px 10px;
-  margin-bottom: 18px;
-}
-.bonus h3 {
+.bonus-titulo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 56;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  font-size: clamp(2rem, 1.2rem + 3.4vw, 3.4rem);
   color: var(--paper);
-  margin: 0 0 12px;
+  margin: 0 0 clamp(24px, 3vw, 36px);
+  max-width: 18ch;
 }
-.bonus p {
-  font-size: 0.96rem;
+.bonus-titulo span {
+  color: var(--orange);
+}
+.bonus-lista {
+  list-style: none;
   margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(16px, 1.8vw, 22px);
 }
-.bonus--wide {
-  grid-column: 1 / -1;
-  background: linear-gradient(100deg, var(--ink-soft), #221d12);
+.bonus-lista__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.bonus-lista__check {
+  color: var(--orange);
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.bonus-lista__check svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.bonus-lista__item p {
+  margin: 0;
+  color: rgba(241, 238, 231, 0.82);
+  font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.05rem);
+  line-height: 1.55;
+}
+.bonus-lista__item b {
+  color: var(--paper);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(241, 238, 231, 0.35);
+  text-underline-offset: 3px;
+}
+.bonus-visual {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 460px;
+  width: 100%;
+  margin-inline: auto;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.bonus-visual__halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 107, 0, 0.55) 0%, rgba(255, 107, 0, 0.18) 40%, transparent 68%),
+    conic-gradient(from 90deg, rgba(255, 107, 0, 0.25), transparent 60%, rgba(255, 107, 0, 0.35));
+  filter: blur(6px);
+  z-index: -1;
+}
+.bonus-visual__selo {
+  width: clamp(180px, 22vw, 260px);
+  height: auto;
 }
 
 /* ============================================================
-   OFERTA
+   OFERTA — card com banner laranja + medalha + lista + preço + CTA
+   Estrutura inspirada no print da página modelo.
    ============================================================ */
-.oferta {
+.oferta-card {
   position: relative;
-  border: 1px solid rgba(255, 107, 0, 0.55);
-  padding: clamp(22px, 2.6vw, 38px) clamp(20px, 3vw, 44px);
+  max-width: 720px;
+  margin-inline: auto;
+  background: linear-gradient(180deg, #2a1408 0%, #170b04 60%, #0e0705 100%);
+  border: 1px solid rgba(255, 107, 0, 0.28);
+  border-radius: 18px;
+  padding: clamp(20px, 2.5vw, 34px);
+  color: var(--paper);
   text-align: center;
-  overflow: hidden;
 }
-.oferta__fantasma {
+/* Header: banner laranja com a medalha "flutuando" à esquerda. */
+.oferta-card__header {
+  position: relative;
+  margin: clamp(28px, 3vw, 42px) 0 clamp(24px, 2.6vw, 34px);
+}
+.oferta-card__medalha {
   position: absolute;
-  inset: auto 0 -14% 0;
+  top: 50%;
+  left: clamp(-10px, 1vw, 8px);
+  transform: translateY(-50%);
+  width: clamp(80px, 9vw, 110px);
+  height: clamp(80px, 9vw, 110px);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  z-index: 2;
+  background: var(--orange);
+  border-radius: 50%;
+  border: 3px solid rgba(255, 138, 42, 0.9);
+  box-shadow: 0 10px 26px -8px rgba(255, 107, 0, 0.75);
+}
+.oferta-card__halo {
+  position: absolute;
+  inset: -35%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 107, 0, 0.55) 0%, rgba(255, 107, 0, 0.2) 45%, transparent 68%);
+  filter: blur(8px);
+  z-index: -1;
+}
+.oferta-card__medalha img {
+  width: 78%;
+  height: auto;
+}
+.oferta-card__banner {
+  position: relative;
+  background: linear-gradient(180deg, #ff8a2a 0%, #ff6b00 100%);
+  border-radius: 999px;
+  padding: 16px clamp(24px, 3vw, 42px) 16px clamp(70px, 10vw, 130px);
+  margin-left: clamp(24px, 3vw, 44px);
+  box-shadow: 0 12px 30px -14px rgba(255, 107, 0, 0.6);
+}
+.oferta-card__banner h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 40;
+  color: #1a0d05;
+  font-size: clamp(1.05rem, 0.9rem + 0.9vw, 1.5rem);
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+  text-align: center;
+}
+.oferta-card__banner-check {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  border: 3px solid #170b04;
+  box-shadow: 0 4px 12px -4px rgba(255, 107, 0, 0.7);
+}
+.oferta-card__banner-check svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Lista de itens dentro do card. Cada item com "-" prefixado, alinhado
+   à esquerda, com respiro generoso. */
+.oferta-card__lista {
+  list-style: none;
+  margin: 0 auto clamp(24px, 3vw, 36px);
+  padding: 0 clamp(4px, 2vw, 32px);
+  text-align: left;
+  max-width: 40rem;
+  display: grid;
+  gap: clamp(10px, 1.2vw, 14px);
+}
+.oferta-card__lista li {
+  color: rgba(241, 238, 231, 0.88);
+  font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.02rem);
+  line-height: 1.5;
+  padding-left: 1em;
+  position: relative;
+}
+.oferta-card__lista li::before {
+  content: "-";
+  position: absolute;
+  left: 0;
+  color: rgba(241, 238, 231, 0.7);
+}
+
+/* Bloco de preço centralizado. */
+.oferta-card__preco {
+  margin: clamp(22px, 2.4vw, 32px) 0 clamp(16px, 1.8vw, 22px);
+}
+.oferta-card__preco-pequeno {
+  display: block;
+  font-family: var(--font-body);
+  color: rgba(241, 238, 231, 0.72);
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+.oferta-card__preco-grande {
   font-family: var(--font-display);
   font-weight: 900;
   font-variation-settings: "opsz" 72;
-  font-size: min(46vw, 30rem);
-  line-height: 0.7;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 107, 0, 0.14);
-  pointer-events: none;
-  user-select: none;
+  color: var(--orange);
+  font-size: clamp(2.8rem, 1.6rem + 5vw, 4.6rem);
+  line-height: 1;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
-.oferta > *:not(.oferta__fantasma) {
-  position: relative;
-  z-index: 1;
+.oferta-card__preco-grande i {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.32em;
+  color: rgba(241, 238, 231, 0.68);
+  margin-left: 0.04em;
+  vertical-align: baseline;
 }
-.oferta__pre {
-  max-width: 44ch;
+.oferta-card__preco-obs {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(241, 238, 231, 0.5);
+}
+
+.oferta-card__provoke {
+  margin: 0 0 clamp(14px, 1.6vw, 20px);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 40;
+  color: var(--paper);
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.2rem);
+  line-height: 1.1;
+}
+
+/* CTA em pill arredondada, matchando o print. */
+.oferta-card__cta {
+  border-radius: 999px !important;
+  max-width: 420px !important;
+  padding: 20px 28px !important;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem) !important;
   margin-inline: auto;
 }
-.preco-bloco {
-  margin: clamp(14px, 1.8vw, 22px) 0;
+
+/* Linha do countdown embaixo do CTA. Timer em cor de destaque com tabular
+   numbers pra não pular pixels a cada segundo. */
+.oferta-card__tempo {
+  margin: clamp(16px, 1.8vw, 22px) 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: rgba(241, 238, 231, 0.72);
+  font-size: 0.9rem;
+  font-weight: 500;
 }
-/* Headline dominante — "POR APENAS 1 REAL POR DIA". O que precisa entrar
-   primeiro na retina. Mesma escala do antigo preço grande. */
-.preco-headline {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-variation-settings: "opsz" 72;
-  font-size: clamp(2rem, 1.1rem + 4.4vw, 4rem);
-  line-height: 0.92;
-  color: var(--paper);
-  margin: 0 0 10px;
+.oferta-card__tempo svg {
+  width: 16px;
+  height: 16px;
+  color: var(--orange);
+}
+.oferta-card__timer {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--orange);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Trio de garantias abaixo do card. */
+.oferta-garantias {
+  margin: clamp(30px, 3.4vw, 46px) auto 0;
+  max-width: 720px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2vw, 28px);
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .oferta-garantias {
+    grid-template-columns: 1fr;
+  }
+}
+.oferta-garantia {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
-  transform-origin: center;
+  gap: 4px;
+  color: rgba(241, 238, 231, 0.7);
+  font-size: 0.85rem;
+  line-height: 1.35;
 }
-.preco-headline span {
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-variation-settings: normal;
-  font-size: 0.62rem;
-  letter-spacing: 0.26em;
-  color: var(--amber);
-}
-.preco-headline b {
+.oferta-garantia__icone {
+  width: 36px;
+  height: 36px;
   color: var(--orange);
-  font-weight: 900;
+  margin-bottom: 6px;
 }
-/* "/dia" fica menor e em bege/paper — o foco visual é R$1. */
-.preco-headline b i {
-  font-style: normal;
-  font-size: 0.42em;
-  font-weight: 700;
-  color: rgba(241, 238, 231, 0.6);
-  letter-spacing: 0.02em;
-  vertical-align: baseline;
-  margin-left: 0.06em;
+.oferta-garantia__icone svg {
+  width: 100%;
+  height: 100%;
 }
-/* Pulse discreto na headline — só depois que o Reveal .oferta ganha .in,
-   pra não rodar animação com a section fora da tela. */
-.oferta.in .preco-headline {
-  animation: preco-pulse 2.8s ease-in-out infinite;
-}
-@keyframes preco-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .oferta.in .preco-headline {
-    animation: none;
-  }
-}
-/* Preço R$42 estático embaixo, confirmando a matemática "1 real × 42 dias". */
-.preco-confirma {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "opsz" 56;
-  font-size: clamp(1.3rem, 0.95rem + 1.6vw, 2rem);
-  line-height: 1;
-  color: rgba(241, 238, 231, 0.72);
-  margin: 0 0 8px;
-  display: inline-flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 0.08em;
-}
-.preco-confirma small {
-  font-size: 0.5em;
-  color: var(--orange);
-  margin-top: 0.24em;
-  font-variation-settings: "opsz" 40;
+.oferta-garantia b {
+  color: var(--paper);
   font-weight: 700;
 }
-.preco-nota {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+.oferta-garantia small {
+  font-size: 0.78rem;
   color: rgba(241, 238, 231, 0.55);
-}
-.oferta__provoke {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "opsz" 48;
-  text-transform: uppercase;
-  font-size: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
-  line-height: 1;
-  color: var(--amber);
-  margin: 0 0 clamp(12px, 1.4vw, 18px);
 }
 
 /* Botão: preenchimento que sobe de baixo no hover. */
@@ -1126,31 +1322,30 @@ a.provoke:focus-visible {
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 540px;
+  max-width: 640px;
   background: var(--orange);
   color: #0c0b0a;
   font-family: var(--font-display);
   font-weight: 900;
   font-variation-settings: "opsz" 40;
   text-transform: uppercase;
-  font-size: clamp(1.25rem, 1rem + 1.2vw, 1.9rem);
-  line-height: 1;
-  padding: 26px 32px;
+  font-size: clamp(1.1rem, 0.9rem + 1vw, 1.65rem);
+  line-height: 1.05;
+  padding: 24px 28px;
   text-decoration: none;
   border: 2px solid var(--orange);
   overflow: hidden;
   isolation: isolate;
   transition: color 0.3s ease;
-  /* Quebra de linha no meio de CTA fica com cara de bug — copies como
-     "QUERO COMEÇAR EM 42 DIAS" viravam duas linhas em telas apertadas. */
-  white-space: nowrap;
+  text-align: center;
+  text-wrap: balance;
 }
 @media (max-width: 640px) {
   /* Mobile: encolhe padding e fonte pra caber as copies mais longas
-     ("Já sei tudo. Aceito o desafio" = 29 chars) sem estourar. */
+     sem estourar. */
   .cta {
-    font-size: clamp(0.92rem, 3.4vw, 1.2rem);
-    padding: 20px 18px;
+    font-size: clamp(0.95rem, 3.6vw, 1.15rem);
+    padding: 18px 16px;
   }
 }
 .cta::before {
@@ -1172,34 +1367,40 @@ a.provoke:focus-visible {
   outline: 3px solid var(--paper);
   outline-offset: 5px;
 }
+/* Strip de números debaixo do CTA — valor gigante em cima, legenda mono
+   embaixo, matching o print da página modelo. */
 .selos {
   display: grid;
-  gap: 1px;
-  background: rgba(241, 238, 231, 0.14);
-  border: 1px solid rgba(241, 238, 231, 0.14);
-  margin-top: clamp(18px, 2.2vw, 26px);
-}
-@media (min-width: 640px) {
-  .selos {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2vw, 32px);
+  margin-top: clamp(28px, 3vw, 44px);
+  padding-top: clamp(22px, 2.5vw, 32px);
+  border-top: 1px solid rgba(241, 238, 231, 0.14);
 }
 .selo {
-  background: var(--ink);
-  padding: 12px 14px;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(241, 238, 231, 0.78);
+  text-align: center;
+  color: rgba(241, 238, 231, 0.72);
 }
 .selo b {
   display: block;
-  color: var(--orange);
-  font-weight: 700;
-  margin-bottom: 6px;
-  letter-spacing: 0.2em;
-  font-size: 0.54rem;
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 60;
+  font-size: clamp(1.8rem, 1.2rem + 2.4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.selo:not(:last-child) {
+  border-right: 1px solid rgba(241, 238, 231, 0.14);
+}
+@media (max-width: 640px) {
+  .selo:not(:last-child) {
+    border-right: 0;
+    border-bottom: 1px solid rgba(241, 238, 231, 0.14);
+    padding-bottom: 16px;
+  }
 }
 
 /* ============================================================
@@ -1453,7 +1654,6 @@ a.provoke:focus-visible {
 .footer__brand-icone {
   width: clamp(64px, 6.6vw, 88px);
   height: auto;
-  border-radius: 999px;
 }
 .footer__brand-nome {
   font-family: var(--font-display);
@@ -1670,111 +1870,6 @@ a.provoke:focus-visible {
   }
 }
 
-/* ============================================================
-   ANCORAGEM DE PREÇO
-   Bloco antes da Oferta que compara R$42 com o mercado.
-   ============================================================ */
-.ancoragem {
-  background: var(--ink);
-  color: var(--paper);
-}
-.ancoragem__titulo {
-  color: var(--paper);
-  margin-top: 8px;
-  max-width: 22ch;
-}
-.ancoragem .lead {
-  color: rgba(241, 238, 231, 0.72);
-  max-width: 60ch;
-  margin-top: 18px;
-  margin-bottom: clamp(30px, 4vw, 46px);
-}
-.ancoragem__tabela {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border-top: 1px solid rgba(241, 238, 231, 0.16);
-}
-.ancoragem__linha {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "rotulo valor"
-    "obs    obs";
-  align-items: baseline;
-  gap: 4px 18px;
-  padding: 20px 0;
-  border-bottom: 1px solid rgba(241, 238, 231, 0.14);
-}
-@media (min-width: 720px) {
-  .ancoragem__linha {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr) auto;
-    grid-template-areas: "rotulo obs valor";
-    gap: 22px;
-    padding: 24px 0;
-  }
-}
-.ancoragem__rotulo {
-  grid-area: rotulo;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-variation-settings: 'opsz' 48;
-  text-transform: uppercase;
-  font-size: clamp(1.1rem, 0.9rem + 0.7vw, 1.5rem);
-  color: var(--paper);
-  letter-spacing: -0.005em;
-  line-height: 1.15;
-}
-.ancoragem__valor {
-  grid-area: valor;
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-variation-settings: 'opsz' 56;
-  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2.2rem);
-  color: rgba(241, 238, 231, 0.5);
-  line-height: 1;
-  letter-spacing: -0.01em;
-}
-.ancoragem__obs {
-  grid-area: obs;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(241, 238, 231, 0.42);
-}
-/* A nossa linha — quebra o padrão riscando visualmente a diferença. */
-.ancoragem__linha--nossa {
-  background: linear-gradient(90deg, rgba(255, 107, 0, 0.16), transparent 70%);
-  border-bottom: 2px solid var(--orange);
-  padding: 26px 14px;
-  margin-top: 6px;
-}
-@media (min-width: 720px) {
-  .ancoragem__linha--nossa {
-    padding: 30px 18px;
-  }
-}
-.ancoragem__linha--nossa .ancoragem__rotulo {
-  color: var(--orange);
-}
-.ancoragem__linha--nossa .ancoragem__valor {
-  color: var(--paper);
-  font-size: clamp(2rem, 1.4rem + 2vw, 3.4rem);
-}
-.ancoragem__linha--nossa .ancoragem__obs {
-  color: rgba(241, 238, 231, 0.72);
-}
-.ancoragem__remate {
-  margin-top: clamp(28px, 3vw, 40px);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-variation-settings: 'opsz' 48;
-  font-size: clamp(1.1rem, 0.9rem + 0.7vw, 1.5rem);
-  color: var(--paper);
-  line-height: 1.25;
-  max-width: 30ch;
-}
 
 /* ============================================================
    MOVIMENTO
@@ -1865,7 +1960,6 @@ a.provoke:focus-visible {
     transform: scaleX(1);
   }
   .malha,
-  .bonus,
   .coluna--antes,
   .coluna--hoje {
     transform: none;
@@ -1986,15 +2080,6 @@ a.provoke:focus-visible {
   margin-top: clamp(32px, 4vw, 56px);
 }
 
-.bonus {
-  transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.35s;
-}
-.bonus:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255, 107, 0, 0.5);
-}
 .caso {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }

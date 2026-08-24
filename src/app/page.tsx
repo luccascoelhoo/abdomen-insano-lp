@@ -1,4 +1,3 @@
-import { Ancoragem } from '@/components/sections/Ancoragem';
 import { Beneficios } from '@/components/sections/Beneficios';
 import { Bonus } from '@/components/sections/Bonus';
 import { Depoimentos } from '@/components/sections/Depoimentos';
@@ -21,7 +20,6 @@ export default function Home() {
       <Beneficios />
       <Entregaveis />
       <Bonus />
-      <Ancoragem />
       <Oferta />
       <Expert />
       <Faq />

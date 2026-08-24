@@ -8,7 +8,7 @@ export function Rodape() {
       <div className="wrap">
         <div className="footer__brand">
           <Image
-            src="/img/logo-icone-laranja.svg"
+            src="/img/logo-branca.svg"
             alt="Ícone Abdômen Insano"
             width={88}
             height={88}
