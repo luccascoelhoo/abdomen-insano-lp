@@ -266,13 +266,19 @@ export const bonus: Bonus[] = [
 ];
 
 export const expert = {
-  tituloLinhas: ['O idealizador do', 'Desafio Abdômen Insano'],
-  antesTitulo: 'ANTES',
+  /** Título com destaque laranja na palavra depois do span. */
+  tituloAntes: 'Conheça o ',
+  tituloDestaque: 'idealizador do método',
+  antesTitulo: 'De um lado:',
   antes: ['Zuado pela magreza', 'Fraco mentalmente', 'Preguiçoso'],
-  hojeTitulo: 'HOJE',
+  hojeTitulo: 'Do outro:',
   hoje: ['Corpo forte e estético', 'Referência de shape p/ milhares de pessoas', 'Produtivo e focado'],
+  /**
+   * Introdução do relato — o nome vem em negrito, seguido de vírgula.
+   * O restante da história continua nos parágrafos abaixo.
+   */
+  nome: 'Igor Correa',
   historia: [
-    'Eu me chamo Igor Correa,',
     'E sempre fui sacaneado por colegas de clube, escola e até mesmo no trabalho por ser magro demais, preguiçoso, e até sem comprometimento.',
     'Eu nunca gostei de ouvir essas palavras, e mesmo com todas as minhas dificuldades eu sempre soube que isso não fazia parte da minha identidade, isso não era quem eu sempre soube que seria.',
     'Essas críticas me levaram a tomar ações que mudariam a minha vida para sempre: entrei na academia, comecei a levar meus estudos na área da nutrição e educação física à sério e desenvolvi uma mentalidade mais organizada e blindada.',
@@ -280,8 +286,6 @@ export const expert = {
     'O Desafio Abdômen Insano de 42 dias foi idealizado para que você dê o primeiro passo e sinta os primeiros resultados de uma vida incrível que você pode viver através da mudança de pequenas ações no seu dia a dia.',
     'Eu acredito, de verdade, que você pode ser mais forte, mais focado e viver a vida dos seus sonhos.',
   ],
-  assinatura: 'Igor Correa',
-  assinaturaCargo: 'Idealizador do Desafio Abdômen Insano',
   fotoAntes: '/img/igor-antes.webp',
   fotoHoje: '/img/igor-hoje.webp',
 } as const;

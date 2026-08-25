@@ -1504,123 +1504,100 @@ a.provoke:focus-visible {
 /* ============================================================
    EXPERT
    ============================================================ */
-.antes-depois {
-  margin-top: clamp(40px, 5vw, 64px);
+/* Layout enxuto, inspirado no print da página modelo (Modo Caverna):
+   título + destaque laranja, duas fotos lado a lado, listas com X/check
+   e o relato em parágrafos plain. Sem cards inclinados, sem capitular. */
+.idealizador__wrap {
+  max-width: 780px;
+}
+.idealizador__titulo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 48;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  font-size: clamp(1.6rem, 1.1rem + 2.4vw, 2.5rem);
+  color: var(--ink);
+  margin: 0 0 clamp(24px, 3vw, 36px);
+  text-align: left;
+}
+.idealizador__titulo span {
+  color: var(--orange);
+}
+.idealizador__fotos {
   display: grid;
-  gap: clamp(16px, 2vw, 22px);
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(12px, 1.4vw, 20px);
+  margin-bottom: clamp(20px, 2.4vw, 30px);
 }
-@media (min-width: 760px) {
-  .antes-depois {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-  .antes-depois > :last-child {
-    margin-top: clamp(28px, 4vw, 60px);
-  }
-}
-.coluna {
-  padding: clamp(24px, 3vw, 36px);
-}
-.coluna--antes {
-  background: var(--ink);
-  color: var(--paper);
-  transform: rotate(-0.7deg);
-}
-.coluna--hoje {
-  background: #fbfaf7;
-  border: 1px solid var(--line);
-  transform: rotate(0.6deg);
-}
-.coluna h3 {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  margin: 0 0 22px;
-  font-weight: 700;
-}
-.coluna__foto {
+.idealizador__foto {
   position: relative;
-  width: 100%;
   aspect-ratio: 3 / 4;
   overflow: hidden;
-  margin: 0 0 20px;
+  border-radius: 6px;
   background: #000;
 }
-.coluna__foto img {
+.idealizador__foto img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 20%;
   display: block;
-  filter: contrast(1.02);
 }
-.coluna--antes .coluna__foto {
-  filter: grayscale(0.35);
+.idealizador__listas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2vw, 32px);
+  margin-bottom: clamp(28px, 3.4vw, 44px);
 }
-.coluna--antes h3 {
-  color: rgba(241, 238, 231, 0.5);
+.idealizador__coluna-titulo {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.98rem;
 }
-.coluna--hoje h3 {
-  color: var(--orange);
-}
-.coluna ul {
+.idealizador__coluna ul {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  gap: 8px;
 }
-.coluna li {
-  padding: 13px 0;
-  border-bottom: 1px solid var(--line);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-variation-settings: "opsz" 28;
-  text-transform: uppercase;
-  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.4rem);
-  line-height: 1.05;
+.idealizador__coluna li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 0.98rem;
+  line-height: 1.4;
 }
-.coluna--antes li {
-  border-color: var(--line-dark);
-  color: rgba(241, 238, 231, 0.55);
+.idealizador__icone {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
 }
-.coluna li:last-child {
-  border-bottom: 0;
+.idealizador__coluna--x .idealizador__icone {
+  color: #e33b3b;
 }
-.historia {
-  max-width: 60ch;
-  margin-top: clamp(48px, 6vw, 80px);
-}
-.historia p {
-  font-size: 1.02rem;
-}
-/* Capitular na primeira letra — recurso de impresso, não de gerador. */
-.historia > p:first-of-type::first-letter {
-  float: left;
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 3.6em;
-  line-height: 0.76;
-  padding: 0.06em 0.12em 0 0;
+.idealizador__coluna--check .idealizador__icone {
   color: var(--orange);
 }
-.assinatura {
-  margin-top: 32px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "opsz" 40;
-  text-transform: uppercase;
-  font-size: 1.5rem;
-  line-height: 1;
+.idealizador__historia {
+  display: grid;
+  gap: clamp(14px, 1.6vw, 20px);
+  max-width: 60ch;
 }
-.assinatura small {
-  display: block;
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: 0.54rem;
-  letter-spacing: 0.2em;
-  color: var(--muted);
-  margin-top: 10px;
-  text-transform: uppercase;
+.idealizador__historia p {
+  margin: 0;
+  color: #3a352e;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+@media (max-width: 640px) {
+  .idealizador__listas {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ============================================================
