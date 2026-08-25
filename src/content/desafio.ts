@@ -123,7 +123,7 @@ export const pilares: Pilar[] = [
       texto:
         'Não adianta apenas treinar, é preciso intensificar os exercícios, seguindo uma estratégia eficiente e validada.',
     },
-    foto: { src: '/img/metodo-01.jpg', alt: 'Igor Correa flexionando o bíceps em ambiente de treino' },
+    foto: { src: '/img/metodo-01.jpg', alt: 'Homem fazendo rosca com barra em ambiente de treino' },
   },
   {
     numero: '02',
@@ -131,7 +131,7 @@ export const pilares: Pilar[] = [
     paragrafos: [
       'Cansei de ver gente dificultando essa parte tão simples. Você vai ter um protocolo criado por uma nutricionista experiente para aprender a comer certo sem precisar virar escravo de dietas rigorosas.',
     ],
-    foto: { src: '/img/metodo-02.jpg', alt: 'Prato colorido de alimentação equilibrada' },
+    foto: { src: '/img/metodo-02.jpg', alt: 'Meal prep com ovos, bacon, abacate e verduras' },
   },
   {
     numero: '03',
@@ -139,7 +139,7 @@ export const pilares: Pilar[] = [
     paragrafos: [
       'Você vai derreter até 3x mais gordura de forma rápida e saudável. Quando você une a tríade: treino avançado, alimentação simplificada e um cardio estratégico e calculado, o abdômen insano não é mais um sonho distante, é uma realidade!',
     ],
-    foto: { src: '/img/metodo-03.jpg', alt: 'Igor Correa em pose de físico em ambiente de treino' },
+    foto: { src: '/img/metodo-03.jpg', alt: 'Corredor em explosão de largada em pista de atletismo' },
   },
 ];
 
