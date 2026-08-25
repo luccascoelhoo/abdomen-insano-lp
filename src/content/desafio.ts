@@ -52,7 +52,7 @@ export const oferta = {
   perguntaDepois: 'Mas não vou cobrar caro.',
   promessaAntes: 'Você vai botar o abdômen trincado e ',
   promessaDestaque: 'sentir a autoconfiança dos deuses…',
-  destaque: 'POR APENAS 1 REAL POR DIA.',
+  destaque: 'Por apenas 1 real por dia.',
   reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$42.',
   fecho: 'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida.',
   fechoDestaque: 'Vamos destravar uma vida épica, estética, equilibrada e livre.',
@@ -151,12 +151,12 @@ export const pilares: Pilar[] = [
 ];
 
 export const semanas: Semana[] = [
-  { rotulo: 'SEMANA 01', titulo: 'Preparando o abdômen' },
-  { rotulo: 'SEMANA 02', titulo: 'Aumentando a resistência' },
-  { rotulo: 'SEMANA 03', titulo: 'Fortalecendo de dentro pra fora' },
-  { rotulo: 'SEMANA 04', titulo: 'Colando a pele no músculo' },
-  { rotulo: 'SEMANA 05', titulo: 'Lapidando a definição' },
-  { rotulo: 'SEMANA 06', titulo: 'Abdômen insano' },
+  { rotulo: 'Semana 01', titulo: 'Preparando o abdômen' },
+  { rotulo: 'Semana 02', titulo: 'Aumentando a resistência' },
+  { rotulo: 'Semana 03', titulo: 'Fortalecendo de dentro pra fora' },
+  { rotulo: 'Semana 04', titulo: 'Colando a pele no músculo' },
+  { rotulo: 'Semana 05', titulo: 'Lapidando a definição' },
+  { rotulo: 'Semana 06', titulo: 'Abdômen insano' },
 ];
 
 export const inspira = {
