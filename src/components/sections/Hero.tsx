@@ -44,7 +44,15 @@ export function Hero() {
             as="h1"
             className="d1"
             linhas={hero.tituloLinhas}
-            classesLinha={['linha', 'linha', 'linha linha--2', 'linha linha--2']}
+            classesLinha={[
+              'linha',
+              'linha',
+              'linha',
+              'linha',
+              'linha linha--2',
+              'linha linha--2',
+              'linha linha--2',
+            ]}
           />
 
           <Reveal as="p" className="hero__sub" delay={220}>

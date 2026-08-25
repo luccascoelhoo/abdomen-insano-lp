@@ -30,8 +30,28 @@ const ICONE_GARANTIA = {
 
 export function Oferta() {
   return (
-    <section className="sec sec--dark" id="oferta" style={{ paddingTop: 0 }}>
+    <section className="sec sec--dark" id="oferta">
       <div className="wrap">
+        {/* Narrativa que abre a oferta — bate com a copy oficial: convite direto
+            + promessa em 1 real/dia antes do card do checkout. */}
+        <div className="oferta-narrativa">
+          <Reveal as="p" className="oferta-narrativa__intro">
+            {oferta.intro}
+          </Reveal>
+          <Reveal as="p" className="oferta-narrativa__destaque" delay={120}>
+            {oferta.destaque}
+          </Reveal>
+          <Reveal as="p" className="oferta-narrativa__reforco" delay={180}>
+            {oferta.reforco}
+          </Reveal>
+          <Reveal as="p" className="oferta-narrativa__fecho" delay={240}>
+            {oferta.fecho}
+          </Reveal>
+          <Reveal as="p" className="oferta-narrativa__mote" delay={300}>
+            {oferta.fechoDestaque}
+          </Reveal>
+        </div>
+
         <Reveal className="oferta-card">
           <header className="oferta-card__header">
             <div className="oferta-card__medalha" aria-hidden="true">

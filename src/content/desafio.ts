@@ -44,9 +44,11 @@ export const oferta = {
   ctaTexto: 'Aceito o desafio!',
   provocacao: 'Você aceita o desafio?',
   intro:
-    'Na boa? Eu poderia cobrar caro por esse desafio, porque ele funciona. Mas não vou cobrar caro. Você vai botar o abdômen trincado e sentir a autoconfiança dos deuses.',
-  fecho:
-    'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida. Vamos destravar uma vida épica, estética, equilibrada e livre.',
+    'Na boa? Eu poderia cobrar caro por esse desafio, porque ele funciona! Mas não vou cobrar caro. Você vai botar o abdômen trincado e sentir a autoconfiança dos deuses.',
+  destaque: 'POR APENAS 1 REAL POR DIA.',
+  reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$42.',
+  fecho: 'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida.',
+  fechoDestaque: 'Vamos destravar uma vida épica, estética, equilibrada e livre.',
   tituloAcesso: 'Desbloqueie o seu acesso:',
   tempoLimitado: 'Oferta por tempo limitado.',
 } as const;
@@ -103,26 +105,36 @@ export const selos: Selo[] = [
 ];
 
 export const hero = {
-  /** Uma entrada por linha do cartaz — a terceira é a linha laranja. */
-  tituloLinhas: ['Conquiste o', 'abdômen', 'trincado,', 'estético e seco'],
-  subAntes: 'Em 42 dias seus amigos não vão entender nada. Você vai eliminar ',
+  /** Uma entrada por linha do cartaz. Copy oficial: convite pro VSL + promessa
+   *  em 42 dias, com destaque cromático nas duas últimas linhas ("abdômen
+   *  trincado, estético e seco em 42 dias") via classesLinha. */
+  tituloLinhas: [
+    'Assista ao vídeo',
+    'e descubra como',
+    'jovens homens comuns',
+    'estão conquistando',
+    'um abdômen trincado,',
+    'estético e seco',
+    'em 42 dias.',
+  ],
+  subAntes: 'Seus amigos não vão entender nada. Você vai eliminar ',
   subDestaque: 'essa gordura chata do abdômen',
-  subDepois: ', conquistar os gomos definidos e uma postura de respeito.',
+  subDepois: ', conquistar os gomos definidos e uma postura de respeito!',
   provocacaoAntes: 'Você aceita ',
   provocacaoDestaque: 'o desafio?',
 } as const;
 
 export const metodo = {
   titulo: 'Como funciona essa parada?',
-  lead: 'Eu e meu time montamos um planejamento à prova de falhas. Em 42 dias, basta cumprir o planejamento para conquistar o abdômen insano.',
+  lead: 'Eu e meu time montamos um planejamento a prova de falhas. Em 42 dias basta cumprir o planejamento para conquistar o abdômen insano.',
 } as const;
 
 export const pilares: Pilar[] = [
   {
     numero: '01',
-    titulo: 'Treino Mensal',
+    titulo: 'Treino Avançado',
     paragrafos: [
-      'Você vai receber uma trilha de treinos de abdômen novos e progressivos a cada mês, direto na plataforma.',
+      'Você vai receber uma trilha de treinos progressivos semana a semana, direto no aplicativo.',
     ],
     aviso: {
       rotulo: 'Acredite',
@@ -135,7 +147,7 @@ export const pilares: Pilar[] = [
     numero: '02',
     titulo: 'Alimentação Simplificada',
     paragrafos: [
-      'Cansei de ver gente dificultando essa parte tão simples. A cada mês você vai ter um protocolo criado por uma nutricionista experiente para aprender a comer certo sem precisar virar escravo de dietas rigorosas.',
+      'Cansei de ver gente dificultando essa parte tão simples. Você vai ter um protocolo criado por uma nutricionista experiente para aprender a comer certo sem precisar virar escravo de dietas rigorosas.',
     ],
     foto: { src: '/img/metodo-02.jpg', alt: 'Prato colorido de alimentação equilibrada' },
   },
@@ -143,7 +155,7 @@ export const pilares: Pilar[] = [
     numero: '03',
     titulo: 'O Elemento Fundamental',
     paragrafos: [
-      'Você vai derreter até 3x mais gordura de forma rápida e saudável. Quando você une a tríade: treino avançado, alimentação simplificada e aeróbios funcionais e calculados, o abdômen insano não é mais um sonho distante, é uma realidade!',
+      'Você vai derreter até 3x mais gordura de forma rápida e saudável. Quando você une a tríade: treino avançado, alimentação simplificada e um cardio estratégico e calculado, o abdômen insano não é mais um sonho distante, é uma realidade!',
     ],
     foto: { src: '/img/metodo-03.jpg', alt: 'Igor Correa em pose de físico em ambiente de treino' },
   },
@@ -160,16 +172,16 @@ export const semanas: Semana[] = [
 
 export const inspira = {
   citacaoAntes: 'Não importa se você está ',
-  citacaoDestaque: 'longe do objetivo',
+  citacaoDestaque: 'longe do objetivo.',
   corpo:
-    'A partir de hoje você não está mais sozinho. Eu e você vamos correr juntos atrás de uma única missão: construir o abdômen mais insano da sua vida.',
+    'A partir de hoje, você não está mais sozinho! Eu e você vamos correr juntos atrás de uma única missão: construir o abdômen mais insano da sua vida!',
 } as const;
 
 export const depoimentos = {
-  tituloLinhas: ['Tá todo mundo botando', 'o abdômen insano'],
-  lead: 'Você é o próximo. Mais de 5.500 alunos já estão dentro do desafio.',
+  tituloLinhas: ['Tá todo mundo botando', 'o abdômen insano!'],
+  lead: 'Você é o próximo!',
   provocacaoAntes: 'Quero botar ',
-  provocacaoDestaque: 'o abdômen insano',
+  provocacaoDestaque: 'o abdômen insano!',
 } as const;
 
 const caso = (n: number, feminino: boolean): Caso => {
@@ -198,74 +210,75 @@ export const casos: Caso[] = [
 
 export const beneficiosSecao = {
   tituloLinhas: ['Por que um abdômen', 'insano é essencial?'],
-  lead: 'Além da estética, um abdômen forte traz benefícios que vão muito além de se sentir melhor se olhando no espelho.',
+  lead: 'Além da estética, um abdômen forte traz benefícios que vão muito além de só se sentir melhor se olhando no espelho:',
 } as const;
 
 export const beneficios: Beneficio[] = [
   {
     titulo: 'Mais força',
     texto:
-      'O abdômen é responsável pela sustentação e pelo equilíbrio do seu corpo. Quando ele fica mais forte, você progride mais carga, sustenta melhores execuções e o corpo todo fica mais estético.',
+      'O abdômen é o responsável pela sustentação e equilíbrio do seu corpo. Quando seu abdômen se torna mais forte, você progride mais cargas, sustenta mais força com melhores execuções e obviamente se torna muito mais estético e bonito.',
   },
   {
     titulo: 'Estabilidade',
     texto:
-      'Um core fortalecido te dá mais equilíbrio. Quer progredir melhor as cargas? Comece pelo abdômen. Quer pedalar melhor? Comece pelo abdômen. Quer correr melhor? Agora você já sabe a resposta.',
+      'Um core fortalecido te dá mais equilíbrio. Quer ficar mais forte e progredir melhor as cargas? Comece fortalecendo o abdômen. Quer pedalar melhor? Comece fortalecendo o abdômen. Quer correr melhor? Agora você já sabe a resposta.',
   },
   {
-    titulo: 'Postura melhorada',
+    titulo: 'Postura Melhorada',
     texto:
-      'Quem tem abdômen forte mantém a postura ereta naturalmente. Isso evita dores nas costas, te faz ser mais respeitado e transmite muito mais confiança para as pessoas ao seu redor.',
+      'Quem tem um abdômen forte mantém a postura ereta naturalmente. Isso evita dores nas costas, te faz ser muito mais respeitado e transmite muito mais confiança para as pessoas ao seu redor.',
   },
   {
-    titulo: 'Confiança e performance',
+    titulo: 'Confiança e Performance',
     texto:
-      'Essa é a etapa que você vive quando vê o resultado no seu próprio corpo. Sua confiança aumenta e seu desempenho nos treinos vai para outro nível.',
+      'Essa é a etapa que você vive quando vê os resultados de um abdômen insano no seu corpo. Sua confiança aumenta e seu desempenho nos treinos vão para outro nível!',
   },
 ];
 
 export const entregaveisSecao = {
-  titulo: 'Depois dos 42 dias, ninguém vai te reconhecer',
-  lead: 'A galera vai te respeitar muito mais, você vira referência pros seus amigos. Acredite: o abdômen insano muda tudo.',
+  tituloLinhas: ['Depois dos 42 dias', 'no desafio, ninguém', 'vai te reconhecer!'],
+  lead: 'A galera vai te respeitar muito mais, tu vai se tornar referência pros seus amigos, acredite: o abdômen insano muda tudo.',
+  intro: 'Ao garantir sua vaga no desafio Abdômen Insano você recebe:',
 } as const;
 
 export const entregaveis: string[] = [
-  'Aplicativo exclusivo',
-  'Trilha de treinos',
-  'Cardápios simplificados para dieta',
-  'O elemento fundamental',
+  'Aplicativo Exclusivo',
+  'Trilha de Treinos',
+  'Cardápios Simplificados para Dieta',
+  'O Elemento Fundamental',
   'Grupo VIP no WhatsApp',
 ];
 
 export const bonusSecao = {
-  tituloLinhas: ['Ainda preparei uns', 'bônus surreais pra você'],
+  titulo: 'Fora tudo isso, ainda preparei uns bônus surreais pra você:',
+  destaque: 'bônus',
 } as const;
 
 export const bonus: Bonus[] = [
   {
-    titulo: 'Protocolo de sono e recuperação dos atletas',
+    titulo: 'Protocolo de Sono e Recuperação dos Atletas',
     texto:
-      'Os hábitos sagrados de sono e recuperação dos maiores atletas da atualidade, entre eles CR7, LeBron James e Djokovic.',
+      'Você vai aprender os hábitos sagrados de sono e recuperação dos maiores atletas da atualidade, entre eles estão CR7, LeBron James e Djokovic.',
   },
   {
     titulo: 'Guia “Sobrevivência Social”',
     texto:
-      'O script exato pra ir no happy hour, no churrasco e no rodízio e mesmo assim continuar dentro do seu déficit, sem sacrificar a vida social.',
+      'Esse guia te dá o script exato pra ir no happy hour, no churrasco, no rodízio e mesmo assim continuar dentro do seu déficit sem sacrificar a vida social.',
   },
   {
-    titulo: 'Treinos dos fisiculturistas naturais',
+    titulo: 'Treinos de musculação dos maiores fisiculturistas naturais',
     texto:
-      'Treinos de musculação dos melhores fisiculturistas naturais do mundo, com vídeos de execução.',
-  },
-  {
-    titulo: 'Rede social do desafio',
-    texto:
-      'Dentro do app existe uma área própria pra tirar dúvidas, postar suas evoluções, trocar aquela ideia maneira e muito mais.',
+      'Treinos dos melhores fisiculturistas naturais do mundo, com vídeos de execução.',
   },
   {
     titulo: '1 ano de acesso',
+    texto: '42 dias de desafio + 11 meses de bônus.',
+  },
+  {
+    titulo: 'Rede Social do Desafio',
     texto:
-      '42 dias de desafio + 11 meses de bônus. Você entra pra fazer 42 dias e fica um ano inteiro com tudo na mão.',
+      'No aplicativo do desafio tem uma área própria para tirar dúvidas, postar suas evoluções, trocar aquela ideia maneira e muito mais.',
     largo: true,
   },
 ];
@@ -275,13 +288,14 @@ export const expert = {
   antesTitulo: 'ANTES',
   antes: ['Zuado pela magreza', 'Fraco mentalmente', 'Preguiçoso'],
   hojeTitulo: 'HOJE',
-  hoje: ['Corpo forte e estético', 'Referência de shape pra milhares', 'Produtivo e focado'],
+  hoje: ['Corpo forte e estético', 'Referência de shape p/ milhares de pessoas', 'Produtivo e focado'],
   historia: [
-    'Eu me chamo Igor Correa. Sempre fui sacaneado por colegas de clube, de escola e até no trabalho por ser magro demais, preguiçoso e sem comprometimento.',
-    'Eu nunca gostei de ouvir essas palavras, e mesmo com todas as minhas dificuldades eu sempre soube que isso não fazia parte da minha identidade. Não era quem eu sabia que seria.',
-    'Essas críticas me levaram a tomar as ações que mudaram a minha vida para sempre: entrei na academia, comecei a levar os estudos em nutrição e educação física a sério e desenvolvi uma mentalidade mais organizada e blindada.',
-    'Hoje eu crio conteúdo exatamente sobre o que mais estudei e impacto todos os meses mais de 1 milhão de pessoas a saírem da inércia, buscarem o seu melhor físico e a vida que merecem viver.',
-    'O Desafio Abdômen Insano de 42 dias foi idealizado pra que você dê o primeiro passo e sinta os primeiros resultados de uma vida incrível, através da mudança de pequenas ações no seu dia a dia.',
+    'Eu me chamo Igor Correa,',
+    'E sempre fui sacaneado por colegas de clube, escola e até mesmo no trabalho por ser magro demais, preguiçoso, e até sem comprometimento.',
+    'Eu nunca gostei de ouvir essas palavras, e mesmo com todas as minhas dificuldades eu sempre soube que isso não fazia parte da minha identidade, isso não era quem eu sempre soube que seria.',
+    'Essas críticas me levaram a tomar ações que mudariam a minha vida para sempre: entrei na academia, comecei a levar meus estudos na área da nutrição e educação física à sério e desenvolvi uma mentalidade mais organizada e blindada.',
+    'Hoje, eu crio conteúdo nas minhas redes sociais exatamente sobre o que eu mais estudei e impacto todos os meses mais de 1 milhão de pessoas a saírem da inércia, buscarem o seu melhor físico e a vida que elas merecem viver.',
+    'O Desafio Abdômen Insano de 42 dias foi idealizado para que você dê o primeiro passo e sinta os primeiros resultados de uma vida incrível que você pode viver através da mudança de pequenas ações no seu dia a dia.',
     'Eu acredito, de verdade, que você pode ser mais forte, mais focado e viver a vida dos seus sonhos.',
   ],
   assinatura: 'Igor Correa',
@@ -301,12 +315,12 @@ export const faq: Pergunta[] = [
       'Para homens e mulheres que buscam resultados rápidos e duradouros em emagrecimento e definição abdominal.',
   },
   {
-    pergunta: 'Sou gordão. Vou obter resultado em 42 dias?',
+    pergunta: 'Sou gordão, vou obter o resultado que espero em 42 dias?',
     resposta:
-      'Só jogo com a verdade: se você estiver muito acima do peso, vai precisar seguir o desafio por um tempo a mais. Mas relaxa, você vai se assustar. Basta seguir o plano de treinos e alimentação para alcançar o abdômen insano em pouco tempo.',
+      'Só jogo com a verdade. Se você estiver MUITO acima do peso, vai precisar seguir o desafio por um tempo a mais. Mas relaxa, você vai se assustar. Basta seguir o plano de treinos e alimentação para alcançar o abdômen insano em pouco tempo.',
   },
   {
-    pergunta: 'Eu sou o “falso magro”. Esse desafio serve pra mim?',
+    pergunta: 'Eu sou o “falso magro”, esse desafio serve pra mim?',
     resposta:
       'Sim. O Desafio Abdômen Insano foi bem desenhado pra esse público que sofre com um corpo magro de camisa, mas que sempre tem uma gordurinha ali nos flancos e no próprio abdômen.',
   },
@@ -314,12 +328,12 @@ export const faq: Pergunta[] = [
     pergunta:
       'Já fiz dieta e emagreci o rosto e os braços, mas a barriga não saiu. Por que dessa vez seria diferente?',
     resposta:
-      'Porque dieta genérica emagrece o corpo todo, mas não ataca especificamente a gordura que blinda seu abdômen. O protocolo sincroniza as três alavancas certas: ativação de core, queima calculada e déficit sob medida. A ideia não é só reduzir peso no geral, é construir músculo de verdade.',
+      'Porque dieta genérica emagrece o corpo todo, mas não ataca especificamente a gordura visceral que blinda seu abdômen. O Protocolo Seca-3 sincroniza as 3 alavancas certas, ativação de core, queima calculada e déficit sob medida. A ideia não é só reduzir peso no geral, é construir músculo de verdade.',
   },
   {
     pergunta: 'Já treino na academia. Preciso mudar meu treino todo?',
     resposta:
-      'Não, você não precisa abandonar o treino de musculação que já tem. Você só precisa seguir a parte do desafio de abdômen depois do seu treino: cardápio, especificidade pro abdômen e os cardios calculados.',
+      'Não, você não precisa abandonar o seu treino de musculação já montado. Você só precisa seguir exatamente a parte do desafio de abdômen após o seu treino de musculação (cardápio, especificidade pro abdômen e os cardios calculados).',
   },
   {
     pergunta: 'Não tenho tempo pra academia todo dia. Dá pra fazer com menos frequência?',
@@ -330,17 +344,17 @@ export const faq: Pergunta[] = [
     pergunta:
       'Não sou disciplinado. Já comecei várias coisas e não terminei. Como sei que vou concluir esse?',
     resposta:
-      'O app foi feito pra quem já falhou sozinho antes. É gamificado, tem a comunidade Antifalhas te puxando nos dias difíceis e progresso visível semana a semana. Você não depende só da sua força de vontade: o sistema não te deixa desistir.',
+      'O app foi feito pra quem já falhou sozinho antes. É gamificado, possui a comunidade Antifalhas te puxando nos dias difíceis e progresso visível semana a semana — você não depende só da sua força de vontade, o sistema não te deixa desistir.',
   },
   {
     pergunta: 'Vou precisar comprar suplemento ou algo a mais pra funcionar?',
     resposta:
-      'Não. Tudo que você precisa pra conquistar o abdômen insano já está dentro do app. Zero investimento extra.',
+      'Não. Tudo que você precisa pra conquistar o Abdômen Insano já está dentro do app. Zero investimento extra.',
   },
   {
-    pergunta: 'Definição abdominal não depende de genética?',
+    pergunta: 'Definição abdominal não depende de genética? Meu corpo consegue mudar isso?',
     resposta:
-      'A genética facilita, mas não decide sozinha. O que realmente define o abdômen é acionar as alavancas certas: ativação de core, queima calculada e déficit sob medida. Quando a metodologia é bem feita, a grande maioria consegue um ótimo resultado.',
+      'A genética facilita, mas não decide sozinha. O que realmente define o abdômen é acionar as alavancas certas. Ativação de core, queima calculada e déficit sob medida. Quando a metodologia é bem feita, a grande maioria consegue um ótimo resultado.',
   },
   {
     pergunta: 'O déficit calórico vai me deixar sem energia ou fraco no treino?',
@@ -350,7 +364,7 @@ export const faq: Pergunta[] = [
   {
     pergunta: '42 dias é pouco tempo. O resultado não vai sumir depois?',
     resposta:
-      'Não necessariamente. O desafio é o ponto de partida perfeito pra você conquistar os hábitos certos, construir um corpo mais forte e, depois dos 42 dias, sustentar o resultado que conquistou.',
+      'Não necessariamente. O desafio é o ponto de partida perfeito pra você conquistar os hábitos certos, construir um corpo mais forte e após os 42 dias conseguir sustentar o resultado que você conquistou dentro do desafio.',
   },
   {
     pergunta: 'Eu saio com amigos nos finais de semana. Isso vai atrapalhar o resultado?',
@@ -361,7 +375,7 @@ export const faq: Pergunta[] = [
 
 export const suporte = {
   titulo: 'Ficou alguma dúvida?',
-  lead: 'Fala com a nossa equipe agora mesmo — responde em minutos, durante horário comercial.',
+  lead: 'Se você ainda ficou alguma dúvida ou gostaria de falar com a nossa equipe, pode entrar em contato conosco agora mesmo.',
   linkTexto: 'Falar no WhatsApp',
   linkUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL ?? '',
   /** Fallback quando o link do WhatsApp ainda não foi configurado. */
@@ -372,7 +386,7 @@ export const suporte = {
 export const rodape = {
   navegacao: [
     { rotulo: 'Contato', href: '/contato' },
-    { rotulo: 'Política de Privacidade', href: '/privacidade' },
+    { rotulo: 'Políticas de Privacidade', href: '/privacidade' },
     { rotulo: 'Termos de Uso', href: '/termos' },
   ],
   responsaveis: 'Karla — CRN1 23440 · Gledson — CREF 015440-G/DF',

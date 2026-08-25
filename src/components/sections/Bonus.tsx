@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Reveal } from '@/components/ui/Reveal';
-import { bonus } from '@/content/desafio';
+import { bonus, bonusSecao } from '@/content/desafio';
 
 /**
  * Ícone circular de check, laranja preenchido — mesmo estilo do print de
@@ -28,7 +28,12 @@ export function Bonus() {
       <div className="wrap bonus-layout">
         <Reveal className="bonus-layout__esq">
           <h2 className="bonus-titulo">
-            Fora tudo isso, ainda preparei uns <span>bônus</span> surreais pra você:
+            {bonusSecao.titulo.split(bonusSecao.destaque).flatMap((parte, i, todos) => [
+              parte,
+              i < todos.length - 1 ? (
+                <span key={i}>{bonusSecao.destaque}</span>
+              ) : null,
+            ])}
           </h2>
 
           <ul className="bonus-lista">

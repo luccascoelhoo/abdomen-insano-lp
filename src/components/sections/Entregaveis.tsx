@@ -7,12 +7,12 @@ export function Entregaveis() {
     <section className="sec sec--dark">
       <div className="wrap entrega">
         <div>
-          <MaskTitle
-            className="d2"
-            linhas={['Depois dos', '42 dias,', 'ninguém vai', 'te reconhecer']}
-          />
+          <MaskTitle className="d2" linhas={entregaveisSecao.tituloLinhas} />
           <Reveal as="p" className="lead" delay={200}>
             {entregaveisSecao.lead}
+          </Reveal>
+          <Reveal as="p" className="lead entrega__intro" delay={260}>
+            {entregaveisSecao.intro}
           </Reveal>
         </div>
 
