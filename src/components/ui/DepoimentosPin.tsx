@@ -39,10 +39,10 @@ export function DepoimentosPin() {
       // O quanto o trilho precisa ser puxado à esquerda pra mostrar tudo:
       // largura do conteúdo menos a largura visível da janela.
       deslocamentoMax = Math.max(0, trilho.scrollWidth - window.innerWidth);
-      // A altura da section define quantos "vh de scroll" o pinning consome.
-      // Uso 1× a largura extra do trilho + 1 viewport, com um piso pra dar
-      // ~2 telas de scroll mesmo em telas grandes.
-      const altura = Math.max(window.innerHeight * 1.6, window.innerHeight + deslocamentoMax);
+      // Altura da section = 1 viewport (pinning) + a largura extra do trilho
+      // convertida em vh, sem piso adicional — evita a sobra de espaço em
+      // branco antes/depois quando o trilho é curto.
+      const altura = window.innerHeight + deslocamentoMax;
       secao.style.height = `${altura}px`;
     };
 

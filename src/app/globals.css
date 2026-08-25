@@ -101,6 +101,13 @@ p:last-child {
   font-size: clamp(2.1rem, 1rem + 4vw, 4.3rem);
   line-height: 1.06;
   font-variation-settings: "opsz" 60;
+  text-align: center;
+}
+/* Lead colado ao título de seção segue o mesmo alinhamento — centro. */
+.d2 + .lead,
+.d2 + .rv.lead {
+  text-align: center;
+  margin-inline: auto;
 }
 /* Título de bloco. */
 .d3 {
@@ -488,7 +495,11 @@ a.provoke:focus-visible {
 }
 .metodo-dark__cab {
   max-width: 720px;
-  margin-bottom: clamp(36px, 5vw, 60px);
+  margin: 0 auto clamp(36px, 5vw, 60px);
+  text-align: center;
+}
+.metodo-dark__cab .lead--claro {
+  margin-inline: auto;
 }
 /* Container envolvendo o mosaico, no mesmo padrão do card grande de
    Benefícios: paper-2 quase branco, borda sutil, cantos arredondados. */
@@ -950,6 +961,13 @@ a.provoke:focus-visible {
     grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
     align-items: start;
   }
+}
+/* No layout 2-col a lista fica ao lado do título — mantém alinhamento à esquerda
+   pra não descolar do título/lista. */
+.entrega > div > .d2,
+.entrega > div > .d2 + .lead {
+  text-align: left;
+  margin-inline: 0;
 }
 .entrega__lista {
   list-style: none;
@@ -1824,6 +1842,11 @@ a.provoke:focus-visible {
    dentro, um sticky de 100vh mantém o trilho na tela e o JS puxa
    as fotos pela esquerda enquanto o scroll avança.
    ============================================================ */
+/* Reduz o padding-block padrão do .sec — o pin já preenche a tela toda
+   e o padding só adicionava espaço em branco antes e depois do trilho. */
+.depoimentos-sec {
+  padding-block: clamp(48px, 6vw, 88px);
+}
 .dep-pin {
   /* Sem ativação do JS a section não deve ocupar altura extra — o mobile
      usa o fallback .depoimentos-mobile e nem renderiza esse trilho visível.

@@ -129,7 +129,7 @@ export const pilares: Pilar[] = [
       texto:
         'Não adianta apenas treinar, é preciso intensificar os exercícios, seguindo uma estratégia eficiente e validada.',
     },
-    foto: { src: '/img/metodo-01.jpg', alt: 'Treino abdominal em ação' },
+    foto: { src: '/img/metodo-01.jpg', alt: 'Igor Correa flexionando o bíceps em ambiente de treino' },
   },
   {
     numero: '02',
@@ -145,7 +145,7 @@ export const pilares: Pilar[] = [
     paragrafos: [
       'Você vai derreter até 3x mais gordura de forma rápida e saudável. Quando você une a tríade: treino avançado, alimentação simplificada e aeróbios funcionais e calculados, o abdômen insano não é mais um sonho distante, é uma realidade!',
     ],
-    foto: { src: '/img/metodo-03.jpg', alt: 'Corredores em pista ao amanhecer' },
+    foto: { src: '/img/metodo-03.jpg', alt: 'Igor Correa em pose de físico em ambiente de treino' },
   },
 ];
 
@@ -192,6 +192,8 @@ export const casos: Caso[] = [
   caso(5, false),
   caso(6, false),
   caso(7, false),
+  caso(8, false),
+  caso(9, false),
 ];
 
 export const beneficiosSecao = {
