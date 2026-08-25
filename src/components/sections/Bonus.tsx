@@ -60,16 +60,18 @@ export function Bonus() {
               alt="Tela do app com a divisão de treinos da semana"
               width={1080}
               height={1920}
+              quality={95}
               className="bonus-visual__mockup bonus-visual__mockup--tras"
-              sizes="(min-width: 900px) 28vw, 60vw"
+              sizes="(min-width: 900px) 320px, 60vw"
             />
             <Image
               src="/img/bonus-mockup-2.webp"
               alt="Tela inicial do app com treino do dia e hábitos"
               width={1080}
               height={1920}
+              quality={95}
               className="bonus-visual__mockup bonus-visual__mockup--frente"
-              sizes="(min-width: 900px) 28vw, 60vw"
+              sizes="(min-width: 900px) 320px, 60vw"
             />
           </div>
         </Reveal>
