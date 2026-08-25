@@ -53,7 +53,12 @@ body {
   font-size: clamp(1rem, 0.97rem + 0.22vw, 1.1rem);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* `clip` no lugar de `hidden` — sem criar scroll container que faria
+     position: sticky (usado no pin dos Depoimentos) parar de aderir. */
+  overflow-x: clip;
+}
+html {
+  overflow-x: clip;
 }
 img {
   max-width: 100%;
