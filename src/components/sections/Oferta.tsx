@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { Countdown } from '@/components/ui/Countdown';
 import { CtaButton } from '@/components/ui/CtaButton';
 import { Reveal } from '@/components/ui/Reveal';
@@ -53,16 +52,6 @@ export function Oferta() {
         </div>
 
         <Reveal className="oferta-card oferta-card--enxuto">
-          <div className="oferta-card__medalha" aria-hidden="true">
-            <div className="oferta-card__halo" />
-            <Image
-              src="/img/logo-branca.svg"
-              alt=""
-              width={110}
-              height={110}
-            />
-          </div>
-
           <div className="oferta-card__preco">
             <span className="oferta-card__preco-pequeno">Por apenas</span>
             <p className="oferta-card__preco-grande">
