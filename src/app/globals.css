@@ -1100,6 +1100,33 @@ a.provoke:focus-visible {
   width: clamp(180px, 22vw, 260px);
   height: auto;
 }
+/* Dois mockups sobrepostos formando a "composição" no bloco de bônus.
+   O de trás (Treino) aparece rotacionado à esquerda, o da frente (Home)
+   desloca pra direita cobrindo parcialmente. */
+.bonus-visual__mockup {
+  position: absolute;
+  width: clamp(180px, 24vw, 280px);
+  height: auto;
+  border-radius: 26px;
+  box-shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.55);
+}
+.bonus-visual__mockup--tras {
+  transform: translate(-22%, -6%) rotate(-8deg);
+  z-index: 1;
+}
+.bonus-visual__mockup--frente {
+  transform: translate(22%, 6%) rotate(6deg);
+  z-index: 2;
+}
+@media (max-width: 900px) {
+  .bonus-visual {
+    aspect-ratio: 1.3 / 1;
+    max-width: 520px;
+  }
+  .bonus-visual__mockup {
+    width: clamp(150px, 40vw, 220px);
+  }
+}
 
 /* ============================================================
    OFERTA — card com banner laranja + medalha + lista + preço + CTA

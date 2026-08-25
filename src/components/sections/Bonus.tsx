@@ -50,18 +50,26 @@ export function Bonus() {
           </ul>
         </Reveal>
 
-        {/* Composição visual: fundo com halo laranja + a medalha do desafio
-            como âncora do bloco. Sem mockup de app pronto, isso substitui bem
-            o print original sem virar ilustração genérica. */}
+        {/* Dois mockups do app (Treino + Home) sobrepostos, com halo laranja
+            atrás — mostra que o desafio vive dentro do aplicativo. */}
         <Reveal className="bonus-layout__dir" delay={200}>
           <div className="bonus-visual">
             <div className="bonus-visual__halo" aria-hidden="true" />
             <Image
-              src="/img/logo-branca.svg"
-              alt="Selo do Desafio Abdômen Insano"
-              width={260}
-              height={260}
-              className="bonus-visual__selo"
+              src="/img/bonus-mockup-1.webp"
+              alt="Tela do app com a divisão de treinos da semana"
+              width={1080}
+              height={1920}
+              className="bonus-visual__mockup bonus-visual__mockup--tras"
+              sizes="(min-width: 900px) 28vw, 60vw"
+            />
+            <Image
+              src="/img/bonus-mockup-2.webp"
+              alt="Tela inicial do app com treino do dia e hábitos"
+              width={1080}
+              height={1920}
+              className="bonus-visual__mockup bonus-visual__mockup--frente"
+              sizes="(min-width: 900px) 28vw, 60vw"
             />
           </div>
         </Reveal>
