@@ -561,9 +561,8 @@ a.provoke:focus-visible {
     radial-gradient(120% 80% at 30% 30%, rgba(255, 107, 0, 0.5), transparent 60%),
     linear-gradient(135deg, #f2c48a 0%, #d8cab0 100%);
 }
-.card-metodo--01 .card-metodo__foto {
-  aspect-ratio: 4 / 3;
-}
+/* Sem override: card 01 usa o mesmo aspect-ratio 16/9 dos outros cards,
+   pra que a altura da foto de treino case com a foto de alimentação. */
 .card-metodo__foto img {
   object-fit: cover;
 }

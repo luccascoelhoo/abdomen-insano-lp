@@ -123,7 +123,7 @@ export const pilares: Pilar[] = [
       texto:
         'Não adianta apenas treinar, é preciso intensificar os exercícios, seguindo uma estratégia eficiente e validada.',
     },
-    foto: { src: '/img/metodo-01.jpg', alt: 'Homem fazendo rosca com barra em ambiente de treino' },
+    foto: { src: '/img/metodo-01.jpg', alt: 'Homem fazendo elevação de pernas suspensa (abdominal) na academia' },
   },
   {
     numero: '02',
