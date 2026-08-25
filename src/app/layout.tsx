@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Anton, Inter, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Grain } from '@/components/ui/Grain';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
@@ -10,18 +10,19 @@ import { faq, marca, oferta } from '@/content/desafio';
 /**
  * SISTEMA TIPOGRÁFICO
  *
- * Anton no display: geometria condensada e bold sem os "espinhos" ópticos de
- * Big Shoulders — mesmo peso visual, menos agressivo em corpo grande.
+ * Space Grotesk no display: geométrica moderna, com peso medium/semibold
+ * suficiente pra ancorar títulos sem pesar. Menos "muro de letras" que
+ * Anton ou Big Shoulders.
  *
  * Inter carrega o texto corrido: neutro moderno, feito pra tela, com
- * excelente legibilidade em português. Também sustenta headline em bold.
+ * excelente legibilidade em português.
  *
- * JetBrains Mono na camada de dado — corpo pequeno, letra técnica, mas com
- * kerning mais generoso que Martian Mono (menos "cristal" nos cantos).
+ * JetBrains Mono na camada de dado — corpo pequeno, letra técnica, com
+ * kerning generoso.
  */
-const display = Anton({
+const display = Space_Grotesk({
   subsets: ['latin'],
-  weight: '400',
+  weight: ['500', '600', '700'],
   variable: '--font-display-src',
   display: 'swap',
 });
