@@ -50,7 +50,7 @@ export function Semanas() {
           className={i === semanas.length - 1 ? 'semana semana--fim' : 'semana'}
           key={semana.rotulo}
         >
-          <span className="semana__n">{semana.rotulo.replace('SEMANA ', '')}</span>
+          <span className="semana__n">{semana.rotulo.replace('Semana ', '')}</span>
           <h4>{semana.titulo}</h4>
           <div
             className="semana__barra"
