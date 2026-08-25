@@ -16,11 +16,6 @@ import { useEffect } from 'react';
  */
 export function SmoothScroll() {
   useEffect(() => {
-    // TESTE DE JANK — desligado unconditionally pra confirmar se o Lenis é o
-    // culpado do frame drop no trackpad. Se sim, decidir: remover de vez ou
-    // voltar com config mais leve (duration 0.8, wheelMultiplier 1.0).
-    return;
-    // eslint-disable-next-line no-unreachable
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
     if (window.innerWidth < 900) return;
@@ -31,11 +26,14 @@ export function SmoothScroll() {
 
     import('lenis').then(({ default: Lenis }) => {
       if (!ativo) return;
+      // Config leve: duration menor (0.9) e wheelMultiplier em 1.0 pra não
+      // "sentir enrolado" no trackpad. Ainda dá o deslize com amortecimento,
+      // mas sem jank de frame.
       const lenis = new Lenis({
-        duration: 1.8,
-        easing: (t: number) => 1 - Math.pow(1 - t, 4),
-        touchMultiplier: 1.3,
-        wheelMultiplier: 0.85,
+        duration: 0.9,
+        easing: (t: number) => 1 - Math.pow(1 - t, 3),
+        touchMultiplier: 1.2,
+        wheelMultiplier: 1.0,
       });
 
       const aoClicar = (evento: MouseEvent) => {

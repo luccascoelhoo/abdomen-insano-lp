@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Big_Shoulders, Hanken_Grotesk, Martian_Mono } from 'next/font/google';
+import { Anton, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Grain } from '@/components/ui/Grain';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
@@ -10,36 +10,30 @@ import { faq, marca, oferta } from '@/content/desafio';
 /**
  * SISTEMA TIPOGRÁFICO
  *
- * Big Shoulders é tipo de sinalização esportiva — condensada, feita para ser
- * lida de longe e em corpo grande. É o oposto do grotesco neutro que toda
- * página gerada por IA usa. O eixo de largura é o que dá variação de verdade:
- * ultracondensado nos números gigantes, mais aberto nos títulos de seção.
+ * Anton no display: geometria condensada e bold sem os "espinhos" ópticos de
+ * Big Shoulders — mesmo peso visual, menos agressivo em corpo grande.
  *
- * Hanken Grotesk carrega o texto corrido: humanista, com bem mais calor que
- * Inter, e aguenta parágrafo longo em português sem cansar.
+ * Inter carrega o texto corrido: neutro moderno, feito pra tela, com
+ * excelente legibilidade em português. Também sustenta headline em bold.
  *
- * Martian Mono é a camada de dado — etiqueta, número de seção, legenda.
- * Só aparece em corpo pequeno com entreletra aberta, como carimbo de ficha.
+ * JetBrains Mono na camada de dado — corpo pequeno, letra técnica, mas com
+ * kerning mais generoso que Martian Mono (menos "cristal" nos cantos).
  */
-const display = Big_Shoulders({
+const display = Anton({
   subsets: ['latin'],
-  // Sem `weight` e com o eixo declarado, o next/font entrega o arquivo
-  // VARIÁVEL. `opsz` é tamanho óptico: o desenho da letra muda entre o corpo
-  // de cartaz e o corpo de lista — a mesma família com dois comportamentos,
-  // que é a variação que faz a página parecer composta por alguém.
-  axes: ['opsz'],
+  weight: '400',
   variable: '--font-display-src',
   display: 'swap',
 });
-const corpo = Hanken_Grotesk({
+const corpo = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700', '800', '900'],
   variable: '--font-body-src',
   display: 'swap',
 });
-const dado = Martian_Mono({
+const dado = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
+  weight: ['400', '500', '700'],
   variable: '--font-mono-src',
   display: 'swap',
 });
