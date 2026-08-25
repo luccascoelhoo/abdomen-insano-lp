@@ -16,54 +16,20 @@ import { useEffect } from 'react';
  */
 export function SmoothScroll() {
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
-    if (window.innerWidth < 900) return;
-
-    let ativo = true;
-    let frame = 0;
-    let destruir: (() => void) | null = null;
-
-    import('lenis').then(({ default: Lenis }) => {
-      if (!ativo) return;
-      // Config leve: duration menor (0.9) e wheelMultiplier em 1.0 pra não
-      // "sentir enrolado" no trackpad. Ainda dá o deslize com amortecimento,
-      // mas sem jank de frame.
-      const lenis = new Lenis({
-        duration: 0.9,
-        easing: (t: number) => 1 - Math.pow(1 - t, 3),
-        touchMultiplier: 1.2,
-        wheelMultiplier: 1.0,
-      });
-
-      const aoClicar = (evento: MouseEvent) => {
-        const alvo = (evento.target as HTMLElement | null)?.closest('a[href^="#"]');
-        if (!alvo) return;
-        const id = alvo.getAttribute('href');
-        if (!id || id === '#') return;
-        const destino = document.querySelector(id);
-        if (!destino) return;
-        evento.preventDefault();
-        lenis.scrollTo(destino as HTMLElement, { offset: -20, duration: 1.4 });
-      };
-      document.addEventListener('click', aoClicar);
-
-      const loop = (tempo: number) => {
-        lenis.raf(tempo);
-        frame = requestAnimationFrame(loop);
-      };
-      frame = requestAnimationFrame(loop);
-
-      destruir = () => {
-        document.removeEventListener('click', aoClicar);
-        cancelAnimationFrame(frame);
-        lenis.destroy();
-      };
-    });
-
+    // Rolagem suave nativa via CSS. Lenis foi removido porque conflita com o
+    // pin horizontal dos Depoimentos (o listener de window.scroll do pin
+    // recebia posições dessincronizadas do scroll virtual do Lenis).
+    // Modernos navegadores (>= 2020) já dão inércia de trackpad/mouse boa
+    // o suficiente sem lib extra.
+    const html = document.documentElement;
+    const anterior = html.style.scrollBehavior;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      html.style.scrollBehavior = 'auto';
+    } else {
+      html.style.scrollBehavior = 'smooth';
+    }
     return () => {
-      ativo = false;
-      destruir?.();
+      html.style.scrollBehavior = anterior;
     };
   }, []);
 

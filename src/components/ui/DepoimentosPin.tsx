@@ -39,10 +39,12 @@ export function DepoimentosPin() {
       // O quanto o trilho precisa ser puxado à esquerda pra mostrar tudo:
       // largura do conteúdo menos a largura visível da janela.
       deslocamentoMax = Math.max(0, trilho.scrollWidth - window.innerWidth);
-      // Altura da section = 1 viewport (pinning) + a largura extra do trilho
-      // convertida em vh, sem piso adicional — evita a sobra de espaço em
-      // branco antes/depois quando o trilho é curto.
-      const altura = window.innerHeight + deslocamentoMax;
+      // Altura da section = 1 viewport (pinning) + a largura extra do trilho.
+      // Piso mínimo de 0.6 viewport de scroll extra pra sempre haver room
+      // pro pin animar — em tela ultrawide sem esse piso a section virava
+      // altura = viewport → alturaUtil=0 → pin nunca ativa em alguns setups.
+      const extra = Math.max(window.innerHeight * 0.6, deslocamentoMax);
+      const altura = window.innerHeight + extra;
       secao.style.height = `${altura}px`;
     };
 
@@ -66,6 +68,31 @@ export function DepoimentosPin() {
     medir();
     aplicar();
 
+    // Re-medir depois que as imagens carregam — antes disso o scrollWidth
+    // reflete só o skeleton do Image do Next e o pin sub-dimensiona a altura.
+    const imgs = Array.from(trilho.querySelectorAll('img'));
+    let carregadas = 0;
+    imgs.forEach((img) => {
+      if (img.complete) {
+        carregadas++;
+      } else {
+        img.addEventListener(
+          'load',
+          () => {
+            carregadas++;
+            medir();
+            aplicar();
+          },
+          { once: true },
+        );
+      }
+    });
+    // Fallback: mede de novo depois de 800ms independente de imagem.
+    const reajuste = window.setTimeout(() => {
+      medir();
+      aplicar();
+    }, 800);
+
     // Pausa o listener de scroll fora do viewport — poupa main thread.
     const io = new IntersectionObserver(
       ([entrada]) => {
@@ -76,13 +103,17 @@ export function DepoimentosPin() {
     );
     io.observe(secao);
 
-    window.addEventListener('scroll', agendar, { passive: true });
-    window.addEventListener('resize', () => {
+    const aoRedimensionar = () => {
       medir();
-      agendar();
-    });
+      aplicar();
+    };
+
+    window.addEventListener('scroll', agendar, { passive: true });
+    window.addEventListener('resize', aoRedimensionar);
     return () => {
       window.removeEventListener('scroll', agendar);
+      window.removeEventListener('resize', aoRedimensionar);
+      window.clearTimeout(reajuste);
       io.disconnect();
       if (pedido) cancelAnimationFrame(pedido);
       secao.classList.remove('dep-pin--ativo');
