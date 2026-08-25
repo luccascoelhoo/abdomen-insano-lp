@@ -49,26 +49,8 @@ export const oferta = {
   reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$42.',
   fecho: 'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida.',
   fechoDestaque: 'Vamos destravar uma vida épica, estética, equilibrada e livre.',
-  tituloAcesso: 'Desbloqueie o seu acesso:',
   tempoLimitado: 'Oferta por tempo limitado.',
 } as const;
-
-/**
- * Lista de itens dentro do card da Oferta — o "o que você recebe".
- * Copia adaptada do print da página modelo, com os itens que realmente
- * fazem parte do desafio hoje.
- */
-export const ofertaItens: string[] = [
-  'Novos treinos de abdômen todo mês',
-  'Cardápios alimentares simplificados',
-  'Trilha completa dos 42 dias',
-  'O elemento fundamental (tríade que derrete até 3x mais gordura)',
-  'Treinos dos maiores fisiculturistas naturais',
-  'Grupo VIP no WhatsApp',
-  'Protocolo de sono e recuperação dos atletas',
-  'Guia "Sobrevivência Social" (happy hour, churrasco, rodízio)',
-  '1 ano completo de acesso ao app',
-];
 
 /**
  * Selos de garantia embaixo do card da Oferta — mesma tríade do print.

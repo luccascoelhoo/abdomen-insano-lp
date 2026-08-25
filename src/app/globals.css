@@ -1183,6 +1183,18 @@ a.provoke:focus-visible {
   position: relative;
   margin: clamp(28px, 3vw, 42px) 0 clamp(24px, 2.6vw, 34px);
 }
+/* Variante enxuta: sem lista, com medalha centralizada. Segue a copy
+   oficial (Oferta = narrativa + preço + CTA, sem listagem). */
+.oferta-card--enxuto {
+  text-align: center;
+}
+.oferta-card--enxuto .oferta-card__medalha {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  margin: 0 auto clamp(18px, 2vw, 24px);
+}
 .oferta-card__medalha {
   position: absolute;
   top: 50%;

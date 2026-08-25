@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { Countdown } from '@/components/ui/Countdown';
 import { CtaButton } from '@/components/ui/CtaButton';
 import { Reveal } from '@/components/ui/Reveal';
-import { oferta, ofertaGarantias, ofertaItens } from '@/content/desafio';
+import { oferta, ofertaGarantias } from '@/content/desafio';
 
 /**
  * Ícones inline pras 3 garantias embaixo do card. Traço laranja, sem lib.
@@ -52,42 +52,24 @@ export function Oferta() {
           </Reveal>
         </div>
 
-        <Reveal className="oferta-card">
-          <header className="oferta-card__header">
-            <div className="oferta-card__medalha" aria-hidden="true">
-              <div className="oferta-card__halo" />
-              <Image
-                src="/img/logo-branca.svg"
-                alt=""
-                width={110}
-                height={110}
-              />
-            </div>
-            <div className="oferta-card__banner">
-              <span className="oferta-card__banner-check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12l4 4 10-10" />
-                </svg>
-              </span>
-              <h2>{oferta.tituloAcesso}</h2>
-            </div>
-          </header>
-
-          <ul className="oferta-card__lista">
-            {ofertaItens.map((item, i) => (
-              <Reveal as="li" key={item} delay={80 + i * 40}>
-                {item}
-              </Reveal>
-            ))}
-          </ul>
+        <Reveal className="oferta-card oferta-card--enxuto">
+          <div className="oferta-card__medalha" aria-hidden="true">
+            <div className="oferta-card__halo" />
+            <Image
+              src="/img/logo-branca.svg"
+              alt=""
+              width={110}
+              height={110}
+            />
+          </div>
 
           <div className="oferta-card__preco">
             <span className="oferta-card__preco-pequeno">Por apenas</span>
             <p className="oferta-card__preco-grande">
-              R$1<i>/dia</i>
+              R${oferta.precoNumero}<i>,00</i>
             </p>
             <span className="oferta-card__preco-obs">
-              R${oferta.precoNumero} · pagamento único
+              equivale a R$1 por dia · pagamento único
             </span>
           </div>
 
