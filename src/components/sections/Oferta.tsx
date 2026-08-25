@@ -21,8 +21,9 @@ const ICONE_GARANTIA = {
   ),
   garantia: (
     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M16 3l3 3 4-1 1 4 3 3-3 3 1 4-4 1-3 3-3-3-4 1-1-4-3-3 3-3-1-4 4-1z" />
-      <path d="M12 16l3 3 6-7" />
+      <circle cx="16" cy="14" r="9" />
+      <path d="M11 14l3.5 3.5L21 11" />
+      <path d="M11 22l-2 6 7-3 7 3-2-6" />
     </svg>
   ),
 } as const;
