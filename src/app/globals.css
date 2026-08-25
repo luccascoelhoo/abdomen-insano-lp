@@ -1140,7 +1140,7 @@ a.provoke:focus-visible {
 .oferta-narrativa {
   max-width: 720px;
   margin: 0 auto clamp(28px, 3.4vw, 44px);
-  text-align: left;
+  text-align: center;
   color: var(--paper);
 }
 .oferta-narrativa > * {
