@@ -43,8 +43,15 @@ export const oferta = {
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
   ctaTexto: 'Aceito o desafio!',
   provocacao: 'Você aceita o desafio?',
-  intro:
-    'Na boa? Eu poderia cobrar caro por esse desafio, porque ele funciona! Mas não vou cobrar caro. Você vai botar o abdômen trincado e sentir a autoconfiança dos deuses.',
+  /** Hierarquia da narrativa (referência página modelo): pergunta pequena
+   *  com destaques laranja → headline gigante com final em laranja →
+   *  chamada uppercase → parágrafos plain. Cada campo mapeia direto pra
+   *  um bloco na Oferta.tsx. */
+  perguntaAntes: 'E na boa?',
+  perguntaMeio: ' Eu poderia cobrar caro por esse desafio, porque ele funciona! ',
+  perguntaDepois: 'Mas não vou cobrar caro.',
+  promessaAntes: 'Você vai botar o abdômen trincado e ',
+  promessaDestaque: 'sentir a autoconfiança dos deuses…',
   destaque: 'POR APENAS 1 REAL POR DIA.',
   reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$42.',
   fecho: 'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida.',

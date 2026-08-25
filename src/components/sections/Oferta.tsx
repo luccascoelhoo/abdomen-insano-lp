@@ -31,22 +31,32 @@ export function Oferta() {
   return (
     <section className="sec sec--dark" id="oferta">
       <div className="wrap">
-        {/* Narrativa que abre a oferta — bate com a copy oficial: convite direto
-            + promessa em 1 real/dia antes do card do checkout. */}
+        {/* Narrativa que abre a oferta — hierarquia visual referência do
+            print da página modelo. Alinhamento à esquerda, com destaques
+            laranja pontuais e a "promessa" em fonte gigante. */}
         <div className="oferta-narrativa">
-          <Reveal as="p" className="oferta-narrativa__intro">
-            {oferta.intro}
+          <Reveal as="p" className="oferta-narrativa__pergunta">
+            <span className="oferta-narrativa__hl">{oferta.perguntaAntes}</span>
+            {oferta.perguntaMeio}
+            <span className="oferta-narrativa__hl">{oferta.perguntaDepois}</span>
           </Reveal>
-          <Reveal as="p" className="oferta-narrativa__destaque" delay={120}>
+
+          <Reveal as="p" className="oferta-narrativa__promessa" delay={120}>
+            {oferta.promessaAntes}
+            <span className="oferta-narrativa__hl">{oferta.promessaDestaque}</span>
+          </Reveal>
+
+          <Reveal as="p" className="oferta-narrativa__destaque" delay={200}>
             {oferta.destaque}
           </Reveal>
-          <Reveal as="p" className="oferta-narrativa__reforco" delay={180}>
+
+          <Reveal as="p" className="oferta-narrativa__paragrafo" delay={260}>
             {oferta.reforco}
           </Reveal>
-          <Reveal as="p" className="oferta-narrativa__fecho" delay={240}>
+          <Reveal as="p" className="oferta-narrativa__paragrafo" delay={320}>
             {oferta.fecho}
           </Reveal>
-          <Reveal as="p" className="oferta-narrativa__mote" delay={300}>
+          <Reveal as="p" className="oferta-narrativa__paragrafo" delay={380}>
             {oferta.fechoDestaque}
           </Reveal>
         </div>

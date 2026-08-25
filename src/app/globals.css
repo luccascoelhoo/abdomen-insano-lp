@@ -1131,40 +1131,58 @@ a.provoke:focus-visible {
    OFERTA — card com banner laranja + medalha + lista + preço + CTA
    Estrutura inspirada no print da página modelo.
    ============================================================ */
-/* Narrativa antes do card: intro em texto corrido → destaque gigante em
-   laranja → reforço → fecho → mote em orange. Copy oficial. */
+/* Narrativa antes do card. Hierarquia (referência página modelo):
+   1. pergunta pequena, alinhada à esquerda, com destaques laranja pontuais
+   2. promessa gigante em bold display, com o final em laranja
+   3. chamada "POR APENAS 1 REAL POR DIA." uppercase menor
+   4. parágrafos regulares
+   Tudo alinhado à esquerda, ocupando ~720px. */
 .oferta-narrativa {
-  max-width: 640px;
+  max-width: 720px;
   margin: 0 auto clamp(28px, 3.4vw, 44px);
-  text-align: center;
-  color: rgba(241, 238, 231, 0.9);
+  text-align: left;
+  color: var(--paper);
 }
 .oferta-narrativa > * {
-  margin: 0 0 clamp(10px, 1.2vw, 16px);
+  margin: 0 0 clamp(14px, 1.6vw, 22px);
 }
-.oferta-narrativa__intro,
-.oferta-narrativa__reforco,
-.oferta-narrativa__fecho {
-  font-size: clamp(0.98rem, 0.9rem + 0.4vw, 1.15rem);
-  line-height: 1.55;
+.oferta-narrativa__hl {
+  color: var(--orange);
+  font-weight: 700;
 }
-.oferta-narrativa__destaque {
+.oferta-narrativa__pergunta {
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+  line-height: 1.5;
+  color: rgba(241, 238, 231, 0.92);
+}
+.oferta-narrativa__promessa {
   font-family: var(--font-display);
   font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  font-size: clamp(1.7rem, 1rem + 3vw, 2.9rem);
-  color: var(--orange);
-  margin-top: clamp(16px, 2vw, 24px);
-}
-.oferta-narrativa__mote {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: none;
-  font-size: clamp(1.05rem, 0.9rem + 0.9vw, 1.35rem);
+  font-variation-settings: "opsz" 60;
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+  font-size: clamp(1.9rem, 1.2rem + 3.2vw, 3.2rem);
   color: var(--paper);
-  margin-top: clamp(6px, 0.8vw, 10px);
+  text-transform: none;
+  margin-top: clamp(8px, 1vw, 14px);
+}
+.oferta-narrativa__promessa .oferta-narrativa__hl {
+  font-weight: 900;
+}
+.oferta-narrativa__destaque {
+  font-family: var(--font-body);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+  color: var(--paper);
+  margin-top: clamp(16px, 2vw, 26px);
+}
+.oferta-narrativa__paragrafo {
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.15rem);
+  line-height: 1.55;
+  color: rgba(241, 238, 231, 0.9);
 }
 .oferta-card {
   position: relative;
