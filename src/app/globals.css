@@ -1690,47 +1690,88 @@ a.provoke:focus-visible {
    SUPORTE E RODAPÉ
    ============================================================ */
 .suporte {
-  text-align: center;
+  background: var(--ink);
+  color: var(--paper);
 }
-.suporte .lead {
-  margin-inline: auto;
+/* Card escuro com borda laranja fina, ícone WhatsApp em marca d'água à
+   direita e botão verde (canal WhatsApp) no destaque. Referência: print
+   enviado no WhatsApp. */
+.suporte-card {
+  position: relative;
+  overflow: hidden;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(28px, 3.4vw, 44px) clamp(24px, 3vw, 40px);
+  background: #0e0705;
+  border: 1px solid rgba(255, 107, 0, 0.55);
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(16px, 2vw, 28px);
+}
+.suporte-card__conteudo {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: clamp(18px, 2vw, 26px);
+  justify-items: start;
+  text-align: left;
+}
+.suporte-card__texto {
+  margin: 0;
+  color: var(--paper);
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem);
+  line-height: 1.5;
   max-width: 34ch;
 }
-.suporte .rotulo {
-  justify-content: center;
-}
-.link-suporte {
-  display: inline-block;
-  margin-top: 26px;
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  border-bottom: 2px solid var(--orange);
-  text-decoration: none;
-  padding-bottom: 6px;
-  transition: color 0.25s ease;
-}
-.link-suporte:hover {
+.suporte-card__texto span {
   color: var(--orange);
+  font-weight: 600;
 }
-.link-suporte--email {
+.suporte-card__cta {
   display: inline-flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
   padding: 14px 28px;
-  border: 1.5px solid var(--line);
-  border-bottom-width: 2px;
-  border-bottom-color: var(--orange);
-  background: #fff;
-}
-.link-suporte--email span {
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: none;
-  color: var(--muted);
+  background: #22c55e;
+  color: #fff;
   font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.98rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.22s ease, transform 0.22s ease;
+  box-shadow: 0 10px 20px -10px rgba(34, 197, 94, 0.6);
+}
+.suporte-card__cta:hover {
+  background: #1eae52;
+  transform: translateY(-1px);
+}
+.suporte-card__marca {
+  position: relative;
+  z-index: 1;
+  color: rgba(241, 238, 231, 0.06);
+  width: clamp(120px, 18vw, 200px);
+  height: clamp(120px, 18vw, 200px);
+  flex-shrink: 0;
+}
+.suporte-card__marca svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@media (max-width: 640px) {
+  .suporte-card {
+    grid-template-columns: 1fr;
+  }
+  .suporte-card__marca {
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    width: 160px;
+    height: 160px;
+  }
 }
 
 .footer {

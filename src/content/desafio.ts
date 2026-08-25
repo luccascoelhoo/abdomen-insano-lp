@@ -357,8 +357,11 @@ export const faq: Pergunta[] = [
 
 export const suporte = {
   titulo: 'Ficou alguma dúvida?',
-  lead: 'Se você ainda ficou alguma dúvida ou gostaria de falar com a nossa equipe, pode entrar em contato conosco agora mesmo.',
-  linkTexto: 'Falar no WhatsApp',
+  /** Dividido em duas partes pra permitir highlight laranja na segunda. */
+  leadAntes:
+    'Caso tenha ficado qualquer dúvida sobre o desafio, ou gostaria de falar com a nossa equipe, ',
+  leadDestaque: 'entre em contato conosco agora mesmo.',
+  linkTexto: 'Chamar o Suporte!',
   linkUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL ?? '',
   /** Fallback quando o link do WhatsApp ainda não foi configurado. */
   emailContato: process.env.NEXT_PUBLIC_EMAIL_SUPORTE ?? 'suporte@desafioabdomeninsano.com.br',
