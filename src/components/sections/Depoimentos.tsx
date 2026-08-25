@@ -11,7 +11,7 @@ export function Depoimentos() {
     <section className="sec depoimentos-sec">
       <div className="wrap">
         <MaskTitle className="d2" linhas={depoimentos.tituloLinhas} />
-        <Reveal as="p" className="lead" delay={180}>
+        <Reveal as="p" className="lead depoimentos-lead" delay={180}>
           {depoimentos.lead}
         </Reveal>
       </div>

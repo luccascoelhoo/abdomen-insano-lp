@@ -1969,6 +1969,11 @@ a.provoke:focus-visible {
 .depoimentos-sec {
   padding-block: clamp(48px, 6vw, 88px);
 }
+/* "Você é o próximo!" — destaque laranja, mesma dimensão de lead. */
+.depoimentos-lead {
+  color: var(--orange);
+  font-weight: 700;
+}
 .dep-pin {
   /* Sem ativação do JS a section não deve ocupar altura extra — o mobile
      usa o fallback .depoimentos-mobile e nem renderiza esse trilho visível.
