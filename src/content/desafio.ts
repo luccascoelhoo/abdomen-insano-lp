@@ -223,7 +223,7 @@ export const beneficios: Beneficio[] = [
 ];
 
 export const entregaveisSecao = {
-  tituloLinhas: ['Depois dos 42 dias', 'no desafio, ninguém', 'vai te reconhecer!'],
+  tituloLinhas: ['Depois dos primeiros 42 dias no desafio,', 'ninguém vai te reconhecer!'],
   lead: 'A galera vai te respeitar muito mais, tu vai se tornar referência pros seus amigos, acredite: o abdômen insano muda tudo.',
   intro: 'Ao garantir sua vaga no desafio Abdômen Insano você recebe:',
 } as const;
