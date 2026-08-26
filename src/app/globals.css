@@ -1405,7 +1405,11 @@ a.provoke:focus-visible {
 }
 @media (max-width: 640px) {
   .oferta-garantias {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 12px;
+  }
+  .oferta-garantia:nth-child(3) {
+    grid-column: 1 / -1;
   }
 }
 .oferta-garantia {
