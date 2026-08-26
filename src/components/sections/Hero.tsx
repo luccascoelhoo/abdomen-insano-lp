@@ -45,13 +45,10 @@ export function Hero() {
             className="d1"
             linhas={hero.tituloLinhas}
             classesLinha={[
-              'linha',
-              'linha',
-              'linha',
-              'linha',
               'linha linha--2',
               'linha linha--2',
-              'linha linha--2',
+              'linha',
+              'linha',
             ]}
           />
 
