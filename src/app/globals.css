@@ -1971,7 +1971,8 @@ a.provoke:focus-visible {
 /* "Você é o próximo!" — destaque laranja, mesma dimensão de lead. */
 .depoimentos-lead {
   color: var(--orange);
-  font-weight: 700;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 1.4rem + 1.5vw, 2.4rem);
 }
 .dep-pin {
   /* Sem ativação do JS a section não deve ocupar altura extra — o mobile

@@ -233,7 +233,7 @@ export const entregaveis: string[] = [
   'Trilha de Treinos',
   'Cardápios Simplificados para Dieta',
   'O Elemento Fundamental',
-  'Grupo VIP no WhatsApp',
+  'Comunidade vip no app',
 ];
 
 export const bonusSecao = {
