@@ -42,7 +42,7 @@ export const oferta = {
   precoDia: 'Por apenas R$1/dia',
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
   ctaTexto: 'Aceito o desafio!',
-  provocacao: 'Você aceita o desafio?',
+  provocacao: 'Aceita o desafio?',
   /** Hierarquia da narrativa (referência página modelo): pergunta pequena
    *  com destaques laranja → headline gigante com final em laranja →
    *  chamada uppercase → parágrafos plain. Cada campo mapeia direto pra
@@ -98,18 +98,15 @@ export const hero = {
    *  em 42 dias, com destaque cromático nas duas últimas linhas ("abdômen
    *  trincado, estético e seco em 42 dias") via classesLinha. */
   tituloLinhas: [
-    'Assista ao vídeo',
-    'e descubra como',
-    'jovens homens comuns',
-    'estão conquistando',
+    'Conquiste',
     'um abdômen trincado,',
     'estético e seco',
-    'em 42 dias.',
+    'com o desafio abdômen insano.',
   ],
-  subAntes: 'Seus amigos não vão entender nada. Você vai eliminar ',
+  subAntes: 'Em 42 dias seus amigos não vão entender nada. Você vai eliminar ',
   subDestaque: 'essa gordura chata do abdômen',
   subDepois: ', conquistar os gomos definidos e uma postura de respeito!',
-  provocacaoAntes: 'Você aceita ',
+  provocacaoAntes: 'Aceita ',
   provocacaoDestaque: 'o desafio?',
 } as const;
 
