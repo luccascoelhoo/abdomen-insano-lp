@@ -25,8 +25,9 @@ export function SmoothScroll() {
 
     const lenis = new Lenis({
       autoRaf: true,
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: 0.06, // Menor o valor, mais longa e "amanteigada" é a inércia (padrão é ~0.1)
+      wheelMultiplier: 0.8, // Diminui de leve o passo do scroll pra dar peso
+      smoothWheel: true,
     });
 
     return () => {
