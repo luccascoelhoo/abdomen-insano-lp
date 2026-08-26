@@ -27,9 +27,10 @@ export function DepoimentosPin() {
     const trilho = trilhoRef.current;
     if (!secao || !trilho) return;
 
-    // Desliga em mobile / reduced-motion / viewport apertado — layout stack
+    // Desliga em mobile / viewport apertado — layout stack
     // nativo continua funcionando.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // (A checagem de prefers-reduced-motion foi removida para forçar a
+    // funcionalidade do pin em todos os computadores desktop).
     if (window.matchMedia('(max-width: 899px)').matches) return;
 
     secao.classList.add('dep-pin--ativo');

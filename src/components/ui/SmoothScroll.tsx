@@ -14,22 +14,23 @@ import { useEffect } from 'react';
  * pode brigar com o momentum do dedo. Por isso o import é dinâmico e a
  * biblioteca só desce pra máquinas com hover/mouse.
  */
+import Lenis from 'lenis';
+
 export function SmoothScroll() {
   useEffect(() => {
-    // Rolagem suave nativa via CSS. Lenis foi removido porque conflita com o
-    // pin horizontal dos Depoimentos (o listener de window.scroll do pin
-    // recebia posições dessincronizadas do scroll virtual do Lenis).
-    // Modernos navegadores (>= 2020) já dão inércia de trackpad/mouse boa
-    // o suficiente sem lib extra.
-    const html = document.documentElement;
-    const anterior = html.style.scrollBehavior;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      html.style.scrollBehavior = 'auto';
-    } else {
-      html.style.scrollBehavior = 'smooth';
-    }
+    // A pedido do usuário, estamos voltando com o Lenis para dar aquela
+    // suavidade premium no scroll do desktop.
+    if (window.matchMedia('(max-width: 899px)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const lenis = new Lenis({
+      autoRaf: true,
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+
     return () => {
-      html.style.scrollBehavior = anterior;
+      lenis.destroy();
     };
   }, []);
 
