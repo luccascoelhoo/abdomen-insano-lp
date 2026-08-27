@@ -184,7 +184,13 @@ const caso = (n: number, feminino: boolean): Caso => {
 
 export const casos: Caso[] = [
   caso(1, false),
-  caso(2, false),
+  {
+    arquivo: '/img/caso-02.png',
+    alt: 'Aluno do desafio antes e depois',
+    legenda: 'Aluno do desafio',
+    width: 1000,
+    height: 1000,
+  },
   caso(3, false),
   caso(4, false),
   caso(5, false),
