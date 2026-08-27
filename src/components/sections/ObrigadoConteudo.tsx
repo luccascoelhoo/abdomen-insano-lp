@@ -74,7 +74,7 @@ export function ObrigadoConteudo({
               </div>
               <h2 className="text-2xl font-bold mb-3">Baixe o aplicativo</h2>
               <p className="text-gray-400 leading-relaxed mb-8">
-                Acesse a loja de aplicativos do seu celular agora mesmo, pelo link do email ou pelos botões abaixo, e faça o download do nosso app oficial.
+                Pelo link do email ou pelos botões abaixo, faça o download do nosso app oficial.
               </p>
               
               <div className="mt-auto flex flex-col gap-3">
