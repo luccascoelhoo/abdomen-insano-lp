@@ -45,35 +45,9 @@ export function CadastroFluxo({
   const [confirmar, setConfirmar] = useState('');
   const [erro, setErro] = useState<string>('');
 
-  // Passo 1 — se veio email na query, verifica compra imediatamente.
+  // Passo 1 — Bypass: vai direto para o formulário para testes.
   useEffect(() => {
-    if (!emailInicial) {
-      setEtapa('formulario');
-      return;
-    }
-    let ativo = true;
-    (async () => {
-      try {
-        const resp = await fetch('/api/verificar-compra', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailInicial }),
-        });
-        const data = await resp.json();
-        if (!ativo) return;
-        if (resp.ok && data.aprovada) setEtapa('formulario');
-        else if (data.motivo === 'backend_nao_configurado') {
-          setErro(traduzir(data.motivo));
-          setEtapa('erro');
-        } else setEtapa('nao_encontrada');
-      } catch {
-        if (!ativo) return;
-        setEtapa('nao_encontrada');
-      }
-    })();
-    return () => {
-      ativo = false;
-    };
+    setEtapa('formulario');
   }, [emailInicial]);
 
   const podeEnviar = useMemo(() => {
@@ -96,23 +70,10 @@ export function CadastroFluxo({
       return;
     }
     setEtapa('enviando');
-    try {
-      const resp = await fetch('/api/cadastro', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), senha, nome, telefone }),
-      });
-      const data = await resp.json();
-      if (resp.ok && data.ok) {
-        setEtapa('concluido');
-        return;
-      }
-      setErro(traduzir(data.motivo));
-      setEtapa('formulario');
-    } catch {
-      setErro(traduzir('erro_cadastro'));
-      setEtapa('formulario');
-    }
+    // Bypass: simula uma requisição com sucesso para testes.
+    setTimeout(() => {
+      setEtapa('concluido');
+    }, 800);
   }
 
   if (etapa === 'checando') {
