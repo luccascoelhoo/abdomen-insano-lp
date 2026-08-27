@@ -104,16 +104,16 @@ export function ObrigadoConteudo({
               <div className="w-12 h-12 bg-[#ff6b00]/10 border border-[#ff6b00]/30 rounded-full flex items-center justify-center mb-6">
                 <span className="text-[#ff6b00] font-black text-xl">3</span>
               </div>
-              <h2 className="text-2xl font-bold mb-3">Cadastre-se no App</h2>
+              <h2 className="text-2xl font-bold mb-3">Conclua o cadastro</h2>
               <p className="text-gray-400 leading-relaxed mb-6">
-                Abra o aplicativo que você baixou e clique em <b>Criar Conta</b> para gerar a sua senha de acesso.
+                Abra o aplicativo que você baixou. Você irá concluir o seu cadastro de acesso diretamente por lá, dentro do próprio aplicativo.
               </p>
               
               <div className="mt-auto flex flex-col gap-2">
                 <div className="flex items-start gap-3 text-xs text-gray-400 bg-black/50 p-4 rounded-xl border border-gray-800/50">
                   <AlertCircle className="w-5 h-5 text-[#ff6b00] flex-shrink-0" />
                   <p>
-                    <b>Muito Importante:</b> Cadastre-se usando exatamente o mesmo email da compra para liberar o acesso.
+                    <b>Muito Importante:</b> Use exatamente o mesmo email da compra para liberar o acesso.
                   </p>
                 </div>
                 {emailQuery && (
