@@ -1,8 +1,9 @@
 'use client';
 
 import { use } from 'react';
+import { CheckCircle2, Mail, AlertCircle, Smartphone, UserPlus } from 'lucide-react';
 import { linksApp } from '@/lib/apps';
-import { CheckCircle2, Mail, AlertCircle, Smartphone, Download, UserPlus } from 'lucide-react';
+import { AppleIcon, PlayStoreIcon } from '@/components/ui/StoreIcons';
 
 type QueryParams = { email?: string; transaction_id?: string; tx?: string };
 
@@ -81,14 +82,14 @@ export function ObrigadoConteudo({
                   href={temApple ? linksApp.appStore : '#'}
                   className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-900 border border-gray-800 rounded-xl py-3 transition-all"
                 >
-                  <Download className="w-5 h-5 text-white" />
+                  <AppleIcon className="w-5 h-5 text-white" />
                   <span className="font-bold">App Store</span>
                 </a>
                 <a
                   href={temGoogle ? linksApp.playStore : '#'}
                   className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-900 border border-gray-800 rounded-xl py-3 transition-all"
                 >
-                  <Download className="w-5 h-5 text-white" />
+                  <PlayStoreIcon className="w-5 h-5 text-white" />
                   <span className="font-bold">Google Play</span>
                 </a>
               </div>

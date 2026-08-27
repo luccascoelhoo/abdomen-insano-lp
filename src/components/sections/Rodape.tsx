@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { rodape } from '@/content/desafio';
 import { linksApp } from '@/lib/apps';
-import { Download } from 'lucide-react';
+import { AppleIcon, PlayStoreIcon } from '@/components/ui/StoreIcons';
 
 export function Rodape() {
   const temApple = Boolean(linksApp.appStore);
@@ -37,7 +37,7 @@ export function Rodape() {
             href={temApple ? linksApp.appStore : '#'}
             className="flex-1 flex items-center justify-center gap-3 bg-black/50 hover:bg-[#ff6b00]/10 border border-gray-800 hover:border-[#ff6b00]/50 rounded-2xl py-4 transition-all"
           >
-            <Download className="w-6 h-6 text-white" />
+            <AppleIcon className="w-7 h-7 text-white" />
             <div className="text-left">
               <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-none mb-1">Baixar na</p>
               <p className="text-base font-bold leading-none text-white">App Store</p>
@@ -48,7 +48,7 @@ export function Rodape() {
             href={temGoogle ? linksApp.playStore : '#'}
             className="flex-1 flex items-center justify-center gap-3 bg-black/50 hover:bg-[#ff6b00]/10 border border-gray-800 hover:border-[#ff6b00]/50 rounded-2xl py-4 transition-all"
           >
-            <Download className="w-6 h-6 text-white" />
+            <PlayStoreIcon className="w-6 h-6 text-white" />
             <div className="text-left">
               <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-none mb-1">Disponível no</p>
               <p className="text-base font-bold leading-none text-white">Google Play</p>
