@@ -106,7 +106,7 @@ export function ObrigadoConteudo({
               </div>
               <h2 className="text-2xl font-bold mb-3">Conclua o cadastro</h2>
               <p className="text-gray-400 leading-relaxed mb-6">
-                Abra o aplicativo que você baixou. Você irá concluir o seu cadastro de acesso diretamente por lá, dentro do próprio aplicativo.
+                Abra o aplicativo. Você irá concluir o seu cadastro de acesso diretamente no próprio aplicativo.
               </p>
               
               <div className="mt-auto flex flex-col gap-2">
