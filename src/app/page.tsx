@@ -10,9 +10,12 @@ import { Metodo } from '@/components/sections/Metodo';
 import { Oferta } from '@/components/sections/Oferta';
 import { Rodape } from '@/components/sections/Rodape';
 import { Suporte } from '@/components/sections/Suporte';
+import { ViewContentWatcher } from '@/components/ui/ViewContentWatcher';
+import { oferta } from '@/content/desafio';
 export default function Home() {
   return (
     <>
+      <ViewContentWatcher valor={oferta.precoNumero} moeda={oferta.precoMoeda} />
       <Hero />
       <Metodo />
       <Inspira />

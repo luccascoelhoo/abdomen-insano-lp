@@ -4,6 +4,8 @@ import './globals.css';
 import { Grain } from '@/components/ui/Grain';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
+import { MetaPixel } from '@/components/ui/MetaPixel';
+import { PIXEL_ID } from '@/lib/pixel';
 import { UtmCatcher } from '@/components/ui/UtmCatcher';
 import { faq, marca, oferta } from '@/content/desafio';
 
@@ -39,7 +41,10 @@ const dado = JetBrains_Mono({
   display: 'swap',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://desafioabdomeninsano.com.br';
+// O domínio no ar é `www.abdomeninsano.com.br`. O antigo continuava como padrão,
+// e com isso `canonical`, `og:url` e `og:image` apontavam para um site que não é
+// este — preview quebrado no compartilhamento e canonical mentindo para o buscador.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.abdomeninsano.com.br';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -97,10 +102,39 @@ const jsonLd = {
   ],
 };
 
+/**
+ * Snippet base do Meta Pixel, inline no `<head>`.
+ *
+ * Só carrega a biblioteca e chama `init`. O `PageView` sai do componente
+ * `MetaPixel`, pelo helper que carimba `event_id` — o snippet oficial junta os
+ * dois na mesma linha e, com isso, o primeiro evento da página seria o único
+ * sem id.
+ */
+const pixelBase = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','${PIXEL_ID}');`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${display.variable} ${corpo.variable} ${dado.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: pixelBase }} />
+      </head>
       <body>
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
+          />
+        </noscript>
+        <MetaPixel />
         <UtmCatcher />
         <SmoothScroll />
         <ScrollProgress />

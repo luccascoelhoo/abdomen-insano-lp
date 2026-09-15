@@ -2,13 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { oferta } from '@/content/desafio';
+import { rastrear } from '@/lib/pixel';
 import { anexarParametros, lerUtm } from '@/lib/utm';
-
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-  }
-}
 
 type Props = {
   className?: string;
@@ -25,10 +20,10 @@ type Props = {
 /**
  * O botão de compra.
  *
- * Hoje dispara `InitiateCheckout` e leva ao checkout. Na Etapa 3 este é o
- * ponto onde entram os UTM/`fbclid` guardados na chegada (hoje eles morrem no
- * clique, e é por isso que não dá pra atribuir venda a criativo) e o
- * `event_id` compartilhado com a Conversions API.
+ * Dispara `InitiateCheckout` com `event_id` e leva ao checkout levando junto os
+ * UTM e o `fbclid` guardados na chegada, mais a origem do clique. O `event_id`
+ * é o que vai permitir deduplicar contra o `Purchase` server-side quando a
+ * Conversions API entrar; antes dela ele já viaja, de propósito.
  */
 export function CtaButton({
   className = 'cta',
@@ -113,9 +108,11 @@ export function CtaButton({
       rel="noopener"
       data-origem={origem}
       onClick={() => {
-        window.fbq?.('track', 'InitiateCheckout', {
+        rastrear('InitiateCheckout', {
           value: oferta.precoNumero,
           currency: oferta.precoMoeda,
+          content_name: 'Desafio Abdômen Insano',
+          origem,
         });
       }}
     >
