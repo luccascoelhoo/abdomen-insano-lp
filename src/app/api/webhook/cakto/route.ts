@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { registrarOuAtualizarCompra, type StatusCompra } from '@/lib/compra';
+import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
+import { classificarPorValor } from '@/lib/produtos';
 
 /**
  * Webhook do Cakto (postback).
@@ -15,6 +17,12 @@ import { registrarOuAtualizarCompra, type StatusCompra } from '@/lib/compra';
  *
  * O corpo esperado é o postback padrão. Como o formato exato pode mudar entre
  * versões, o parser é defensivo: aceita várias formas do mesmo campo.
+ *
+ * Duas coisas acontecem aqui, nesta ordem, e a segunda nunca derruba a primeira:
+ *   1. a compra é gravada no banco, que é o registro da casa;
+ *   2. o `Purchase` sai para o Meta pela Conversions API.
+ * Se a medição falhar, a venda continua gravada e o motivo fica no log. O
+ * contrário seria pior: perder a venda para não perder o evento.
  */
 export const runtime = 'nodejs';
 
@@ -26,10 +34,10 @@ type PayloadCakto = {
     id?: string;
     status?: string;
     amount?: number;
-    customer?: { email?: string; name?: string };
+    customer?: { email?: string; name?: string; phone?: string };
     utm?: Record<string, string>;
   };
-  customer?: { email?: string; name?: string };
+  customer?: { email?: string; name?: string; phone?: string };
   email?: string;
   amount?: number;
   id?: string;
@@ -48,6 +56,15 @@ function mapearStatus(bruto: string | undefined): StatusCompra {
 function centavos(valor: number | undefined): number {
   if (typeof valor !== 'number' || Number.isNaN(valor)) return 0;
   return valor < 1000 ? Math.round(valor * 100) : Math.round(valor);
+}
+
+/**
+ * O `event_id` da venda, compartilhado com o disparo do navegador na página de
+ * obrigado. Determinístico de propósito: dois postbacks da mesma transação
+ * produzem o mesmo id, e o Meta conta uma venda só.
+ */
+export function eventIdDaTransacao(transacaoId: string): string {
+  return `cakto:${transacaoId}`;
 }
 
 export async function POST(request: Request) {
@@ -73,10 +90,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, motivo: 'json_invalido' }, { status: 400 });
   }
 
-  const email =
-    payload.data?.customer?.email ?? payload.customer?.email ?? payload.email ?? '';
-  const transacao_id =
-    payload.data?.id ?? payload.transaction?.id ?? payload.id ?? '';
+  const cliente = payload.data?.customer ?? payload.customer;
+  const email = cliente?.email ?? payload.email ?? '';
+  const transacao_id = payload.data?.id ?? payload.transaction?.id ?? payload.id ?? '';
   const status = mapearStatus(
     payload.data?.status ?? payload.transaction?.status ?? payload.status ?? payload.event,
   );
@@ -101,9 +117,47 @@ export async function POST(request: Request) {
       valor_centavos,
       utm,
     });
-    return NextResponse.json({ ok: true });
   } catch (erro) {
     console.error('[webhook/cakto] falha ao gravar compra', erro);
     return NextResponse.json({ ok: false, motivo: 'erro_persistencia' }, { status: 500 });
   }
+
+  // Só venda aprovada vira Purchase. Pendente e estorno ficam no banco e não
+  // sobem: evento de dinheiro que não entrou infla o resultado da campanha.
+  let medicao: string = 'nao_aplicavel';
+  if (status === 'aprovada') {
+    if (!capiConfigurado()) {
+      medicao = 'capi_sem_token';
+      console.error('[webhook/cakto] venda aprovada sem META_CAPI_TOKEN — Purchase não medido', {
+        transacao_id,
+      });
+    } else {
+      const produto = classificarPorValor(valor_centavos);
+      const r = await enviarEventoCapi({
+        evento: 'Purchase',
+        eventId: eventIdDaTransacao(transacao_id),
+        email,
+        telefone: cliente?.phone,
+        nome: cliente?.name,
+        // O gateway não repassa cookie; o que sobra é o fbclid que a landing
+        // anexou ao checkout e voltou dentro do bloco de UTM.
+        fbp: utm?.fbp,
+        fbc: utm?.fbc ?? fbcDeFbclid(utm?.fbclid),
+        valor: valor_centavos / 100,
+        moeda: 'BRL',
+        urlOrigem: 'https://www.abdomeninsano.com.br/',
+        conteudo: { id: produto.id, nome: produto.nome },
+      });
+      medicao = r.ok ? `enviado:${r.eventos}` : `falhou:${r.motivo}`;
+      if (!r.ok) {
+        console.error('[webhook/cakto] Purchase não chegou ao Meta', {
+          transacao_id,
+          motivo: r.motivo,
+          detalhe: r.detalhe,
+        });
+      }
+    }
+  }
+
+  return NextResponse.json({ ok: true, medicao });
 }

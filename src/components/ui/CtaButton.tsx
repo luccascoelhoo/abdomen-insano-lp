@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { oferta } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
-import { anexarParametros, lerUtm } from '@/lib/utm';
+import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
   className?: string;
@@ -40,6 +40,7 @@ export function CtaButton({
     setHref(
       anexarParametros(oferta.checkoutUrl, {
         ...utm,
+        ...lerCookiesDoPixel(),
         redirect_url: returnUrl,
         return_url: returnUrl,
         thank_you_url: returnUrl,

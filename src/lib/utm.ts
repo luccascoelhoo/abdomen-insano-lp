@@ -42,6 +42,26 @@ export function lerUtm(): MapaUtm {
   }
 }
 
+/**
+ * Cookies que o pixel grava no navegador.
+ *
+ * `_fbp` identifica o browser e `_fbc` guarda o clique no anúncio. Eles são o
+ * que permite a Conversions API casar a venda com a pessoa que clicou, e o
+ * gateway nunca os enxerga sozinho: por isso viajam anexados ao checkout, na
+ * esperança de voltarem no postback.
+ */
+export function lerCookiesDoPixel(): { fbp?: string; fbc?: string } {
+  if (typeof document === 'undefined') return {};
+  const achar = (nome: string) =>
+    document.cookie
+      .split('; ')
+      .find((c) => c.startsWith(`${nome}=`))
+      ?.slice(nome.length + 1);
+  const fbp = achar('_fbp');
+  const fbc = achar('_fbc');
+  return { ...(fbp ? { fbp } : {}), ...(fbc ? { fbc } : {}) };
+}
+
 /** Anexa UTM + parâmetros extras a uma URL de checkout, preservando o que já existe. */
 export function anexarParametros(base: string, extras: Record<string, string>): string {
   try {
