@@ -117,13 +117,41 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','${PIXEL_ID}');`;
 
+/**
+ * Container do Google Tag Manager.
+ *
+ * Entra só agora porque, até a versão publicada em 18/09/2026, o container
+ * carregava seis tags do Facebook apontando para o pixel de outro produto —
+ * subir o snippet antes disso faria a página disparar Page View duas vezes,
+ * uma pelo código e outra pelo container, e cada visita valeria por duas.
+ * Na versão no ar aquelas seis tags estão pausadas e só o GA4 dispara, então
+ * o container e o pixel do código não se atropelam.
+ */
+const GTM_ID = 'GTM-KV4MKTXG';
+
+const gtmBase = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_ID}');`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${display.variable} ${corpo.variable} ${dado.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: pixelBase }} />
+        <script dangerouslySetInnerHTML={{ __html: gtmBase }} />
       </head>
       <body>
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+            title="Google Tag Manager"
+          />
+        </noscript>
         <noscript>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
