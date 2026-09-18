@@ -18,11 +18,20 @@ import { classificarPorValor } from '@/lib/produtos';
  * O corpo esperado é o postback padrão. Como o formato exato pode mudar entre
  * versões, o parser é defensivo: aceita várias formas do mesmo campo.
  *
- * Duas coisas acontecem aqui, nesta ordem, e a segunda nunca derruba a primeira:
- *   1. a compra é gravada no banco, que é o registro da casa;
- *   2. o `Purchase` sai para o Meta pela Conversions API.
- * Se a medição falhar, a venda continua gravada e o motivo fica no log. O
- * contrário seria pior: perder a venda para não perder o evento.
+ * Duas coisas acontecem aqui, nesta ordem, e a primeira não depende da segunda:
+ *   1. o `Purchase` sai para o Meta pela Conversions API;
+ *   2. a compra é gravada no banco, que é o registro da casa.
+ *
+ * A ordem já foi a inversa e estava errada. Gravar antes fazia a medição
+ * refém do banco: com o Supabase fora do ar, ou só sem variável configurada,
+ * a rota devolvia 500 antes de chegar ao Meta e **nenhuma venda era medida**,
+ * em toda tentativa e em toda reentrega. Campanha que não vê venda otimiza no
+ * escuro, e isso custa verba por dia.
+ *
+ * Se a gravação falhar agora, a resposta continua sendo 500 de propósito, para
+ * a Cakto reenviar e o registro não se perder. O `Purchase` sai de novo na
+ * reentrega, com o mesmo `event_id` determinístico, e o Meta deduplica. Ou
+ * seja: nenhuma das duas pontas é sacrificada pela outra.
  */
 export const runtime = 'nodejs';
 
@@ -108,20 +117,6 @@ export async function POST(request: Request) {
     );
   }
 
-  try {
-    await registrarOuAtualizarCompra({
-      email,
-      gateway: 'cakto',
-      transacao_id,
-      status,
-      valor_centavos,
-      utm,
-    });
-  } catch (erro) {
-    console.error('[webhook/cakto] falha ao gravar compra', erro);
-    return NextResponse.json({ ok: false, motivo: 'erro_persistencia' }, { status: 500 });
-  }
-
   // Só venda aprovada vira Purchase. Pendente e estorno ficam no banco e não
   // sobem: evento de dinheiro que não entrou infla o resultado da campanha.
   let medicao: string = 'nao_aplicavel';
@@ -157,6 +152,23 @@ export async function POST(request: Request) {
         });
       }
     }
+  }
+
+  try {
+    await registrarOuAtualizarCompra({
+      email,
+      gateway: 'cakto',
+      transacao_id,
+      status,
+      valor_centavos,
+      utm,
+    });
+  } catch (erro) {
+    console.error('[webhook/cakto] falha ao gravar compra', { transacao_id, medicao, erro });
+    return NextResponse.json(
+      { ok: false, motivo: 'erro_persistencia', medicao },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true, medicao });
