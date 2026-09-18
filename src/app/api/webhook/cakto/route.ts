@@ -4,6 +4,7 @@ import { registrarOuAtualizarCompra, type StatusCompra } from '@/lib/compra';
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { PIXEL_ID } from '@/lib/pixel';
 import { classificarPorValor } from '@/lib/produtos';
+import { eventIdDaTransacao, idDaTransacao } from '@/lib/transacao';
 import { supabaseConfigured } from '@/lib/supabase';
 
 /**
@@ -68,15 +69,6 @@ function mapearStatus(bruto: string | undefined): StatusCompra {
 function centavos(valor: number | undefined): number {
   if (typeof valor !== 'number' || Number.isNaN(valor)) return 0;
   return valor < 1000 ? Math.round(valor * 100) : Math.round(valor);
-}
-
-/**
- * O `event_id` da venda, compartilhado com o disparo do navegador na página de
- * obrigado. Determinístico de propósito: dois postbacks da mesma transação
- * produzem o mesmo id, e o Meta conta uma venda só.
- */
-export function eventIdDaTransacao(transacaoId: string): string {
-  return `cakto:${transacaoId}`;
 }
 
 /** O segredo pode chegar em três cabeçalhos diferentes, conforme a versão da Cakto. */
@@ -173,7 +165,14 @@ export async function POST(request: Request) {
 
   const cliente = payload.data?.customer ?? payload.customer;
   const email = cliente?.email ?? payload.email ?? '';
-  const transacao_id = payload.data?.id ?? payload.transaction?.id ?? payload.id ?? '';
+  // Varre todos os nomes que o gateway pode usar, na mesma ordem de preferência
+  // que a página de obrigado usa. Os dois lados escolhendo igual é o que faz a
+  // deduplicação funcionar sem depender de o gateway ser coerente consigo mesmo.
+  const transacao_id =
+    idDaTransacao(payload.data as Record<string, unknown>) ??
+    idDaTransacao(payload.transaction as Record<string, unknown>) ??
+    idDaTransacao(payload as Record<string, unknown>) ??
+    '';
   const status = mapearStatus(
     payload.data?.status ?? payload.transaction?.status ?? payload.status ?? payload.event,
   );
@@ -212,7 +211,13 @@ export async function POST(request: Request) {
         fbc: utm?.fbc ?? fbcDeFbclid(utm?.fbclid),
         valor: valor_centavos / 100,
         moeda: 'BRL',
-        urlOrigem: 'https://www.abdomeninsano.com.br/',
+        // A landing é a origem da jornada. Se o gateway devolver a URL real de
+        // onde a venda partiu, ela manda: gravar sempre a home é uma meia
+        // verdade que atrapalha quando existir mais de uma página de entrada.
+        urlOrigem:
+          utm?.url_origem ??
+          process.env.NEXT_PUBLIC_SITE_URL ??
+          'https://www.abdomeninsano.com.br/',
         conteudo: { id: produto.id, nome: produto.nome },
       });
       medicao = r.ok ? `enviado:${r.eventos}` : `falhou:${r.motivo}`;
