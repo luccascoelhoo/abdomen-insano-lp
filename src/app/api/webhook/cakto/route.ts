@@ -49,12 +49,22 @@ type PayloadCakto = {
     amount?: number;
     customer?: { email?: string; name?: string; phone?: string };
     utm?: Record<string, string>;
+    utm_source?: string;
+    utm_medium?: string;
+    utm_campaign?: string;
+    utm_term?: string;
+    utm_content?: string;
+    sck?: string | null;
+    fbc?: string | null;
+    fbp?: string | null;
   };
   customer?: { email?: string; name?: string; phone?: string };
   email?: string;
   amount?: number;
   id?: string;
   utm?: Record<string, string>;
+  /** O Cakto manda o segredo do webhook AQUI, no corpo — não em header. */
+  secret?: string;
 };
 
 function mapearStatus(bruto: string | undefined): StatusCompra {
@@ -152,15 +162,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, motivo: 'nao_configurado' }, { status: 503 });
   }
 
-  if (assinaturaDe(request) !== segredo) {
-    return NextResponse.json({ ok: false, motivo: 'assinatura_invalida' }, { status: 401 });
-  }
 
   let payload: PayloadCakto;
   try {
     payload = (await request.json()) as PayloadCakto;
   } catch {
     return NextResponse.json({ ok: false, motivo: 'json_invalido' }, { status: 400 });
+  }
+
+  // ⚠️ O CAKTO MANDA O SEGREDO NO CORPO, NÃO EM HEADER — medido em 18/09/2026
+  // no histórico de entregas do próprio Cakto (evento de teste para este
+  // webhook): o payload chega como { data, event, secret } e sem nenhum
+  // header de assinatura. Comparar só headers dava 401 em TODO evento real.
+  // Headers continuam aceitos como fallback. Comparação em tempo constante.
+  const recebido = payload.secret ?? assinaturaDe(request);
+  if (!segredoConfere(recebido, segredo)) {
+    return NextResponse.json({ ok: false, motivo: 'assinatura_invalida' }, { status: 401 });
   }
 
   const cliente = payload.data?.customer ?? payload.customer;
@@ -179,7 +196,13 @@ export async function POST(request: Request) {
   const valor_centavos = centavos(
     payload.data?.amount ?? payload.transaction?.amount ?? payload.amount,
   );
-  const utm = payload.data?.utm ?? payload.utm ?? null;
+  // O Cakto manda os UTMs PLANOS em data (utm_source, utm_medium, …, sck) e
+  // fbc/fbp também em data — não existe data.utm. Sem isto, utm era sempre nulo.
+  const utm =
+    payload.data?.utm ??
+    payload.utm ??
+    utmDosCamposPlanos(payload.data) ??
+    null;
 
   if (!email || !transacao_id) {
     return NextResponse.json(
@@ -249,4 +272,34 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ ok: true, medicao });
+}
+
+/** Compara em tempo constante (evita medir o segredo pelo tempo de resposta). */
+function segredoConfere(recebido: string, esperado: string): boolean {
+  if (!recebido || recebido.length !== esperado.length) return false;
+  let diff = 0;
+  for (let i = 0; i < esperado.length; i++) {
+    diff |= recebido.charCodeAt(i) ^ esperado.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+/** Monta `utm` a partir dos campos planos que o Cakto envia em `data`. */
+function utmDosCamposPlanos(
+  data: PayloadCakto['data'] | undefined,
+): Record<string, string> | null {
+  if (!data) return null;
+  const pares: Array<[string, string | null | undefined]> = [
+    ['utm_source', data.utm_source],
+    ['utm_medium', data.utm_medium],
+    ['utm_campaign', data.utm_campaign],
+    ['utm_term', data.utm_term],
+    ['utm_content', data.utm_content],
+    ['sck', data.sck],
+    ['fbc', data.fbc],
+    ['fbp', data.fbp],
+  ];
+  const utm: Record<string, string> = {};
+  for (const [k, v] of pares) if (typeof v === 'string' && v) utm[k] = v;
+  return Object.keys(utm).length ? utm : null;
 }
