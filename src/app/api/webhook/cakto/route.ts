@@ -1,7 +1,10 @@
+import { createHash } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { registrarOuAtualizarCompra, type StatusCompra } from '@/lib/compra';
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
+import { PIXEL_ID } from '@/lib/pixel';
 import { classificarPorValor } from '@/lib/produtos';
+import { supabaseConfigured } from '@/lib/supabase';
 
 /**
  * Webhook do Cakto (postback).
@@ -76,6 +79,80 @@ export function eventIdDaTransacao(transacaoId: string): string {
   return `cakto:${transacaoId}`;
 }
 
+/** O segredo pode chegar em três cabeçalhos diferentes, conforme a versão da Cakto. */
+function assinaturaDe(request: Request): string {
+  return (
+    request.headers.get('x-cakto-signature') ??
+    request.headers.get('x-webhook-secret') ??
+    request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ??
+    ''
+  );
+}
+
+/**
+ * Impressão digital de um segredo: os 12 primeiros hex do SHA-256.
+ *
+ * Serve para responder "o valor que está aqui é o mesmo que eu tenho na mão?"
+ * sem devolver o valor. Comparar impressões prova identidade; a impressão
+ * sozinha não reconstrói nada.
+ */
+function impressao(valor: string | undefined | null): string | null {
+  if (!valor) return null;
+  return createHash('sha256').update(valor).digest('hex').slice(0, 12);
+}
+
+/**
+ * Diagnóstico do deploy, atrás do mesmo segredo do webhook.
+ *
+ * Existe porque a configuração deste projeto mora numa conta Vercel que não é
+ * nossa. Sem isto, saber se uma variável de ambiente entrou dependia de
+ * esperar uma venda real acontecer, e saber qual build está no ar dependia de
+ * acreditar em quem publicou. As duas perguntas passam a ter resposta lida,
+ * a qualquer hora, por quem tem o segredo.
+ *
+ * Nunca devolve valor de segredo: só presença e impressão digital.
+ */
+export async function GET(request: Request) {
+  const segredo = process.env.CAKTO_WEBHOOK_SECRET;
+  if (!segredo) {
+    return NextResponse.json({ ok: false, motivo: 'nao_configurado' }, { status: 503 });
+  }
+  if (assinaturaDe(request) !== segredo) {
+    return NextResponse.json({ ok: false, motivo: 'assinatura_invalida' }, { status: 401 });
+  }
+
+  let supabaseHost: string | null = null;
+  try {
+    supabaseHost = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').host;
+  } catch {
+    supabaseHost = null;
+  }
+
+  return NextResponse.json({
+    ok: true,
+    deploy: {
+      ambiente: process.env.VERCEL_ENV ?? null,
+      commit: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
+      branch: process.env.VERCEL_GIT_COMMIT_REF ?? null,
+      regiao: process.env.VERCEL_REGION ?? null,
+    },
+    variaveis: {
+      CAKTO_WEBHOOK_SECRET: impressao(segredo),
+      META_CAPI_TOKEN: impressao(process.env.META_CAPI_TOKEN),
+      META_TEST_EVENT_CODE: Boolean(process.env.META_TEST_EVENT_CODE),
+      NEXT_PUBLIC_META_PIXEL_ID: PIXEL_ID,
+      NEXT_PUBLIC_SUPABASE_URL: supabaseHost,
+      SUPABASE_SERVICE_ROLE_KEY: impressao(process.env.SUPABASE_SERVICE_ROLE_KEY),
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? null,
+    },
+    pronto: {
+      webhook: true,
+      purchase_server_side: capiConfigurado(),
+      persistencia: supabaseConfigured(),
+    },
+  });
+}
+
 export async function POST(request: Request) {
   const segredo = process.env.CAKTO_WEBHOOK_SECRET;
   if (!segredo) {
@@ -83,12 +160,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, motivo: 'nao_configurado' }, { status: 503 });
   }
 
-  const assinaturaHeader =
-    request.headers.get('x-cakto-signature') ??
-    request.headers.get('x-webhook-secret') ??
-    request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ??
-    '';
-  if (assinaturaHeader !== segredo) {
+  if (assinaturaDe(request) !== segredo) {
     return NextResponse.json({ ok: false, motivo: 'assinatura_invalida' }, { status: 401 });
   }
 
