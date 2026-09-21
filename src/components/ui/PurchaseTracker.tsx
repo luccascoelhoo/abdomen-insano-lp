@@ -2,10 +2,12 @@
 
 import { useEffect, useRef } from 'react';
 import { oferta } from '@/content/desafio';
+import { PIXEL_ID } from '@/lib/pixel';
 
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
+    dataLayer?: Record<string, unknown>[];
   }
 }
 
@@ -75,16 +77,29 @@ export function PurchaseTracker({
 
       if (dados?.conhecida && dados.aprovada && dados.event_id) {
         disparado.current = true;
+        const valorFinal = dados.valor ?? valor ?? oferta.precoNumero;
         window.fbq?.(
-          'track',
+          'trackSingle',
+          PIXEL_ID,
           'Purchase',
           {
-            value: dados.valor ?? valor ?? oferta.precoNumero,
+            value: valorFinal,
             currency: oferta.precoMoeda,
             content_name: 'Desafio Abdômen Insano',
           },
           { eventID: dados.event_id },
         );
+        // O mesmo fato para o container: o `purchase` do GA4 passa a nascer
+        // daqui, com a transação confirmada pelo servidor, e não de qualquer
+        // carregamento da /obrigado. A tag do container escuta
+        // `purchase_confirmada`.
+        window.dataLayer = window.dataLayer ?? [];
+        window.dataLayer.push({
+          event: 'purchase_confirmada',
+          transaction_id: id,
+          value: valorFinal,
+          currency: oferta.precoMoeda,
+        });
         return;
       }
 

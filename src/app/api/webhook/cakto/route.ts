@@ -1,6 +1,12 @@
 import { createHash } from 'node:crypto';
 import { NextResponse } from 'next/server';
-import { registrarOuAtualizarCompra, type StatusCompra } from '@/lib/compra';
+import {
+  medicaoPersistivel,
+  registrarEnvioCapi,
+  registrarMedicaoDaCompra,
+  registrarOuAtualizarCompra,
+  type StatusCompra,
+} from '@/lib/compra';
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { PIXEL_ID } from '@/lib/pixel';
 import { classificarPorValor } from '@/lib/produtos';
@@ -141,6 +147,10 @@ export async function GET(request: Request) {
       webhook: true,
       purchase_server_side: capiConfigurado(),
       persistencia: supabaseConfigured(),
+      // Falso até a migration de INTEGRACAO.md §2 ser aplicada pelo dono do banco.
+      persistencia_medicao: supabaseConfigured()
+        ? await medicaoPersistivel().catch(() => ({ coluna: false, envios: false }))
+        : null,
     },
   });
 }
@@ -248,5 +258,20 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true, medicao });
+  // O que o Meta respondeu fica ao lado da venda e numa linha por envio. As
+  // duas gravações são tolerantes: sem a coluna ou a tabela (migration ainda
+  // não aplicada) elas registram no log e a resposta continua 200, porque o
+  // que importava já aconteceu.
+  let medicao_gravada = false;
+  if (status === 'aprovada') {
+    medicao_gravada = await registrarMedicaoDaCompra('cakto', transacao_id, medicao);
+    await registrarEnvioCapi({
+      evento: 'Purchase',
+      event_id: eventIdDaTransacao(transacao_id),
+      resultado: medicao,
+      transacao_id,
+    });
+  }
+
+  return NextResponse.json({ ok: true, medicao, medicao_gravada });
 }

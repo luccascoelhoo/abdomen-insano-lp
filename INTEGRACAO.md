@@ -98,6 +98,45 @@ alter table public.usuarios enable row level security;
 -- (sem policies = acesso 100% via service_role)
 ```
 
+### 2.1. Registro da medição (adicionado em 21/09/2026)
+
+O código passou a guardar o que o Meta respondeu a cada envio: ao lado da venda
+(`compras.medicao`) e uma linha por evento (`eventos_capi`). Sem este bloco o
+site continua funcionando, e a venda continua sendo gravada e medida; só o
+registro do resultado fica no log da Vercel em vez de no banco. Execute no
+**SQL Editor** do mesmo projeto:
+
+```sql
+-- Resultado do envio do Purchase ao Meta, ex.: 'enviado:1' ou 'falhou:http_400'
+alter table public.compras add column if not exists medicao text;
+
+-- Um envio pela Conversions API por linha: ViewContent, InitiateCheckout, Purchase.
+-- O event_id aqui tem que bater com o que o navegador disparou, senão o Meta
+-- conta duas vezes; é esta tabela que permite conferir isso.
+create table if not exists public.eventos_capi (
+  id            uuid primary key default gen_random_uuid(),
+  evento        text not null,
+  event_id      text not null,
+  resultado     text not null,
+  transacao_id  text,
+  caminho       text,
+  criado_em     timestamptz not null default now()
+);
+
+create index if not exists eventos_capi_event_id_idx on public.eventos_capi (event_id);
+create index if not exists eventos_capi_criado_idx   on public.eventos_capi (criado_em);
+
+alter table public.eventos_capi enable row level security;
+-- (sem policies = acesso 100% via service_role)
+```
+
+Para confirmar que entrou, o diagnóstico do deploy responde
+`pronto.persistencia_medicao: { coluna: true, envios: true }`:
+
+```
+GET /api/webhook/cakto   (com o header x-cakto-signature: <segredo do webhook>)
+```
+
 ### Se o app usa Supabase Auth em vez de tabela `usuarios`
 
 O código dá pra adaptar em ~15 linhas: em `src/lib/usuario.ts`, troque o

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { oferta } from '@/content/desafio';
+import { registrarEnvioCapi } from '@/lib/compra';
+import { supabaseConfigured } from '@/lib/supabase';
 
 /**
  * A segunda perna dos eventos que nascem no navegador.
@@ -102,6 +104,7 @@ export async function POST(request: Request) {
     conteudo: { id: 'dai-front', nome: 'Desafio Abdômen Insano' },
   });
 
+  const medicao = r.ok ? `enviado:${r.eventos}` : `falhou:${r.motivo}`;
   if (!r.ok) {
     console.error('[api/evento] evento não chegou ao Meta', {
       evento,
@@ -109,8 +112,13 @@ export async function POST(request: Request) {
       motivo: r.motivo,
       detalhe: r.detalhe,
     });
-    return NextResponse.json({ ok: true, medicao: `falhou:${r.motivo}` });
   }
 
-  return NextResponse.json({ ok: true, medicao: `enviado:${r.eventos}` });
+  // Uma linha por envio, para a dedup ser conferível fora do painel do Meta.
+  // Tolerante: sem banco, ou sem a tabela, fica no log e a resposta é a mesma.
+  if (supabaseConfigured()) {
+    await registrarEnvioCapi({ evento, event_id: eventId, resultado: medicao, caminho });
+  }
+
+  return NextResponse.json({ ok: true, medicao });
 }

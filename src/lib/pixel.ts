@@ -95,7 +95,11 @@ const ESPELHADOS = new Set(['ViewContent', 'InitiateCheckout']);
 export function rastrear(evento: string, parametros: Record<string, unknown> = {}): string {
   const eventId = novoEventId();
   if (typeof window === 'undefined') return eventId;
-  window.fbq?.('track', evento, parametros, { eventID: eventId });
+  // `trackSingle`, e não `track`: `track` dispara em todo pixel carregado na
+  // página, e o container do cliente tem seis tags pausadas apontando para o
+  // pixel de outro produto. Se alguém despausar uma, `track` mandaria cada
+  // evento daqui para lá também.
+  window.fbq?.('trackSingle', PIXEL_ID, evento, parametros, { eventID: eventId });
   if (ESPELHADOS.has(evento)) espelharNoServidor(evento, eventId);
   return eventId;
 }
