@@ -161,6 +161,35 @@ mas confirme se o Cakto passa essas variáveis no redirect. Se ele passa com
 outros nomes, ajuste `src/app/obrigado/page.tsx` — `searchParams` aceita
 `email`, `transaction_id`, `tx`.
 
+### 3.1.1. Funil pós-compra (upsell → downsell → obrigado)
+
+```
+Desafio pago → /shapeinsano-up ─ sim → checkout do upsell → /obrigado
+                               └ não → /shapeinsano-down ─ sim → checkout do downsell → /obrigado
+                                                         └ não → /obrigado
+```
+
+A ordem vive em `src/lib/funil.ts`. Uma página só entra no caminho quando tem
+VSL **e** link do "sim" preenchidos em `src/content/desafio.ts` (`upsell` /
+`downsell`) — até lá o funil pula a página e manda direto pro `/obrigado`.
+
+Quando as páginas estiverem prontas, no painel Cakto:
+
+| Produto | URL de agradecimento |
+|---|---|
+| Desafio Abdômen Insano | `https://www.abdomeninsano.com.br/shapeinsano-up` |
+| Shape Insano 360 (upsell) | `https://www.abdomeninsano.com.br/obrigado` |
+| Shape Insano 360 com 25% (downsell) | `https://www.abdomeninsano.com.br/obrigado` |
+
+Se a URL de agradecimento do painel prevalecer sobre o `redirect_url` que a LP
+manda, ela é quem manda — então só troque a do Desafio pro upsell **depois**
+de a página estar pronta.
+
+Medição: as páginas do funil também montam o `PurchaseTracker`, porque com o
+funil ativo o comprador do Desafio chega nelas antes do `/obrigado`. Os botões
+repassam a query inteira (`email`, `transaction_id`…) de página em página, e o
+tracker trava por sessão cada transação — a mesma venda não sai duas vezes.
+
 ### 3.2. Webhook (postback)
 
 No painel Cakto → **Integrações → Webhook**, crie um endpoint apontando pra:

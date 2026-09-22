@@ -44,6 +44,7 @@ Tudo desligado sob `prefers-reduced-motion`.
 | Identidade visual (cores, fontes, espaçamentos) | `src/app/globals.css` (`@theme` no topo) |
 | Ligar/desligar CTA sticky, provocações clicáveis, imagens | `src/lib/flags.ts` |
 | Uma seção específica | `src/components/sections/` |
+| Upsell / downsell (`/shapeinsano-up`, `/shapeinsano-down`): copy, player VTurb, links dos botões | `src/content/desafio.ts` (`upsell`, `downsell`) — ordem do funil em `src/lib/funil.ts`, layout em `src/components/funil/` |
 
 ## O que já está resolvido
 

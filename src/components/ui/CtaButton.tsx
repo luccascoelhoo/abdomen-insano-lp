@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { oferta } from '@/content/desafio';
+import { destinoPosCompra } from '@/lib/funil';
 import { rastrear } from '@/lib/pixel';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
@@ -36,7 +37,8 @@ export function CtaButton({
 
   useEffect(() => {
     const utm = lerUtm();
-    const returnUrl = `${window.location.origin}/obrigado`;
+    // Primeira parada depois do pagamento: upsell, se estiver pronto (lib/funil).
+    const returnUrl = `${window.location.origin}${destinoPosCompra()}`;
     setHref(
       anexarParametros(oferta.checkoutUrl, {
         ...utm,

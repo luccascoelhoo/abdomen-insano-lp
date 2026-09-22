@@ -2598,3 +2598,208 @@ a.provoke:focus-visible {
 .obrigado__proximos b {
   color: var(--amber);
 }
+
+/* ============================================================
+   FUNIL PÓS-COMPRA — /shapeinsano-up e /shapeinsano-down
+
+   Mesma tinta e mesmo laranja da oferta da LP, mas numa coluna
+   só e estreita: o vídeo é o protagonista. O brilho quente no
+   topo repete o degradê do card de oferta, pra quem acabou de
+   pagar sentir que continua no mesmo lugar.
+   ============================================================ */
+.funil {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 70% 42% at 50% -6%, rgba(255, 107, 0, 0.24), transparent 70%),
+    var(--ink);
+  color: var(--paper);
+}
+.funil__coluna {
+  flex: 1;
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+  padding: clamp(24px, 4vw, 40px) 16px clamp(48px, 6vw, 72px);
+  text-align: center;
+}
+.funil__logo {
+  height: 52px;
+  width: auto;
+  margin: 0 auto clamp(20px, 3vw, 28px);
+}
+
+/* Barra "compra em andamento": listrada e correndo, pra ler como
+   processo vivo, não como gráfico. */
+.funil__progresso {
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 107, 0, 0.12);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  overflow: hidden;
+  margin-bottom: clamp(20px, 3vw, 28px);
+}
+.funil__progresso-barra {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.18) 0 10px, transparent 10px 20px),
+    linear-gradient(90deg, var(--orange), #ff8a2a);
+  background-size: 28px 28px, 100% 100%;
+  box-shadow: 0 0 14px rgba(255, 107, 0, 0.55);
+  animation: funil-listras 1s linear infinite;
+}
+.funil__progresso-valor {
+  padding-right: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+@keyframes funil-listras {
+  to {
+    background-position: 28px 0, 0 0;
+  }
+}
+
+.funil__titulo {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+  font-size: clamp(1.9rem, 1.3rem + 2.6vw, 2.6rem);
+  text-wrap: balance;
+}
+.funil__titulo span {
+  color: var(--orange);
+}
+.funil__alerta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: clamp(16px, 2vw, 20px) 0 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(245, 179, 1, 0.12);
+  border: 1px solid rgba(245, 179, 1, 0.4);
+  color: var(--amber);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+.funil__alerta svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+.funil__texto {
+  margin-top: clamp(14px, 2vw, 18px);
+}
+.funil__texto p {
+  margin: 0 0 0.6em;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(241, 238, 231, 0.76);
+  text-wrap: pretty;
+}
+.funil__texto p:last-child {
+  margin-bottom: 0;
+}
+.funil__texto b {
+  color: var(--paper);
+  font-weight: 700;
+}
+
+/* VSL 9:16. O vazio usa o mesmo degradê do card de oferta. */
+.funil__vsl {
+  margin-top: clamp(22px, 3vw, 30px);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 107, 0, 0.28);
+  box-shadow: 0 24px 60px -24px rgba(255, 107, 0, 0.45);
+  background: #000;
+}
+.funil__vsl--vazio {
+  aspect-ratio: 9 / 16;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  background: linear-gradient(180deg, #2a1408 0%, #170b04 60%, #0e0705 100%);
+}
+.funil__vsl-play {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--ink);
+  box-shadow: 0 0 0 10px rgba(255, 107, 0, 0.16);
+}
+.funil__vsl-play svg {
+  width: 32px;
+  height: 32px;
+  margin-left: 4px;
+}
+.funil__vsl-nota {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  color: rgba(241, 238, 231, 0.5);
+}
+
+/* Aceitar / recusar. `.esconder` é o seletor que a VTurb revela no pitch. */
+.esconder {
+  display: none;
+}
+.funil__acoes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: clamp(24px, 3vw, 32px);
+}
+.funil__cta {
+  border-radius: 999px;
+  padding: 20px 24px;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+}
+.funil__recusar {
+  font-size: 0.85rem;
+  color: rgba(241, 238, 231, 0.5);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.funil__recusar:hover {
+  color: rgba(241, 238, 231, 0.8);
+}
+
+.funil__rodape {
+  border-top: 1px solid var(--line-dark);
+  padding: 28px 16px calc(28px + env(safe-area-inset-bottom));
+  text-align: center;
+}
+.funil__rodape .footer__nav {
+  justify-content: center;
+  margin: 0 0 12px;
+}
+.funil__rodape p {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(241, 238, 231, 0.42);
+}
+@media (prefers-reduced-motion: reduce) {
+  .funil__progresso-barra {
+    animation: none;
+  }
+}

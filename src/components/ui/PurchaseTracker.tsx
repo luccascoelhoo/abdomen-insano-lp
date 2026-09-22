@@ -53,6 +53,14 @@ export function PurchaseTracker({
   useEffect(() => {
     const id = transacaoId?.trim();
     if (!id || disparado.current) return;
+    // O funil (upsell → downsell → /obrigado) carrega a mesma transação de
+    // página em página; ela é medida uma vez só por sessão.
+    const chaveSessao = `ai_purchase_${id}`;
+    try {
+      if (sessionStorage.getItem(chaveSessao)) return;
+    } catch {
+      /* storage bloqueado — segue, o event_id ainda deduplica no Meta */
+    }
 
     let vivo = true;
     let relogio: ReturnType<typeof setTimeout>;
@@ -77,6 +85,9 @@ export function PurchaseTracker({
 
       if (dados?.conhecida && dados.aprovada && dados.event_id) {
         disparado.current = true;
+        try {
+          sessionStorage.setItem(chaveSessao, '1');
+        } catch {}
         const valorFinal = dados.valor ?? valor ?? oferta.precoNumero;
         window.fbq?.(
           'trackSingle',

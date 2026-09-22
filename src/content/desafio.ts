@@ -393,3 +393,77 @@ export const rodape = {
   aviso:
     'Este site não é afiliado ao Facebook ou a qualquer entidade do Facebook. Resultados individuais podem variar conforme dedicação e condição física de cada pessoa.',
 } as const;
+
+/**
+ * PÓS-COMPRA — páginas de upsell e downsell (Projeto Shape Insano 360).
+ *
+ * Estrutura das duas segue a referência do funil: coluna estreita no escuro,
+ * headline curta, aviso pra não fechar a página e a VSL vertical da VTurb.
+ * Os botões de aceitar/recusar só aparecem quando a VTurb libera (delay do
+ * pitch).
+ *
+ * Ordem do funil (quem decide o próximo passo é `src/lib/funil.ts`):
+ *   compra do Desafio → upsell ─ sim → checkout do upsell → /obrigado
+ *                               └ não → downsell ─ sim → checkout do downsell → /obrigado
+ *                                                └ não → /obrigado
+ * O link do "sim" é o checkout da oferta na Cakto. Enquanto uma página não
+ * tiver VSL + link do "sim", o funil PULA ela — ninguém cai numa página
+ * pela metade em produção.
+ *
+ * Player VTurb: cole o `id` do player e a URL do `player.js` que o painel da
+ * VTurb gera no código de incorporação. Vazio = placeholder no lugar do vídeo.
+ */
+export type Vsl = {
+  /** Id do player, sem o prefixo `vid-`/`vid_` do código de incorporação. */
+  playerId: string;
+  /** URL do `player.js` do embed — o formato novo (`.../v4/player.js`) e o antigo funcionam. */
+  scriptUrl: string;
+  /** Segundos de vídeo até os botões aparecerem. 0 = aparecem já. */
+  delaySegundos: number;
+};
+
+/** `url` = link do checkout da oferta na Cakto. */
+export type BotaoFunil = { texto: string; url: string };
+
+export type PaginaFunil = {
+  metaTitulo: string;
+  /** Barra "compra em andamento" — omitir pra não mostrar. */
+  progresso?: number;
+  tituloAntes: string;
+  tituloDestaque?: string;
+  tituloDepois?: string;
+  /** Faixa de alerta acima do texto de apoio. */
+  alerta?: string;
+  /** Parágrafos de apoio. Trechos entre **asteriscos** saem em negrito. */
+  paragrafos: string[];
+  vsl: Vsl;
+  aceitar: BotaoFunil;
+  /** O destino do "não" é fixo pela ordem do funil — só o texto mora aqui. */
+  recusarTexto: string;
+};
+
+export const upsell: PaginaFunil = {
+  metaTitulo: 'Compra em andamento — Desafio Abdômen Insano',
+  progresso: 67,
+  tituloAntes: 'Compra em andamento!',
+  alerta: 'Atenção, não feche essa página!',
+  paragrafos: [
+    'A sua compra do **Desafio Abdômen Insano** ainda está em andamento.',
+    'Assista esse vídeo até o final e **siga os passos para confirmar a sua compra.**',
+  ],
+  vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
+  aceitar: { texto: 'Sim, quero o Shape Insano 360', url: '' },
+  recusarTexto: 'Não, quero seguir só com o Desafio',
+};
+
+export const downsell: PaginaFunil = {
+  metaTitulo: 'Seu desconto aumentou — Projeto Shape Insano 360',
+  tituloAntes: 'Aumentei o seu desconto em ',
+  tituloDestaque: '25%',
+  paragrafos: [
+    'Você liberou o **Melhor Plano do Projeto Shape Insano 360**. Assista o vídeo abaixo e **não feche nem atualize essa página!**',
+  ],
+  vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
+  aceitar: { texto: 'Sim, quero com 25% de desconto', url: '' },
+  recusarTexto: 'Não, obrigado',
+};
