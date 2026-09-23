@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { rastrear } from '@/lib/pixel';
+import { ID_FRONT } from '@/lib/produtos';
 
 /**
  * `ViewContent` — quem leu a oferta, e não quem bateu e saiu.
@@ -20,11 +21,17 @@ export function ViewContentWatcher({ valor, moeda }: { valor: number; moeda: str
     const marcar = () => {
       if (disparado.current) return;
       disparado.current = true;
-      rastrear('ViewContent', {
-        content_name: 'Desafio Abdômen Insano',
-        value: valor,
-        currency: moeda,
-      });
+      rastrear(
+        'ViewContent',
+        {
+          content_ids: [ID_FRONT],
+          content_name: 'Desafio Abdômen Insano',
+          content_type: 'product',
+          value: valor,
+          currency: moeda,
+        },
+        ID_FRONT,
+      );
       window.removeEventListener('scroll', aoRolar);
       clearTimeout(relogio);
     };

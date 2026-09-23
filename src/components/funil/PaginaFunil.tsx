@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { rodape, type PaginaFunil as Pagina } from '@/content/desafio';
 import { BotoesFunil } from './BotoesFunil';
+import { ViewContentFunil } from './ViewContentFunil';
 import { VslPlayer } from './VslPlayer';
 
 /** `**trecho**` vira <b>trecho</b> — mantém a copy inteira no arquivo de conteúdo. */
@@ -24,6 +25,8 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
 
   return (
     <div className="funil">
+      <ViewContentFunil produtoId={pagina.produtoId} />
+
       <main className="funil__coluna">
         <Image
           className="funil__logo"
@@ -74,6 +77,7 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
 
         <BotoesFunil
           aceitar={pagina.aceitar}
+          produtoId={pagina.produtoId}
           recusarTexto={pagina.recusarTexto}
           recusarHref={destinoRecusa}
           esconder={esconderBotoes}

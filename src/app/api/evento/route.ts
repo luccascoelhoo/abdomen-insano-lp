@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { oferta } from '@/content/desafio';
 import { registrarEnvioCapi } from '@/lib/compra';
+import { produtoPorId } from '@/lib/produtos';
 import { supabaseConfigured } from '@/lib/supabase';
 
 /**
@@ -19,8 +20,11 @@ import { supabaseConfigured } from '@/lib/supabase';
  * Por que isto não vira porta aberta para inflar o pixel de fora:
  *
  *  - só os dois eventos da lista passam, nada mais;
- *  - o valor **nunca** vem do corpo da requisição, vem do preço da oferta no
- *    servidor, então ninguém injeta receita inventada;
+ *  - o valor **nunca** vem do corpo da requisição, vem do preço que o servidor
+ *    conhece — a oferta do front, ou o degrau do funil que o `produtoId`
+ *    aponta no catálogo — então ninguém injeta receita inventada;
+ *  - `produtoId` só é aceito se existir em `lib/produtos.ts`; id desconhecido
+ *    é recusado em vez de virar venda do front;
  *  - `Origin` e `Referer` precisam ser do próprio site;
  *  - o `event_source_url` é reconstruído aqui, não aceito de fora.
  *
@@ -39,6 +43,8 @@ const EVENTOS_PERMITIDOS = new Set(['ViewContent', 'InitiateCheckout']);
 type Corpo = {
   evento?: string;
   eventId?: string;
+  /** Degrau do funil (`lib/produtos.ts`). Ausente = front, que é o que a LP vende. */
+  produtoId?: string;
   caminho?: string;
   fbp?: string;
   fbc?: string;
@@ -51,7 +57,15 @@ function daCasa(request: Request): boolean {
     if (!valor) return false;
     try {
       const host = new URL(valor).host;
-      return host.endsWith('abdomeninsano.com.br') || host.startsWith('localhost');
+      // `endsWith` puro deixava passar `xabdomeninsano.com.br`, que é outro
+      // dono. O domínio tem que ser ele mesmo ou um subdomínio dele.
+      return (
+        host === 'abdomeninsano.com.br' ||
+        host === 'www.abdomeninsano.com.br' ||
+        host.endsWith('.abdomeninsano.com.br') ||
+        host === 'localhost' ||
+        host.startsWith('localhost:')
+      );
     } catch {
       return false;
     }
@@ -82,6 +96,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, motivo: 'evento_invalido' }, { status: 400 });
   }
 
+  // Qual degrau este evento mede. Sem id, é o front da LP — o comportamento de
+  // sempre. Com id, tem que ser um do catálogo: o valor e o nome saem de lá,
+  // nunca do corpo, e id desconhecido para aqui em vez de contaminar o front.
+  // `!== undefined` e não truthy: string vazia é chamador com bug, não
+  // ausência. Deixar `''` cair no front mediria R$ 42 no lugar do degrau sem
+  // erro nenhum, que é o tipo de silêncio que esta rota existe para evitar.
+  const produtoId = corpo.produtoId === undefined ? undefined : String(corpo.produtoId).trim();
+  const produto = produtoId ? produtoPorId(produtoId) : undefined;
+  if (produtoId !== undefined && !produto) {
+    return NextResponse.json({ ok: false, motivo: 'produto_invalido' }, { status: 400 });
+  }
+
   const fbp = corpo.fbp?.trim();
   const fbc = corpo.fbc?.trim() || fbcDeFbclid(corpo.fbclid?.trim());
   if (!fbp && !fbc) {
@@ -98,10 +124,12 @@ export async function POST(request: Request) {
     eventId,
     fbp,
     fbc,
-    valor: oferta.precoNumero,
+    valor: produto ? produto.centavos / 100 : oferta.precoNumero,
     moeda: oferta.precoMoeda,
     urlOrigem: `${base}${caminho}`,
-    conteudo: { id: 'dai-front', nome: 'Desafio Abdômen Insano' },
+    conteudo: produto
+      ? { id: produto.id, nome: produto.nome }
+      : { id: 'dai-front', nome: 'Desafio Abdômen Insano' },
   });
 
   const medicao = r.ok ? `enviado:${r.eventos}` : `falhou:${r.motivo}`;

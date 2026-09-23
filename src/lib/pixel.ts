@@ -49,13 +49,18 @@ export function novoEventId(): string {
  * depois do `init`, então o primeiro `PageView` pode chegar aqui antes deles:
  * daí a única retentativa, curta, antes de desistir em silêncio.
  */
-function espelharNoServidor(evento: string, eventId: string, tentativa = 0): void {
+function espelharNoServidor(
+  evento: string,
+  eventId: string,
+  produtoId: string | undefined,
+  tentativa = 0,
+): void {
   if (typeof window === 'undefined') return;
 
   const { fbp, fbc } = lerCookiesDoPixel();
   if (!fbp && !fbc) {
     if (tentativa === 0) {
-      window.setTimeout(() => espelharNoServidor(evento, eventId, 1), 1500);
+      window.setTimeout(() => espelharNoServidor(evento, eventId, produtoId, 1), 1500);
     }
     return;
   }
@@ -68,6 +73,10 @@ function espelharNoServidor(evento: string, eventId: string, tentativa = 0): voi
       body: JSON.stringify({
         evento,
         eventId,
+        // Qual degrau do funil vendeu. O servidor NÃO aceita valor daqui: ele
+        // lê o preço do catálogo por este id, então o campo não abre porta
+        // para inflar receita de fora.
+        produtoId,
         caminho: window.location.pathname,
         fbp,
         fbc,
@@ -91,8 +100,19 @@ function espelharNoServidor(evento: string, eventId: string, tentativa = 0): voi
  */
 const ESPELHADOS = new Set(['ViewContent', 'InitiateCheckout']);
 
-/** Dispara um evento padrão e devolve o `event_id` usado. */
-export function rastrear(evento: string, parametros: Record<string, unknown> = {}): string {
+/**
+ * Dispara um evento padrão e devolve o `event_id` usado.
+ *
+ * `produtoId` é o degrau do funil (`lib/produtos.ts`). A LP vende o front e
+ * pode omitir; as páginas de upsell e downsell precisam informar, senão o
+ * evento chega ao Meta com o produto errado e a conversão personalizada do
+ * front passa a contar venda que não é dela.
+ */
+export function rastrear(
+  evento: string,
+  parametros: Record<string, unknown> = {},
+  produtoId?: string,
+): string {
   const eventId = novoEventId();
   if (typeof window === 'undefined') return eventId;
   // `trackSingle`, e não `track`: `track` dispara em todo pixel carregado na
@@ -100,6 +120,6 @@ export function rastrear(evento: string, parametros: Record<string, unknown> = {
   // pixel de outro produto. Se alguém despausar uma, `track` mandaria cada
   // evento daqui para lá também.
   window.fbq?.('trackSingle', PIXEL_ID, evento, parametros, { eventID: eventId });
-  if (ESPELHADOS.has(evento)) espelharNoServidor(evento, eventId);
+  if (ESPELHADOS.has(evento)) espelharNoServidor(evento, eventId, produtoId);
   return eventId;
 }

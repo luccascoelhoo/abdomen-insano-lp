@@ -5,6 +5,8 @@
  * um bônus ou o preço é editar UMA linha neste arquivo — o markup não se toca.
  */
 
+import type { ProdutoId } from '@/lib/produtos';
+
 export type Pilar = {
   numero: string;
   titulo: string;
@@ -427,6 +429,12 @@ export type BotaoFunil = { texto: string; url: string };
 
 export type PaginaFunil = {
   metaTitulo: string;
+  /**
+   * Degrau que esta página vende, em `lib/produtos.ts`. É ele que define o
+   * `content_ids` e o valor dos eventos — sem isso o upsell chegaria ao Meta
+   * como venda do front e a campanha otimizaria pelo número errado.
+   */
+  produtoId: ProdutoId;
   /** Barra "compra em andamento" — omitir pra não mostrar. */
   progresso?: number;
   tituloAntes: string;
@@ -444,6 +452,7 @@ export type PaginaFunil = {
 
 export const upsell: PaginaFunil = {
   metaTitulo: 'Compra em andamento — Desafio Abdômen Insano',
+  produtoId: 'si360-upsell',
   progresso: 67,
   tituloAntes: 'Compra em andamento!',
   alerta: 'Atenção, não feche essa página!',
@@ -458,6 +467,7 @@ export const upsell: PaginaFunil = {
 
 export const downsell: PaginaFunil = {
   metaTitulo: 'Seu desconto aumentou — Projeto Shape Insano 360',
+  produtoId: 'si360-downsell',
   tituloAntes: 'Aumentei o seu desconto em ',
   tituloDestaque: '25%',
   paragrafos: [

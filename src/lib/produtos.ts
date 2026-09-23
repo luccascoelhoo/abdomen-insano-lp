@@ -21,14 +21,27 @@ export type Produto = {
   centavos: number;
 };
 
-export const PRODUTOS: Produto[] = [
+export const PRODUTOS = [
   { id: 'dai-front', nome: 'Desafio Abdômen Insano', degrau: 'front', centavos: 4200 },
   { id: 'bump-op3em10', nome: 'Operação -3kg em 10 dias', degrau: 'bump', centavos: 1490 },
   { id: 'bump-testosterona', nome: 'Testosterona 5x', degrau: 'bump', centavos: 990 },
   { id: 'bump-vitalicio', nome: 'Acesso Vitalício', degrau: 'bump', centavos: 1990 },
   { id: 'si360-upsell', nome: 'Shape Insano 360', degrau: 'upsell', centavos: 19700 },
   { id: 'si360-downsell', nome: 'Shape Insano 360 (downsell)', degrau: 'downsell', centavos: 14700 },
-];
+] as const satisfies readonly Produto[];
+
+/**
+ * Os ids que existem de verdade. Quem aponta uma página do funil para um
+ * degrau usa este tipo: id errado quebra no build, e não em silêncio no Meta.
+ */
+export type ProdutoId = (typeof PRODUTOS)[number]['id'];
+
+/**
+ * O degrau que a LP vende. Os eventos do front citam este id nas DUAS pernas
+ * (navegador e Conversions API) — sem isso a conversão personalizada não tem
+ * como separar o front do upsell, já que os dois moram no mesmo domínio.
+ */
+export const ID_FRONT = 'dai-front' satisfies ProdutoId;
 
 const DESCONHECIDO: Produto = {
   id: 'desconhecido',
@@ -36,6 +49,12 @@ const DESCONHECIDO: Produto = {
   degrau: 'front',
   centavos: 0,
 };
+
+/** Produto do catálogo pelo id, ou `undefined` se o id não for de um degrau conhecido. */
+export function produtoPorId(id: string | undefined): Produto | undefined {
+  if (!id) return undefined;
+  return PRODUTOS.find((p) => p.id === id);
+}
 
 /**
  * Classifica pelo valor exato e, se não bater, pelo valor mais próximo dentro

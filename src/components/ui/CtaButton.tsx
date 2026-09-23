@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { oferta } from '@/content/desafio';
 import { destinoPosCompra } from '@/lib/funil';
 import { rastrear } from '@/lib/pixel';
+import { ID_FRONT } from '@/lib/produtos';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
@@ -111,12 +112,18 @@ export function CtaButton({
       rel="noopener"
       data-origem={origem}
       onClick={() => {
-        rastrear('InitiateCheckout', {
-          value: oferta.precoNumero,
-          currency: oferta.precoMoeda,
-          content_name: 'Desafio Abdômen Insano',
-          origem,
-        });
+        rastrear(
+          'InitiateCheckout',
+          {
+            value: oferta.precoNumero,
+            currency: oferta.precoMoeda,
+            content_ids: [ID_FRONT],
+            content_name: 'Desafio Abdômen Insano',
+            content_type: 'product',
+            origem,
+          },
+          ID_FRONT,
+        );
       }}
     >
       {children ?? oferta.ctaTexto}
