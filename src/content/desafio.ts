@@ -461,7 +461,7 @@ export const upsell: PaginaFunil = {
     'Assista esse vídeo até o final e **siga os passos para confirmar a sua compra.**',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero o Shape Insano 360', url: '' },
+  aceitar: { texto: 'Sim, quero o Shape Insano 360', url: 'https://pay.cakto.com.br/39rfuow_1081230' },
   recusarTexto: 'Não, quero seguir só com o Desafio',
 };
 
@@ -474,6 +474,6 @@ export const downsell: PaginaFunil = {
     'Você liberou o **Melhor Plano do Projeto Shape Insano 360**. Assista o vídeo abaixo e **não feche nem atualize essa página!**',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero com 25% de desconto', url: '' },
+  aceitar: { texto: 'Sim, quero com 25% de desconto', url: 'https://pay.cakto.com.br/vx548za' },
   recusarTexto: 'Não, obrigado',
 };

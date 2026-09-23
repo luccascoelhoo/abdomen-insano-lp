@@ -8,7 +8,10 @@
  * contam igual.
  *
  * O reconhecimento é pelo **valor em centavos**, porque é o único campo que o
- * webhook garante hoje. Quando o payload real da Cakto for conhecido e trouxer
+ * webhook garante hoje. Cuidado com o downsell: na Cakto ele é uma OFERTA do
+ * mesmo produto do upsell, então a configuração pública devolve
+ * `product.price: 197` e `price: 127`. O que vale aqui é o que a pessoa pagou.
+ * Conferido na oferta `vx548za` em 23/09/2026. Quando o payload real da Cakto for conhecido e trouxer
  * id de oferta, trocar a chave por ele: id é exato, valor é inferência, e
  * promoção ou cupom quebram a inferência.
  */
@@ -27,7 +30,7 @@ export const PRODUTOS = [
   { id: 'bump-testosterona', nome: 'Testosterona 5x', degrau: 'bump', centavos: 990 },
   { id: 'bump-vitalicio', nome: 'Acesso Vitalício', degrau: 'bump', centavos: 1990 },
   { id: 'si360-upsell', nome: 'Shape Insano 360', degrau: 'upsell', centavos: 19700 },
-  { id: 'si360-downsell', nome: 'Shape Insano 360 (downsell)', degrau: 'downsell', centavos: 14700 },
+  { id: 'si360-downsell', nome: 'Shape Insano 360 (downsell)', degrau: 'downsell', centavos: 12700 },
 ] as const satisfies readonly Produto[];
 
 /**
