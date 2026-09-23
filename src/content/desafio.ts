@@ -5,6 +5,8 @@
  * um bônus ou o preço é editar UMA linha neste arquivo — o markup não se toca.
  */
 
+import type { ProdutoId } from '@/lib/produtos';
+
 export type Pilar = {
   numero: string;
   titulo: string;
@@ -427,6 +429,12 @@ export type BotaoFunil = { texto: string; url: string };
 
 export type PaginaFunil = {
   metaTitulo: string;
+  /**
+   * Degrau que esta página vende, em `lib/produtos.ts`. É ele que define o
+   * `content_ids` e o valor dos eventos — sem isso o upsell chegaria ao Meta
+   * como venda do front e a campanha otimizaria pelo número errado.
+   */
+  produtoId: ProdutoId;
   /** Barra "compra em andamento" — omitir pra não mostrar. */
   progresso?: number;
   tituloAntes: string;
@@ -444,6 +452,7 @@ export type PaginaFunil = {
 
 export const upsell: PaginaFunil = {
   metaTitulo: 'Compra em andamento — Desafio Abdômen Insano',
+  produtoId: 'si360-upsell',
   progresso: 67,
   tituloAntes: 'Compra em andamento!',
   alerta: 'Atenção, não feche essa página!',
@@ -452,18 +461,19 @@ export const upsell: PaginaFunil = {
     'Assista esse vídeo até o final e **siga os passos para confirmar a sua compra.**',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero o Shape Insano 360', url: '' },
+  aceitar: { texto: 'Sim, quero o Shape Insano 360', url: 'https://pay.cakto.com.br/39rfuow_1081230' },
   recusarTexto: 'Não, quero seguir só com o Desafio',
 };
 
 export const downsell: PaginaFunil = {
   metaTitulo: 'Seu desconto aumentou — Projeto Shape Insano 360',
+  produtoId: 'si360-downsell',
   tituloAntes: 'Aumentei o seu desconto em ',
   tituloDestaque: '25%',
   paragrafos: [
     'Você liberou o **Melhor Plano do Projeto Shape Insano 360**. Assista o vídeo abaixo e **não feche nem atualize essa página!**',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero com 25% de desconto', url: '' },
+  aceitar: { texto: 'Sim, quero com 25% de desconto', url: 'https://pay.cakto.com.br/vx548za' },
   recusarTexto: 'Não, obrigado',
 };
