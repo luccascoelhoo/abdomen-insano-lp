@@ -179,7 +179,7 @@ Quando as páginas estiverem prontas, no painel Cakto:
 |---|---|
 | Desafio Abdômen Insano | `https://www.abdomeninsano.com.br/shapeinsano-up` |
 | Shape Insano 360 (upsell) | `https://www.abdomeninsano.com.br/obrigado` |
-| Shape Insano 360 com 25% (downsell) | `https://www.abdomeninsano.com.br/obrigado` |
+| Shape Insano 360 com 35% (downsell) | `https://www.abdomeninsano.com.br/obrigado` |
 
 Se a URL de agradecimento do painel prevalecer sobre o `redirect_url` que a LP
 manda, ela é quem manda — então só troque a do Desafio pro upsell **depois**

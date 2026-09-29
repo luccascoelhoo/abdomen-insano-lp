@@ -469,11 +469,11 @@ export const downsell: PaginaFunil = {
   metaTitulo: 'Seu desconto aumentou — Projeto Shape Insano 360',
   produtoId: 'si360-downsell',
   tituloAntes: 'Aumentei o seu desconto em ',
-  tituloDestaque: '25%',
+  tituloDestaque: '35%',
   paragrafos: [
     'Você liberou o **Melhor Plano do Projeto Shape Insano 360**. Assista o vídeo abaixo e **não feche nem atualize essa página!**',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero com 25% de desconto', url: 'https://pay.cakto.com.br/vx548za' },
+  aceitar: { texto: 'Sim, quero com 35% de desconto', url: 'https://pay.cakto.com.br/vx548za' },
   recusarTexto: 'Não, obrigado',
 };
