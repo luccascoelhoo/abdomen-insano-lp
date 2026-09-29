@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Downsell — para quem recusou o upsell: mesmo produto, 25% mais barato.
+ * Downsell — para quem recusou o upsell: mesmo produto, 35% mais barato.
  *
  * Com o funil ativo, o checkout devolve o comprador aqui e não no /obrigado —
  * então o `Purchase` de navegador da compra que acabou de acontecer precisa
