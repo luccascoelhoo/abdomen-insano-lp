@@ -9,6 +9,7 @@ import {
 } from '@/lib/compra';
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { PIXEL_ID } from '@/lib/pixel';
+import { repassarVendaAoMetrics } from '@/lib/frota-metrics';
 import { classificarPorValor } from '@/lib/produtos';
 import { eventIdDaTransacao, idDaTransacao } from '@/lib/transacao';
 import { supabaseConfigured } from '@/lib/supabase';
@@ -296,7 +297,17 @@ export async function POST(request: Request) {
     });
   }
 
-  return NextResponse.json({ ok: true, medicao, medicao_gravada });
+  // Cópia para o painel da agência. Depois de gravar, e sem poder falhar o webhook.
+  const painel = await repassarVendaAoMetrics({
+    gateway: 'cakto',
+    transacao_id,
+    status,
+    valor_centavos,
+    produto: classificarPorValor(valor_centavos).nome,
+    utm,
+  });
+
+  return NextResponse.json({ ok: true, medicao, medicao_gravada, painel });
 }
 
 /** Compara em tempo constante (evita medir o segredo pelo tempo de resposta). */
