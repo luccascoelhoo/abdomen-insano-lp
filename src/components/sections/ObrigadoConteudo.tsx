@@ -15,7 +15,6 @@ export function ObrigadoConteudo({
   const query = use(searchParamsPromise);
   const emailQuery = query.email?.trim();
 
-  const temApple = Boolean(linksApp.appStore);
   const temGoogle = Boolean(linksApp.playStore);
 
   return (
@@ -79,19 +78,29 @@ export function ObrigadoConteudo({
               
               <div className="mt-auto flex flex-col gap-3">
                 <a
-                  href={temApple ? linksApp.appStore : '#'}
+                  href={linksApp.appStore}
                   className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-900 border border-gray-800 rounded-xl py-3 transition-all"
                 >
                   <AppleIcon className="w-5 h-5 text-white" />
                   <span className="font-bold">App Store</span>
                 </a>
-                <a
-                  href={temGoogle ? linksApp.playStore : '#'}
-                  className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-900 border border-gray-800 rounded-xl py-3 transition-all"
-                >
-                  <PlayStoreIcon className="w-5 h-5 text-white" />
-                  <span className="font-bold">Google Play</span>
-                </a>
+                {temGoogle ? (
+                  <a
+                    href={linksApp.playStore}
+                    className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-900 border border-gray-800 rounded-xl py-3 transition-all"
+                  >
+                    <PlayStoreIcon className="w-5 h-5 text-white" />
+                    <span className="font-bold">Google Play</span>
+                  </a>
+                ) : (
+                  <span
+                    aria-disabled="true"
+                    className="w-full flex items-center justify-center gap-2 bg-black/60 border border-gray-800 rounded-xl py-3 text-gray-400"
+                  >
+                    <PlayStoreIcon className="w-5 h-5 text-gray-400" />
+                    <span className="font-bold">Google Play · em análise</span>
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -130,7 +139,7 @@ export function ObrigadoConteudo({
 
         <div className="text-center pt-6">
           <p className="text-gray-500 text-sm">
-            Ficou com alguma dúvida ou teve problemas? <a href="#" className="text-[#ff6b00] hover:underline">Fale com nosso suporte</a>.
+            Ficou com alguma dúvida ou teve problemas? <a href="https://flameer.vercel.app/suporte" className="text-[#ff6b00] hover:underline">Fale com nosso suporte</a>.
           </p>
         </div>
 
