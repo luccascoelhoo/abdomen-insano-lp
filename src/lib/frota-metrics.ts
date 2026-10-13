@@ -27,6 +27,8 @@ export async function repassarVendaAoMetrics(venda: {
   valor_centavos: number;
   produto: string;
   utm: Record<string, string> | null;
+  /** Data da venda segundo o gateway. Sem ela, vale a hora do processamento. */
+  ocorrido_em?: string | null;
 }): Promise<string> {
   const url = process.env.FROTA_METRICS_SALE_URL;
   const clientId = process.env.FROTA_METRICS_CLIENT_ID;
@@ -48,7 +50,7 @@ export async function repassarVendaAoMetrics(venda: {
         amount: venda.valor_centavos / 100,
         product_name: venda.produto,
         status,
-        occurred_at: new Date().toISOString(),
+        occurred_at: dataDaVenda(venda.ocorrido_em),
         // Só a origem da campanha; fbc, fbp e sck são do Meta e não saem daqui.
         utm: venda.utm
           ? Object.fromEntries(Object.entries(venda.utm).filter(([k]) => k.startsWith('utm_')))
@@ -69,4 +71,18 @@ export async function repassarVendaAoMetrics(venda: {
     console.error('[frota-metrics] repasse falhou', { transacao_id: venda.transacao_id, erro });
     return 'falhou:rede';
   }
+}
+
+/**
+ * A reentrega de um webhook pode chegar horas depois, e um estorno chega dias
+ * depois: a hora do processamento jogava a venda no dia errado do painel.
+ * Data ilegível cai para agora, que é o comportamento anterior.
+ */
+function dataDaVenda(bruta: string | null | undefined): string {
+  // Data sem fuso seria lida como UTC na Vercel e jogaria a venda da madrugada
+  // no dia anterior. A Cakto é brasileira: sem fuso, vale o de Brasília.
+  const texto = bruta?.trim();
+  const comFuso = texto && !/(Z|[+-]\d{2}:?\d{2})$/i.test(texto) ? `${texto}-03:00` : texto;
+  const data = comFuso ? new Date(comFuso.replace(' ', 'T')) : null;
+  return data && !Number.isNaN(data.getTime()) ? data.toISOString() : new Date().toISOString();
 }

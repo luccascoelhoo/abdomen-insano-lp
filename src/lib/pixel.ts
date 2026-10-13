@@ -12,6 +12,7 @@
  * por instalado e não grava.
  */
 
+import type { MouseEvent } from 'react';
 import { lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 export const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '894388872511780';
@@ -45,9 +46,13 @@ export function novoEventId(): string {
  * fecha esse buraco, e o `event_id` compartilhado impede que ela vire contagem
  * dobrada.
  *
- * O que identifica a pessoa são os cookies do próprio pixel. Eles nascem logo
- * depois do `init`, então o primeiro `PageView` pode chegar aqui antes deles:
- * daí a única retentativa, curta, antes de desistir em silêncio.
+ * O que identifica a pessoa são os cookies do próprio pixel, ou o `fbclid` do
+ * anúncio, que o servidor transforma em `fbc`. Os cookies nascem logo depois
+ * do `init`, então o primeiro evento pode chegar aqui antes deles: daí a única
+ * retentativa, curta, antes de desistir em silêncio.
+ *
+ * `InitiateCheckout` não espera. Ele nasce num clique que tira a pessoa da
+ * página, e uma retentativa de 1,5 s depois da saída nunca acontece.
  */
 function espelharNoServidor(
   evento: string,
@@ -58,8 +63,9 @@ function espelharNoServidor(
   if (typeof window === 'undefined') return;
 
   const { fbp, fbc } = lerCookiesDoPixel();
-  if (!fbp && !fbc) {
-    if (tentativa === 0) {
+  const fbclid = lerUtm().fbclid;
+  if (!fbp && !fbc && !fbclid) {
+    if (tentativa === 0 && evento !== 'InitiateCheckout') {
       window.setTimeout(() => espelharNoServidor(evento, eventId, produtoId, 1), 1500);
     }
     return;
@@ -80,7 +86,7 @@ function espelharNoServidor(
         caminho: window.location.pathname,
         fbp,
         fbc,
-        fbclid: lerUtm().fbclid,
+        fbclid,
       }),
     }).catch(() => {
       /* a perna do navegador já saiu; a do servidor é redundância */
@@ -122,4 +128,63 @@ export function rastrear(
   window.fbq?.('trackSingle', PIXEL_ID, evento, parametros, { eventID: eventId });
   if (ESPELHADOS.has(evento)) espelharNoServidor(evento, eventId, produtoId);
   return eventId;
+}
+
+/**
+ * Quanto o clique de compra segura a saída para o pixel do navegador partir.
+ * A cópia do servidor já sai com `keepalive` e não depende disto.
+ */
+const ESPERA_ANTES_DE_SAIR_MS = 150;
+
+/**
+ * Segura a navegação de um link de checkout por um instante.
+ *
+ * Sem isto, o `InitiateCheckout` do navegador é chamado e a troca de página
+ * cancela o envio: a auditoria de 28/09/2026 viu o evento sair só pelo
+ * servidor. Abrir em outra aba (Ctrl, Cmd, Shift, botão do meio) não troca a
+ * página atual, então segue o comportamento normal do navegador.
+ */
+export function seguirAposMedir(evento: MouseEvent<HTMLAnchorElement>): void {
+  if (typeof window === 'undefined') return;
+  const link = evento.currentTarget;
+  if (
+    evento.defaultPrevented ||
+    evento.button !== 0 ||
+    evento.metaKey ||
+    evento.ctrlKey ||
+    evento.shiftKey ||
+    evento.altKey ||
+    (link.target && link.target !== '_self')
+  ) {
+    return;
+  }
+  const destino = link.href;
+  evento.preventDefault();
+  link.dataset.saindo = '1';
+  window.setTimeout(() => window.location.assign(destino), ESPERA_ANTES_DE_SAIR_MS);
+  // Navegação interrompida (Esc, aba que não descarrega) não dispara
+  // `pageshow`: sem este prazo o botão de compra ficaria morto até recarregar.
+  window.setTimeout(() => {
+    delete link.dataset.saindo;
+  }, 3000);
+}
+
+/**
+ * Este link já está saindo? A espera de {@link seguirAposMedir} deixa a página
+ * viva o bastante para um segundo toque, que mediria outro checkout com outro
+ * `event_id`. Quem volta pelo botão "voltar" do navegador encontra a página do
+ * cache, com a marca ainda posta: `pageshow` a apaga.
+ */
+export function jaEstaSaindo(evento: MouseEvent<HTMLAnchorElement>): boolean {
+  if (evento.currentTarget.dataset.saindo !== '1') return false;
+  evento.preventDefault();
+  return true;
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('pageshow', () => {
+    document.querySelectorAll<HTMLElement>('[data-saindo]').forEach((el) => {
+      delete el.dataset.saindo;
+    });
+  });
 }

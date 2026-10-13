@@ -21,6 +21,8 @@ type Resposta = {
   aprovada?: boolean;
   valor?: number;
   event_id?: string;
+  /** O degrau que o servidor reconheceu pelo valor pago. */
+  produto?: { id: string; nome: string };
 };
 
 /**
@@ -96,7 +98,9 @@ export function PurchaseTracker({
           {
             value: valorFinal,
             currency: oferta.precoMoeda,
-            content_name: 'Desafio Abdômen Insano',
+            // Mesmo produto que o servidor mandou com este event_id.
+            content_name: dados.produto?.nome ?? 'Desafio Abdômen Insano',
+            ...(dados.produto ? { content_ids: [dados.produto.id], content_type: 'product' } : {}),
           },
           { eventID: dados.event_id },
         );

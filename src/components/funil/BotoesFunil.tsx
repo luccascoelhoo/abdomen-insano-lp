@@ -2,9 +2,9 @@
 
 import type { MouseEvent } from 'react';
 import { oferta, type BotaoFunil } from '@/content/desafio';
-import { rastrear } from '@/lib/pixel';
+import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { produtoPorId, type ProdutoId } from '@/lib/produtos';
-import { anexarParametros, lerUtm } from '@/lib/utm';
+import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
   aceitar: BotaoFunil;
@@ -20,10 +20,12 @@ type Props = {
 /**
  * No clique, repassa tudo que chegou na URL (a Cakto manda email e transação
  * por ali, e o /obrigado precisa deles no fim do funil) mais as UTMs
- * guardadas na LP — sem isso a venda do upsell perde a origem.
+ * guardadas na LP — sem isso a venda do upsell perde a origem. Os cookies do
+ * pixel vão junto pelo mesmo motivo do checkout do front: é o que deixa a
+ * Conversions API casar a venda do upsell com quem clicou no anúncio.
  */
 function repassarParametros(evento: MouseEvent<HTMLAnchorElement>) {
-  const extras: Record<string, string> = { ...lerUtm() };
+  const extras: Record<string, string> = { ...lerUtm(), ...lerCookiesDoPixel() };
   new URLSearchParams(window.location.search).forEach((v, k) => {
     extras[k] = v;
   });
@@ -41,6 +43,7 @@ export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esc
    * saber de qual degrau, senão o upsell vira número do front.
    */
   function aceitarOferta(evento: MouseEvent<HTMLAnchorElement>) {
+    if (jaEstaSaindo(evento)) return;
     // Primeiro o que a venda precisa, depois o que a medição precisa: se o
     // pixel explodir (extensão de privacidade, cookie barrado), o link já
     // saiu com UTM, email e id de transação. Medir é acessório; o parâmetro
@@ -62,6 +65,7 @@ export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esc
         produto.id,
       );
     }
+    seguirAposMedir(evento);
   }
 
   // A VTurb revela o elemento com `display: block` — por isso o `.esconder`

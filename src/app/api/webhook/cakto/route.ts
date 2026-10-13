@@ -64,6 +64,10 @@ type PayloadCakto = {
     sck?: string | null;
     fbc?: string | null;
     fbp?: string | null;
+    fbclid?: string | null;
+    /** Quando o pagamento foi aprovado; o nome muda conforme a versão da Cakto. */
+    paidAt?: string | null;
+    paid_at?: string | null;
   };
   customer?: { email?: string; name?: string; phone?: string };
   email?: string;
@@ -305,6 +309,11 @@ export async function POST(request: Request) {
     valor_centavos,
     produto: classificarPorValor(valor_centavos).nome,
     utm,
+    // Só a data de pagamento, e só da venda aprovada. A data de criação do pedido
+    // não serve (PIX e boleto pagam dias depois), e no estorno o painel guarda
+    // a primeira data que recebeu: sem data aqui, vale a hora do processamento.
+    ocorrido_em:
+      status === 'aprovada' ? (payload.data?.paidAt ?? payload.data?.paid_at ?? null) : null,
   });
 
   return NextResponse.json({ ok: true, medicao, medicao_gravada, painel });
@@ -334,6 +343,7 @@ function utmDosCamposPlanos(
     ['sck', data.sck],
     ['fbc', data.fbc],
     ['fbp', data.fbp],
+    ['fbclid', data.fbclid],
   ];
   const utm: Record<string, string> = {};
   for (const [k, v] of pares) if (typeof v === 'string' && v) utm[k] = v;

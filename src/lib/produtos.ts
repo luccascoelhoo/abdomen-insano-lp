@@ -60,18 +60,45 @@ export function produtoPorId(id: string | undefined): Produto | undefined {
 }
 
 /**
+ * O front somado a cada combinação possível de order bumps.
+ *
+ * O bump entra na MESMA transação do front, então o webhook recebe um valor só
+ * (R$ 42 + R$ 14,90 = R$ 56,90) que não bate com nenhum degrau. Sem isto, toda
+ * compra com bump virava "não classificada" e saía da conversão do front.
+ */
+const COMBINACOES_DO_FRONT: Produto[] = (() => {
+  const front = PRODUTOS.find((p) => p.id === ID_FRONT)!;
+  const bumps = PRODUTOS.filter((p) => p.degrau === 'bump');
+  const combinacoes: Produto[] = [];
+  for (let mascara = 1; mascara < 1 << bumps.length; mascara++) {
+    const escolhidos = bumps.filter((_, i) => mascara & (1 << i));
+    combinacoes.push({
+      id: front.id,
+      nome: [front.nome, ...escolhidos.map((b) => b.nome)].join(' + '),
+      degrau: 'front',
+      centavos: front.centavos + escolhidos.reduce((t, b) => t + b.centavos, 0),
+    });
+  }
+  return combinacoes;
+})();
+
+/**
  * Classifica pelo valor exato e, se não bater, pelo valor mais próximo dentro
  * de R$ 2,00. A folga existe porque taxa e arredondamento do gateway deslocam
  * centavos; acima disso é melhor devolver "não classificada" do que atribuir a
  * venda ao degrau errado e envenenar a otimização.
+ *
+ * Front com bump volta com o id do front (`dai-front`), porque é isso que a
+ * conversão personalizada do front filtra, e com os bumps no nome.
  */
 export function classificarPorValor(centavos: number): Produto {
-  const exato = PRODUTOS.find((p) => p.centavos === centavos);
+  const candidatos: readonly Produto[] = [...PRODUTOS, ...COMBINACOES_DO_FRONT];
+  const exato = candidatos.find((p) => p.centavos === centavos);
   if (exato) return exato;
 
   let melhor: Produto | null = null;
   let menorDiferenca = Number.POSITIVE_INFINITY;
-  for (const p of PRODUTOS) {
+  for (const p of candidatos) {
     const d = Math.abs(p.centavos - centavos);
     if (d < menorDiferenca) {
       menorDiferenca = d;
