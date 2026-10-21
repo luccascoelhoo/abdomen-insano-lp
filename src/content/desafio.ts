@@ -476,7 +476,14 @@ export const downsell: PaginaFunil = {
   paragrafos: [
     'Você liberou o **Melhor Plano do Projeto Shape Insano 360**. Assista o vídeo abaixo e **não feche nem atualize essa página!**',
   ],
-  vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
+  vsl: {
+    playerId: '6ad909948b6fe1ef3d42e9dd',
+    scriptUrl:
+      'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ad909948b6fe1ef3d42e9dd/v4/player.js',
+    // Sem o segundo do pitch os botões aparecem já. Quando souberem o minuto
+    // em que a oferta é falada no vídeo, colocar aqui.
+    delaySegundos: 0,
+  },
   aceitar: { texto: 'Sim, quero com 35% de desconto', url: 'https://pay.cakto.com.br/vx548za' },
   recusarTexto: 'Não, obrigado',
 };
