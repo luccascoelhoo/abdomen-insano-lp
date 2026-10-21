@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { rastrear } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
+import { usePreco } from '@/components/ui/Precos';
 
 /**
  * `ViewContent` — quem leu a oferta, e não quem bateu e saiu.
@@ -14,8 +15,10 @@ import { ID_FRONT } from '@/lib/produtos';
  *
  * Vive só na home. A `/obrigado` não tem oferta para ser lida.
  */
-export function ViewContentWatcher({ valor, moeda }: { valor: number; moeda: string }) {
+export function ViewContentWatcher({ moeda }: { moeda: string }) {
   const disparado = useRef(false);
+  // Preço vivo da Cakto; o de referência só se o layout não conseguiu ler.
+  const valor = usePreco(ID_FRONT);
 
   useEffect(() => {
     const marcar = () => {

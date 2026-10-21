@@ -5,6 +5,7 @@ import { oferta } from '@/content/desafio';
 import { destinoPosCompra } from '@/lib/funil';
 import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
+import { usePreco } from '@/components/ui/Precos';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
@@ -35,6 +36,7 @@ export function CtaButton({
 }: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [href, setHref] = useState<string>(oferta.checkoutUrl);
+  const preco = usePreco(ID_FRONT);
 
   // O link é montado de novo no clique: no carregamento o pixel ainda não criou
   // o cookie `_fbp`, e o checkout saía sem ele (auditoria de 28/09/2026).
@@ -63,7 +65,7 @@ export function CtaButton({
     rastrear(
       'InitiateCheckout',
       {
-        value: oferta.precoNumero,
+        value: preco ?? oferta.precoNumero,
         currency: oferta.precoMoeda,
         content_ids: [ID_FRONT],
         content_name: 'Desafio Abdômen Insano',

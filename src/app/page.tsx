@@ -15,7 +15,7 @@ import { oferta } from '@/content/desafio';
 export default function Home() {
   return (
     <>
-      <ViewContentWatcher valor={oferta.precoNumero} moeda={oferta.precoMoeda} />
+      <ViewContentWatcher moeda={oferta.precoMoeda} />
       <Hero />
       <Metodo />
       <Inspira />

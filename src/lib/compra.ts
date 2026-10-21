@@ -22,6 +22,15 @@ export type Compra = {
   medicao?: string | null;
 };
 
+/**
+ * Chave, dentro de `utm`, onde a venda aprovada guarda o id do produto que o
+ * webhook reconheceu. Mora ali para não exigir migration; o sublinhado separa
+ * de qualquer UTM de verdade, e o repasse ao painel só leva chaves `utm_`.
+ */
+export const CHAVE_PRODUTO = '_produto';
+/** O nome que o webhook mandou ao Meta, com os bumps quando houver. */
+export const CHAVE_PRODUTO_NOME = '_produto_nome';
+
 const TABLE = 'compras';
 const TABLE_ENVIOS = 'eventos_capi';
 

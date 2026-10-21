@@ -4,6 +4,7 @@ import type { MouseEvent } from 'react';
 import { oferta, type BotaoFunil } from '@/content/desafio';
 import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { produtoPorId, type ProdutoId } from '@/lib/produtos';
+import { usePreco } from '@/components/ui/Precos';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
@@ -38,6 +39,7 @@ function repassarParametros(evento: MouseEvent<HTMLAnchorElement>) {
  * nunca vira beco sem saída pra quem já pagou.
  */
 export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esconder }: Props) {
+  const preco = usePreco(produtoId);
   /**
    * O "sim" é um checkout começando, igual ao CTA da LP — e o Meta precisa
    * saber de qual degrau, senão o upsell vira número do front.
@@ -55,7 +57,7 @@ export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esc
       rastrear(
         'InitiateCheckout',
         {
-          value: produto.centavos / 100,
+          value: preco ?? produto.centavos / 100,
           currency: oferta.precoMoeda,
           content_ids: [produto.id],
           content_name: produto.nome,

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { oferta } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
 import { produtoPorId, type ProdutoId } from '@/lib/produtos';
+import { usePreco } from '@/components/ui/Precos';
 
 /**
  * `ViewContent` da oferta pós-compra.
@@ -19,6 +20,7 @@ import { produtoPorId, type ProdutoId } from '@/lib/produtos';
  */
 export function ViewContentFunil({ produtoId }: { produtoId: ProdutoId }) {
   const disparado = useRef(false);
+  const preco = usePreco(produtoId);
 
   useEffect(() => {
     if (disparado.current) return;
@@ -30,7 +32,7 @@ export function ViewContentFunil({ produtoId }: { produtoId: ProdutoId }) {
     rastrear(
       'ViewContent',
       {
-        value: produto.centavos / 100,
+        value: preco ?? produto.centavos / 100,
         currency: oferta.precoMoeda,
         content_ids: [produto.id],
         content_name: produto.nome,
@@ -38,7 +40,7 @@ export function ViewContentFunil({ produtoId }: { produtoId: ProdutoId }) {
       },
       produto.id,
     );
-  }, [produtoId]);
+  }, [produtoId, preco]);
 
   return null;
 }

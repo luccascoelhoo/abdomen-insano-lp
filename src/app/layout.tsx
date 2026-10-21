@@ -7,6 +7,8 @@ import { SmoothScroll } from '@/components/ui/SmoothScroll';
 import { MetaPixel } from '@/components/ui/MetaPixel';
 import { PIXEL_ID } from '@/lib/pixel';
 import { UtmCatcher } from '@/components/ui/UtmCatcher';
+import { PrecosProvider } from '@/components/ui/Precos';
+import { precosAtuais } from '@/lib/precos';
 import { faq, marca, oferta } from '@/content/desafio';
 
 /**
@@ -135,7 +137,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${GTM_ID}');`;
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Preço vivo da Cakto para os eventos do pixel (ver lib/precos).
+  const precos = await precosAtuais();
   return (
     <html lang="pt-BR" className={`${display.variable} ${corpo.variable} ${dado.variable}`}>
       <head>
@@ -167,7 +171,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll />
         <ScrollProgress />
         <Grain />
-        {children}
+        <PrecosProvider precos={precos}>{children}</PrecosProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
