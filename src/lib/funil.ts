@@ -32,6 +32,11 @@ export function destinoPosCompra(): string {
   return paginaPronta(upsell) ? ROTA_UPSELL : ROTA_OBRIGADO;
 }
 
+/** Pra onde vai quem aceita uma oferta do funil (upsell ou downsell): criar a conta. */
+export function destinoAceite(): string {
+  return ROTA_OBRIGADO;
+}
+
 /** Pra onde vai quem clica "não" no upsell. */
 export function destinoRecusaUpsell(): string {
   return paginaPronta(downsell) ? ROTA_DOWNSELL : ROTA_OBRIGADO;
