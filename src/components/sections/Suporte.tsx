@@ -14,8 +14,6 @@ function IconeWpp() {
 }
 
 export function Suporte() {
-  const href = suporte.linkUrl || `mailto:${suporte.emailContato}`;
-
   return (
     <section className="sec suporte">
       <div className="wrap">
@@ -28,9 +26,9 @@ export function Suporte() {
 
             <a
               className="suporte-card__cta"
-              href={href}
-              target={suporte.linkUrl ? '_blank' : undefined}
-              rel={suporte.linkUrl ? 'noopener noreferrer' : undefined}
+              href={suporte.linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {suporte.linkTexto}
             </a>

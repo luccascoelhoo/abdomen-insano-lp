@@ -378,17 +378,20 @@ export const suporte = {
     'Caso tenha ficado qualquer dúvida sobre o desafio, ou gostaria de falar com a nossa equipe, ',
   leadDestaque: 'entre em contato conosco agora mesmo.',
   linkTexto: 'Chamar o Suporte!',
-  linkUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL ?? '',
-  /** Fallback quando o link do WhatsApp ainda não foi configurado. */
-  emailContato: process.env.NEXT_PUBLIC_EMAIL_SUPORTE ?? 'suporte@desafioabdomeninsano.com.br',
-  emailTexto: 'Escrever pro suporte',
+  // `||` (e não `??`): variável vazia na Vercel chega como ''. Sem WhatsApp
+  // configurado cai na página de suporte do Flameer — o e-mail antigo
+  // (suporte@desafioabdomeninsano.com.br) não recebia nada.
+  linkUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://flameer.vercel.app/suporte',
 } as const;
 
 export const rodape = {
   navegacao: [
-    { rotulo: 'Contato', href: '/contato' },
-    { rotulo: 'Políticas de Privacidade', href: '/privacidade' },
-    { rotulo: 'Termos de Uso', href: '/termos' },
+    // Páginas legais e de atendimento moram no site do Flameer (o app onde o
+    // desafio é entregue). Externas de propósito: abrem em outra aba pra não
+    // derrubar a VSL de quem está no meio do funil.
+    { rotulo: 'Contato', href: 'https://flameer.vercel.app/suporte' },
+    { rotulo: 'Políticas de Privacidade', href: 'https://flameer.vercel.app/privacidade' },
+    { rotulo: 'Termos de Uso', href: 'https://flameer.vercel.app/termos' },
   ],
   responsaveis: 'Karla — CRN1 23440 · Gledson — CREF 015440-G/DF',
   empresa: '© 2026 SI TREINAMENTOS LTDA · CNPJ 62.568.265/0001-48',

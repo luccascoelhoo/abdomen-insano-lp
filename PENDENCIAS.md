@@ -50,7 +50,7 @@ soltar arquivos e apertar botões em painel externo.
 
 ### 7. Suporte
 - [ ] Setar `NEXT_PUBLIC_WHATSAPP_URL="https://wa.me/..."` — hoje cai no fallback de email
-- [ ] Setar `NEXT_PUBLIC_EMAIL_SUPORTE` com o email real de atendimento (fallback usa `suporte@desafioabdomeninsano.com.br` como padrão)
+- [x] Suporte: sem `NEXT_PUBLIC_WHATSAPP_URL`, o botão leva a `https://flameer.vercel.app/suporte` (o e-mail antigo não recebia nada)
 
 ### 8. Domínio + deploy
 - [ ] Comprar domínio (ex.: `desafioabdomeninsano.com.br`)
