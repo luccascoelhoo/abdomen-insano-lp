@@ -9,7 +9,8 @@ import { downsell, upsell, type PaginaFunil } from '@/content/desafio';
  *
  * Uma página só entra no caminho quando está pronta (VSL + link do "sim").
  * Sem isso ela é pulada: melhor ir direto pro /obrigado do que mostrar um
- * vídeo vazio pra quem acabou de pagar.
+ * vídeo vazio pra quem acabou de pagar. O downsell só é alcançado a partir do
+ * upsell, nunca direto depois da compra.
  */
 export const ROTA_UPSELL = '/shapeinsano-up';
 export const ROTA_DOWNSELL = '/shapeinsano-down';
@@ -19,11 +20,16 @@ export function paginaPronta(pagina: PaginaFunil): boolean {
   return Boolean(pagina.vsl.playerId && pagina.vsl.scriptUrl && pagina.aceitar.url);
 }
 
-/** Pra onde o checkout do Desafio devolve o comprador. */
+/**
+ * Pra onde o checkout do Desafio devolve o comprador.
+ *
+ * Só o upsell abre o funil. O downsell NÃO é porta de entrada: ele é a segunda
+ * chance de quem recusou o upsell ("aumentei o seu desconto" só faz sentido
+ * depois de um desconto menor). Sem o upsell pronto, o comprador vai direto
+ * pro /obrigado — mesmo que o downsell já esteja pronto.
+ */
 export function destinoPosCompra(): string {
-  if (paginaPronta(upsell)) return ROTA_UPSELL;
-  if (paginaPronta(downsell)) return ROTA_DOWNSELL;
-  return ROTA_OBRIGADO;
+  return paginaPronta(upsell) ? ROTA_UPSELL : ROTA_OBRIGADO;
 }
 
 /** Pra onde vai quem clica "não" no upsell. */
