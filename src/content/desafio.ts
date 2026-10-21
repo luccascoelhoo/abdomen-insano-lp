@@ -427,8 +427,23 @@ export type Vsl = {
   delaySegundos: number;
 };
 
-/** `url` = link do checkout da oferta na Cakto. */
-export type BotaoFunil = { texto: string; url: string };
+/**
+ * Oferta no botão de um clique da Cakto (`upsell.js`): cobra no cartão que a
+ * pessoa acabou de usar, sem abrir outro checkout.
+ */
+export type OfertaCakto = {
+  /** `offer-id` do código de incorporação do painel — o trecho antes do `_` na URL do checkout. */
+  id: string;
+  /** `offer-type` do código de incorporação do painel da Cakto. */
+  tipo: 'upsell' | 'downsell';
+};
+
+/**
+ * `url` = link do checkout da oferta na Cakto. Com `cakto`, o "sim" vira o
+ * botão de um clique e `url` fica só como reserva (script bloqueado ou fora
+ * do ar): quem não consegue o um clique ainda consegue comprar.
+ */
+export type BotaoFunil = { texto: string; url: string; cakto?: OfertaCakto };
 
 export type PaginaFunil = {
   metaTitulo: string;
@@ -510,6 +525,7 @@ export const upsell: PaginaFunil = {
   aceitar: {
     texto: 'Quero o Shape Insano 360',
     url: 'https://pay.cakto.com.br/39rfuow_1081230',
+    cakto: { id: '39rfuow', tipo: 'upsell' },
   },
   recusarTexto: 'Não quero, seguir só com o Desafio',
 };

@@ -253,6 +253,35 @@ Sequência recomendada quando as chaves estiverem no lugar:
 10. Simula webhook de reembolso (`status: refunded`) pelo próprio painel
     Cakto e confirma que a linha em `compras` virou `estornada`.
 
+### 3.1.2. Botão de um clique da Cakto (upsell e downsell)
+
+Os "sim" das páginas `/shapeinsano-up` e `/shapeinsano-down` usam o `upsell.js`
+da Cakto (`cakto-upsell-accept` / `cakto-upsell-reject`). Como ele se comporta
+(lido no código do script, não na documentação):
+
+- **No cartão, o "sim" cobra na hora**, sem tela de confirmação: ele carrega a
+  oferta, cobra no cartão que acabou de pagar o Desafio e, ~5 s depois, segue
+  para o endereço de aceite (`/obrigado`). Pagando em **PIX**, abre um modal com
+  o QR code. **Qualquer teste com token real é uma cobrança real.**
+- **Qualquer falha manda a pessoa para o endereço do "não"** (no upsell, o
+  downsell; no downsell, o `/obrigado`) — oferta que não carrega, cartão
+  recusado, token inválido.
+- **O token** (`upsellToken`) chega na URL pela Cakto e o "não" o leva adiante,
+  para o downsell cobrar do mesmo jeito. Sem token ele ainda tenta por uma
+  impressão digital do navegador.
+- O redirecionamento da Cakto **só acrescenta o token**; por isso o site coloca
+  e-mail, transação e UTM nos endereços de aceite e de recusa antes de entregá-los
+  ao botão, e o `/obrigado` continua recebendo o que precisa.
+- Se o `upsell.js` não carrega (bloqueador, Cakto fora do ar), a página mostra o
+  link de checkout comum (`aceitar.url`) — a venda não depende do um clique.
+- O clique no "sim" continua disparando `InitiateCheckout` do degrau certo.
+
+Configuração em `src/content/desafio.ts` (`aceitar.cakto`): `id` é o `offer-id` e
+`tipo` é o `offer-type` do código de incorporação do painel. O do upsell
+(`39rfuow`, `upsell`) veio do código da Cakto; **o `tipo` do downsell
+(`vx548za`) está como `downsell` por dedução — confirmar com o código de
+incorporação do downsell no painel antes de ligar.**
+
 ### 5.1. Teste de compra do funil (upsell → downsell)
 
 Pré-requisitos: os dois players da VTurb preenchidos em `src/content/desafio.ts`
@@ -271,6 +300,9 @@ clique medido mergeado, e na Cakto as páginas de agradecimento configuradas
 
 **Só dá pra verificar com compra de verdade (Cakto + Supabase + Gerenciador de Eventos):**
 1. Compra do Desafio (R$ 42). Deve cair em `/shapeinsano-up`, não em `/obrigado`.
+   Com o botão de um clique, a URL da página deve chegar com `upsellToken`; se
+   não chegar, a Cakto não está redirecionando o Desafio para o upsell por
+   dentro do fluxo dela.
 2. Recusa o upsell → `/shapeinsano-down`. Recusa de novo → `/obrigado`.
 3. Em outra compra, aceita o upsell. Depois do pagamento o comprador deve
    chegar em `/obrigado` **com o e-mail na URL** — se chegar em outro lugar, a
