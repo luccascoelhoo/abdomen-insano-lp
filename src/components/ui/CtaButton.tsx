@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
 import { oferta } from '@/content/desafio';
 import { destinoPosCompra } from '@/lib/funil';
-import { rastrear } from '@/lib/pixel';
+import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
@@ -36,21 +36,44 @@ export function CtaButton({
   const ref = useRef<HTMLAnchorElement>(null);
   const [href, setHref] = useState<string>(oferta.checkoutUrl);
 
-  useEffect(() => {
+  // O link é montado de novo no clique: no carregamento o pixel ainda não criou
+  // o cookie `_fbp`, e o checkout saía sem ele (auditoria de 28/09/2026).
+  const montarLink = useCallback(() => {
     const utm = lerUtm();
     // Primeira parada depois do pagamento: upsell, se estiver pronto (lib/funil).
     const returnUrl = `${window.location.origin}${destinoPosCompra()}`;
-    setHref(
-      anexarParametros(oferta.checkoutUrl, {
-        ...utm,
-        ...lerCookiesDoPixel(),
-        redirect_url: returnUrl,
-        return_url: returnUrl,
-        thank_you_url: returnUrl,
-        origem,
-      }),
-    );
+    return anexarParametros(oferta.checkoutUrl, {
+      ...utm,
+      ...lerCookiesDoPixel(),
+      redirect_url: returnUrl,
+      return_url: returnUrl,
+      thank_you_url: returnUrl,
+      origem,
+    });
   }, [origem]);
+
+  useEffect(() => {
+    setHref(montarLink());
+  }, [montarLink]);
+
+  function aoClicar(evento: MouseEvent<HTMLAnchorElement>) {
+    if (jaEstaSaindo(evento)) return;
+    // Primeiro o link, que é o que a venda precisa; depois a medição.
+    evento.currentTarget.href = montarLink();
+    rastrear(
+      'InitiateCheckout',
+      {
+        value: oferta.precoNumero,
+        currency: oferta.precoMoeda,
+        content_ids: [ID_FRONT],
+        content_name: 'Desafio Abdômen Insano',
+        content_type: 'product',
+        origem,
+      },
+      ID_FRONT,
+    );
+    seguirAposMedir(evento);
+  }
 
   useEffect(() => {
     const el = ref.current;
@@ -111,20 +134,7 @@ export function CtaButton({
       href={href}
       rel="noopener"
       data-origem={origem}
-      onClick={() => {
-        rastrear(
-          'InitiateCheckout',
-          {
-            value: oferta.precoNumero,
-            currency: oferta.precoMoeda,
-            content_ids: [ID_FRONT],
-            content_name: 'Desafio Abdômen Insano',
-            content_type: 'product',
-            origem,
-          },
-          ID_FRONT,
-        );
-      }}
+      onClick={aoClicar}
     >
       {children ?? oferta.ctaTexto}
     </a>

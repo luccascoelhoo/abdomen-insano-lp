@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { buscarCompraPorTransacao } from '@/lib/compra';
 import { supabaseConfigured } from '@/lib/supabase';
+import { classificarPorValor } from '@/lib/produtos';
 import { eventIdDaTransacao } from '@/lib/transacao';
 
 /**
@@ -17,7 +18,11 @@ import { eventIdDaTransacao } from '@/lib/transacao';
  * mesmo.
  *
  * Não devolve nada sobre a pessoa: só se a venda existe, se está aprovada, o
- * valor em centavos e o id do evento. Quem tem o id da transação já o tinha.
+ * valor, o produto e o id do evento. Quem tem o id da transação já o tinha.
+ *
+ * O produto sai da mesma classificação que o webhook usa no `Purchase` do
+ * servidor. Os dois lados do mesmo `event_id` precisam citar o mesmo produto,
+ * senão o navegador contava todo upsell como Desafio.
  */
 export const runtime = 'nodejs';
 
@@ -50,6 +55,7 @@ export async function POST(request: Request) {
       aprovada: compra.status === 'aprovada',
       valor: compra.valor_centavos / 100,
       event_id: eventIdDaTransacao(compra.transacao_id),
+      produto: (({ id, nome }) => ({ id, nome }))(classificarPorValor(compra.valor_centavos)),
     });
   } catch (erro) {
     console.error('[compra/status] falha', erro);
