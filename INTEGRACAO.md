@@ -270,7 +270,7 @@ clique medido mergeado, e na Cakto as páginas de agradecimento configuradas
   197; o do downsell com `['si360-downsell']`, valor 127.
 
 **Só dá pra verificar com compra de verdade (Cakto + Supabase + Gerenciador de Eventos):**
-1. Compra do Desafio (R$ 42). Deve cair em `/shapeinsano-up`, não em `/obrigado`.
+1. Compra do Desafio (pelo valor atual da oferta na Cakto). Deve cair em `/shapeinsano-up`, não em `/obrigado`.
 2. Recusa o upsell → `/shapeinsano-down`. Recusa de novo → `/obrigado`.
 3. Em outra compra, aceita o upsell. Depois do pagamento o comprador deve
    chegar em `/obrigado` **com o e-mail na URL** — se chegar em outro lugar, a
@@ -278,7 +278,8 @@ clique medido mergeado, e na Cakto as páginas de agradecimento configuradas
 4. Confirma a cobrança do Shape Insano 360 (mensal ou anual) nos dois
    checkouts — hoje divergem entre upsell e downsell.
 5. Supabase → `compras`: uma linha por transação, com o valor de cada degrau
-   (4200, 19700, 12700 centavos; Desafio com bump soma os bumps).
+   com o valor atual de cada oferta na Cakto (o site lê o preço de lá; os valores de
+   `src/lib/produtos.ts` são só reserva). Desafio com bump soma os bumps.
 6. Gerenciador de Eventos: um `Purchase` por transação, com o `content_ids`
    do degrau certo (`dai-front`, `si360-upsell`, `si360-downsell`) e o mesmo
    `event_id` (`cakto:<transação>`) no navegador e no servidor.
