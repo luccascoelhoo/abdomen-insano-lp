@@ -2803,3 +2803,37 @@ a.provoke:focus-visible {
     animation: none;
   }
 }
+
+/* ---- botão de um clique da Cakto (shadow DOM: só `::part(button)` alcança) ---- */
+.funil__acoes cakto-upsell-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+.funil__acoes cakto-upsell-accept {
+  display: block;
+  width: 100%;
+}
+.funil__acoes cakto-upsell-accept::part(button) {
+  width: 100%;
+  border: 2px solid var(--orange);
+  border-radius: 999px;
+  padding: 20px 24px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+  line-height: 1.05;
+  text-align: center;
+  text-wrap: balance;
+}
+.funil__acoes cakto-upsell-reject::part(button) {
+  margin-top: 0;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: rgba(241, 238, 231, 0.5);
+}
+.funil__acoes cakto-upsell-reject::part(button):hover {
+  color: rgba(241, 238, 231, 0.8);
+}

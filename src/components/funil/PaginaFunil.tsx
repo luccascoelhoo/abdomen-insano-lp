@@ -20,7 +20,15 @@ function comNegrito(texto: string) {
  * protagonista. Nada de menu, nada de link pra fora além do rodapé legal:
  * a única saída é assistir e decidir.
  */
-export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destinoRecusa: string }) {
+export function PaginaFunil({
+  pagina,
+  destinoAceite,
+  destinoRecusa,
+}: {
+  pagina: Pagina;
+  destinoAceite: string;
+  destinoRecusa: string;
+}) {
   const esconderBotoes = Boolean(pagina.vsl.playerId && pagina.vsl.delaySegundos > 0);
 
   return (
@@ -79,6 +87,7 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
           aceitar={pagina.aceitar}
           produtoId={pagina.produtoId}
           recusarTexto={pagina.recusarTexto}
+          aceiteHref={destinoAceite}
           recusarHref={destinoRecusa}
           esconder={esconderBotoes}
         />
