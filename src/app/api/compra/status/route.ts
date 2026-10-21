@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { buscarCompraPorTransacao } from '@/lib/compra';
+import { CHAVE_PRODUTO, CHAVE_PRODUTO_NOME, buscarCompraPorTransacao } from '@/lib/compra';
 import { supabaseConfigured } from '@/lib/supabase';
+import { precosAtuais } from '@/lib/precos';
 import { classificarPorValor } from '@/lib/produtos';
 import { eventIdDaTransacao } from '@/lib/transacao';
 
@@ -20,8 +21,8 @@ import { eventIdDaTransacao } from '@/lib/transacao';
  * Não devolve nada sobre a pessoa: só se a venda existe, se está aprovada, o
  * valor, o produto e o id do evento. Quem tem o id da transação já o tinha.
  *
- * O produto sai da mesma classificação que o webhook usa no `Purchase` do
- * servidor. Os dois lados do mesmo `event_id` precisam citar o mesmo produto,
+ * O produto é o que o webhook gravou na venda aprovada (`CHAVE_PRODUTO`) e,
+ * em venda gravada antes disso, a mesma classificação por valor do webhook. Os dois lados do mesmo `event_id` precisam citar o mesmo produto,
  * senão o navegador contava todo upsell como Desafio.
  */
 export const runtime = 'nodejs';
@@ -55,7 +56,17 @@ export async function POST(request: Request) {
       aprovada: compra.status === 'aprovada',
       valor: compra.valor_centavos / 100,
       event_id: eventIdDaTransacao(compra.transacao_id),
-      produto: (({ id, nome }) => ({ id, nome }))(classificarPorValor(compra.valor_centavos)),
+      // O que o webhook gravou vale sempre, inclusive "desconhecido": o
+      // navegador repete o servidor, não corrige. Reclassificar só a venda
+      // gravada antes do carimbo existir.
+      produto: compra.utm?.[CHAVE_PRODUTO]
+        ? {
+            id: compra.utm[CHAVE_PRODUTO],
+            nome: compra.utm[CHAVE_PRODUTO_NOME] ?? compra.utm[CHAVE_PRODUTO],
+          }
+        : (({ id, nome }) => ({ id, nome }))(
+            classificarPorValor(compra.valor_centavos, await precosAtuais()),
+          ),
     });
   } catch (erro) {
     console.error('[compra/status] falha', erro);

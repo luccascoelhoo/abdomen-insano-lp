@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import {
+  CHAVE_PRODUTO,
+  CHAVE_PRODUTO_NOME,
   medicaoPersistivel,
   registrarEnvioCapi,
   registrarMedicaoDaCompra,
@@ -10,7 +12,8 @@ import {
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { PIXEL_ID } from '@/lib/pixel';
 import { repassarVendaAoMetrics } from '@/lib/frota-metrics';
-import { classificarPorValor } from '@/lib/produtos';
+import { classificarVenda, produtoPorOferta } from '@/lib/produtos';
+import { precosAtuais } from '@/lib/precos';
 import { eventIdDaTransacao, idDaTransacao } from '@/lib/transacao';
 import { supabaseConfigured } from '@/lib/supabase';
 
@@ -226,6 +229,32 @@ export async function POST(request: Request) {
     );
   }
 
+  // Qual degrau foi vendido: pela oferta que a Cakto diz, e pelo valor só se
+  // ela não disser. O campo exato da oferta no aviso ainda não foi visto numa
+  // venda real; o log diz qual caminho decidiu e onde a oferta estava.
+  const ofertas = ofertasNoPayload(payload);
+  const { produto, por } = classificarVenda({
+    ofertas: ofertas.map((o) => o.valor),
+    centavos: valor_centavos,
+    precos: await precosAtuais(),
+  });
+  console.info('[webhook/cakto] produto', {
+    transacao_id,
+    produto: produto.id,
+    por,
+    campos_oferta: ofertas.map((o) => o.campo),
+    valor_centavos,
+  });
+  // A venda aprovada guarda o produto ao lado das UTMs, onde `/api/compra/status`
+  // o lê para o Purchase do navegador citar o mesmo produto que o do servidor.
+  // Só a aprovada carimba. Um aviso posterior que traga UTMs (estorno,
+  // reentrega) regrava o bloco sem o carimbo; não afeta o Purchase, que só
+  // sai de venda aprovada, e a reentrega da aprovada carimba de novo.
+  const utmGravada =
+    status === 'aprovada'
+      ? { ...(utm ?? {}), [CHAVE_PRODUTO]: produto.id, [CHAVE_PRODUTO_NOME]: produto.nome }
+      : utm;
+
   // Só venda aprovada vira Purchase. Pendente e estorno ficam no banco e não
   // sobem: evento de dinheiro que não entrou infla o resultado da campanha.
   let medicao: string = 'nao_aplicavel';
@@ -236,7 +265,6 @@ export async function POST(request: Request) {
         transacao_id,
       });
     } else {
-      const produto = classificarPorValor(valor_centavos);
       const r = await enviarEventoCapi({
         evento: 'Purchase',
         eventId: eventIdDaTransacao(transacao_id),
@@ -276,7 +304,7 @@ export async function POST(request: Request) {
       transacao_id,
       status,
       valor_centavos,
-      utm,
+      utm: utmGravada,
     });
   } catch (erro) {
     console.error('[webhook/cakto] falha ao gravar compra', { transacao_id, medicao, erro });
@@ -307,7 +335,7 @@ export async function POST(request: Request) {
     transacao_id,
     status,
     valor_centavos,
-    produto: classificarPorValor(valor_centavos).nome,
+    produto: produto.nome,
     utm,
     // Só a data de pagamento, e só da venda aprovada. A data de criação do pedido
     // não serve (PIX e boleto pagam dias depois), e no estorno o painel guarda
@@ -348,4 +376,29 @@ function utmDosCamposPlanos(
   const utm: Record<string, string> = {};
   for (const [k, v] of pares) if (typeof v === 'string' && v) utm[k] = v;
   return Object.keys(utm).length ? utm : null;
+}
+
+/**
+ * Procura no aviso todo texto que identifique uma oferta do catálogo: id, id
+ * curto ou URL do checkout. Varre em vez de ler um campo fixo porque o formato
+ * do aviso muda entre versões da Cakto, e um nome de campo errado aqui faria a
+ * classificação cair no valor sem ninguém perceber. Devolve todas, com o
+ * caminho de cada uma: quem desempata é `classificarVenda`.
+ */
+function ofertasNoPayload(payload: PayloadCakto): Array<{ valor: string; campo: string }> {
+  const achadas: Array<{ valor: string; campo: string }> = [];
+  const pilha: Array<[unknown, string, number]> = [[payload, '', 0]];
+  while (pilha.length) {
+    const [no, caminho, nivel] = pilha.pop()!;
+    if (typeof no === 'string') {
+      if (produtoPorOferta(no)) achadas.push({ valor: no, campo: caminho });
+    } else if (no && typeof no === 'object' && nivel < 6) {
+      for (const [k, v] of Object.entries(no)) {
+        // O cliente não tem nada de oferta, e é onde mora dado pessoal.
+        if (k === 'customer' || k === 'secret') continue;
+        pilha.push([v, caminho ? `${caminho}.${k}` : k, nivel + 1]);
+      }
+    }
+  }
+  return achadas;
 }

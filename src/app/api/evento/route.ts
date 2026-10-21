@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { oferta } from '@/content/desafio';
 import { registrarEnvioCapi } from '@/lib/compra';
-import { produtoPorId } from '@/lib/produtos';
+import { ID_FRONT, precoDe, produtoPorId } from '@/lib/produtos';
+import { precosAtuais } from '@/lib/precos';
 import { supabaseConfigured } from '@/lib/supabase';
 
 /**
@@ -124,7 +125,8 @@ export async function POST(request: Request) {
     eventId,
     fbp,
     fbc,
-    valor: produto ? produto.centavos / 100 : oferta.precoNumero,
+    // Mesmo preço vivo que o navegador mandou na perna dele (lib/precos).
+    valor: precoDe(produto ?? produtoPorId(ID_FRONT)!, await precosAtuais()) / 100,
     moeda: oferta.precoMoeda,
     urlOrigem: `${base}${caminho}`,
     conteudo: produto
