@@ -87,7 +87,12 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
       <footer className="funil__rodape">
         <nav className="footer__nav">
           {rodape.navegacao.map((item) => (
-            <Link key={item.href} href={item.href}>
+            <Link
+              key={item.href}
+              href={item.href}
+              target={item.href.startsWith('http') ? '_blank' : undefined}
+              rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
               {item.rotulo}
             </Link>
           ))}

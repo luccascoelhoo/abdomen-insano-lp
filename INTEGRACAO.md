@@ -253,6 +253,38 @@ Sequência recomendada quando as chaves estiverem no lugar:
 10. Simula webhook de reembolso (`status: refunded`) pelo próprio painel
     Cakto e confirma que a linha em `compras` virou `estornada`.
 
+### 5.1. Teste de compra do funil (upsell → downsell)
+
+Pré-requisitos: os dois players da VTurb preenchidos em `src/content/desafio.ts`
+(sem eles o funil pula as páginas e tudo cai direto no `/obrigado`), o PR do
+clique medido mergeado, e na Cakto as páginas de agradecimento configuradas
+(Desafio → `/shapeinsano-up`; upsell e downsell → `/obrigado`).
+
+**Já verificado no código (navegador, 20/10/2026)** — não precisa repetir à mão:
+- Com o funil pronto, o checkout do Desafio sai com `redirect_url=/shapeinsano-up`.
+- O clique segura ~150 ms e o `InitiateCheckout` sai antes da troca de página.
+- Upsell: "sim" → `pay.cakto.com.br/39rfuow_1081230`; "não" → `/shapeinsano-down`.
+- Downsell: "sim" → `pay.cakto.com.br/vx548za`; "não" → `/obrigado`.
+- `email`, `transaction_id`, UTM e `fbp` viajam de página em página.
+- `InitiateCheckout` do upsell sai com `content_ids: ['si360-upsell']`, valor
+  197; o do downsell com `['si360-downsell']`, valor 127.
+
+**Só dá pra verificar com compra de verdade (Cakto + Supabase + Gerenciador de Eventos):**
+1. Compra do Desafio (R$ 42). Deve cair em `/shapeinsano-up`, não em `/obrigado`.
+2. Recusa o upsell → `/shapeinsano-down`. Recusa de novo → `/obrigado`.
+3. Em outra compra, aceita o upsell. Depois do pagamento o comprador deve
+   chegar em `/obrigado` **com o e-mail na URL** — se chegar em outro lugar, a
+   página de agradecimento do produto não está configurada na Cakto.
+4. Confirma a cobrança do Shape Insano 360 (mensal ou anual) nos dois
+   checkouts — hoje divergem entre upsell e downsell.
+5. Supabase → `compras`: uma linha por transação, com o valor de cada degrau
+   (4200, 19700, 12700 centavos; Desafio com bump soma os bumps).
+6. Gerenciador de Eventos: um `Purchase` por transação, com o `content_ids`
+   do degrau certo (`dai-front`, `si360-upsell`, `si360-downsell`) e o mesmo
+   `event_id` (`cakto:<transação>`) no navegador e no servidor.
+7. Painel Frota Metrics: a venda aparece com o produto e a data do pagamento.
+8. Estorna uma das compras de teste e confirma que `compras` virou `estornada`.
+
 ---
 
 ## 6. Onde procurar quando algo quebrar
