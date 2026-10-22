@@ -462,6 +462,19 @@ export type PaginaFunil = {
    * assume isso.
    */
   precoCheioCentavos?: number;
+  /**
+   * Percentual ANUNCIADO, quando ele não sai da conta dos preços.
+   *
+   * ⚠️ NÃO É BUG, E NÃO CONSERTE PARA O VALOR CALCULADO. É alegação de
+   * marketing, decidida pelo dono em 22/10/2026 para casar com o que a VSL
+   * fala. A conta real, contra a âncora de R$ 299 e o preço de R$ 147, dá
+   * 50,8% — a diferença é de 9,2 pontos.
+   *
+   * Está num campo separado de propósito: enquanto o resto da página é
+   * derivado da Cakto e não pode divergir, este número é escolha humana e
+   * fica visível como tal. Apagar este campo devolve o percentual calculado.
+   */
+  descontoDeclarado?: number;
   /** Parágrafos de apoio. Trechos entre **asteriscos** saem em negrito. */
   paragrafos: string[];
   /*
@@ -508,8 +521,10 @@ export const downsell: PaginaFunil = {
   produtoId: 'si360-downsell',
   tituloAntes: 'Aumentei o seu desconto',
   descontoSobre: 'si360-upsell',
-  /* Valor cheio informado pelo dono em 22/10/2026. Contra R$ 127 dá 57%. */
+  /* Valor cheio de marketing, informado pelo dono em 22/10/2026. */
   precoCheioCentavos: 29900,
+  /* O que a VSL fala. Ver o aviso no tipo: a conta contra 299/147 dá 50,8%. */
+  descontoDeclarado: 60,
   paragrafos: [
     'Sua compra do **Desafio Abdômen Insano** segue confirmada. Isto aqui é só a última chance do **Shape Insano 360**, agora com desconto.',
     'Assista o vídeo e decida — esta página não volta.',

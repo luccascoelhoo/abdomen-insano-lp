@@ -17,15 +17,28 @@ export function DescontoDinamico({
   base,
   oferta,
   cheioCentavos,
+  declarado,
 }: {
   base: string;
   oferta: string;
   /** Âncora declarada. Quando existe, vence o preço do degrau anterior. */
   cheioCentavos?: number;
+  /** Percentual anunciado. Quando existe, nem calcula — ver o aviso no tipo. */
+  declarado?: number;
 }) {
+  // Sempre chamados: hook não pode ficar atrás de `if`.
   const precoDoDegrau = usePrecoCentavos(base);
   const precoOferta = usePrecoCentavos(oferta);
   const precoBase = cheioCentavos ?? precoDoDegrau;
+
+  if (declarado && declarado > 0) {
+    return (
+      <>
+        {' em '}
+        <span>{declarado}%</span>
+      </>
+    );
+  }
 
   if (!precoBase || !precoOferta || precoOferta >= precoBase) return null;
 

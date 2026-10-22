@@ -61,6 +61,7 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
               base={pagina.descontoSobre}
               oferta={pagina.produtoId}
               cheioCentavos={pagina.precoCheioCentavos}
+              declarado={pagina.descontoDeclarado}
             />
           )}
           {pagina.tituloDepois}
