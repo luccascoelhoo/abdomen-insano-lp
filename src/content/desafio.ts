@@ -445,6 +445,12 @@ export type PaginaFunil = {
   tituloDepois?: string;
   /** Faixa de alerta acima do texto de apoio. */
   alerta?: string;
+  /**
+   * Degrau de referência para o "em N%" do título: o percentual sai da
+   * comparação entre o preço VIVO dele e o desta página. Número de desconto
+   * escrito à mão vira mentira na primeira troca de preço.
+   */
+  descontoSobre?: ProdutoId;
   /** Parágrafos de apoio. Trechos entre **asteriscos** saem em negrito. */
   paragrafos: string[];
   /*
@@ -473,12 +479,11 @@ export const upsell: PaginaFunil = {
     'Antes de entrar, uma oferta que não volta depois: assista o vídeo e decida.',
   ],
   vsl: {
-    playerId: '6ad930babdfe8274ec2e99c3',
+    playerId: '6ada62344e1a50542a6594ac',
     scriptUrl:
-      'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ad930babdfe8274ec2e99c3/v4/player.js',
-    // 0 = botões visíveis desde o início. O segundo do pitch ainda não veio
-    // do time; number chutado aqui esconderia o botão na hora errada.
-    delaySegundos: 0,
+      'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ada62344e1a50542a6594ac/v4/player.js',
+    /* 10:11 — minuto do pitch informado pelo time em 22/10/2026. */
+    delaySegundos: 611,
   },
   aceitar: {
     texto: 'Quero o Shape Insano 360',
@@ -490,8 +495,8 @@ export const upsell: PaginaFunil = {
 export const downsell: PaginaFunil = {
   metaTitulo: 'Seu desconto aumentou — Projeto Shape Insano 360',
   produtoId: 'si360-downsell',
-  tituloAntes: 'Aumentei o seu desconto em ',
-  tituloDestaque: '35%',
+  tituloAntes: 'Aumentei o seu desconto',
+  descontoSobre: 'si360-upsell',
   paragrafos: [
     'Sua compra do **Desafio Abdômen Insano** segue confirmada. Isto aqui é só a última chance do **Shape Insano 360**, agora com desconto.',
     'Assista o vídeo e decida — esta página não volta.',
@@ -500,7 +505,8 @@ export const downsell: PaginaFunil = {
     playerId: '6ad909948b6fe1ef3d42e9dd',
     scriptUrl:
       'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ad909948b6fe1ef3d42e9dd/v4/player.js',
-    delaySegundos: 0,
+    /* 1:00 — minuto do pitch informado pelo time em 22/10/2026. */
+    delaySegundos: 60,
   },
   aceitar: {
     texto: 'Quero com o desconto',
