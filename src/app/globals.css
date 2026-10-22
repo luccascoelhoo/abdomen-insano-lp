@@ -2774,14 +2774,29 @@ a.provoke:focus-visible {
   padding: 20px 24px;
   font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
 }
+/* Preço e periodicidade da oferta recorrente, colados no botão. Tamanho de
+   texto corrido, não de letra miúda: é informação de contrato, não ressalva. */
+.funil__condicoes {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgba(241, 238, 231, 0.88);
+  text-align: center;
+  max-width: 34ch;
+  margin-inline: auto;
+}
+
+/* A recusa estava em 50% de opacidade, ou seja, escondida de quem já pagou e
+   só quer entrar. Quem recusa tem o mesmo direito de enxergar o caminho. */
 .funil__recusar {
-  font-size: 0.85rem;
-  color: rgba(241, 238, 231, 0.5);
+  font-size: 0.95rem;
+  color: rgba(241, 238, 231, 0.82);
   text-decoration: underline;
   text-underline-offset: 3px;
+  padding: 10px 4px;
 }
 .funil__recusar:hover {
-  color: rgba(241, 238, 231, 0.8);
+  color: var(--paper);
 }
 
 .funil__rodape {

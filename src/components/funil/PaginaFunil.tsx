@@ -78,6 +78,7 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
         <BotoesFunil
           aceitar={pagina.aceitar}
           produtoId={pagina.produtoId}
+          condicoes={pagina.condicoes}
           recusarTexto={pagina.recusarTexto}
           recusarHref={destinoRecusa}
           esconder={esconderBotoes}

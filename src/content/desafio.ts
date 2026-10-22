@@ -33,15 +33,15 @@ export const marca = {
   nome: 'Desafio Abdômen Insano',
   titulo: 'Desafio Abdômen Insano — 42 dias para o abdômen trincado',
   descricao:
-    'Em 42 dias você elimina a gordura chata do abdômen e conquista os gomos definidos. Treino avançado, alimentação simplificada e cardio calculado, tudo dentro do app. Por R$42.',
+    'Em 42 dias você elimina a gordura chata do abdômen e conquista os gomos definidos. Treino avançado, alimentação simplificada e cardio calculado, tudo dentro do app. Por R$64, pagamento único.',
   logo: '/img/logo-desafio.svg',
 } as const;
 
 export const oferta = {
-  precoNumero: 42,
+  /** Reserva: o preço exibido vem vivo da Cakto. Só vale se a consulta falhar. */
+  precoNumero: 64,
   precoMoeda: 'BRL',
   precoRotulo: 'R$',
-  precoDia: 'Por apenas R$1/dia',
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
   ctaTexto: 'Aceito o desafio!',
   provocacao: 'Aceita o desafio?',
@@ -54,9 +54,9 @@ export const oferta = {
   perguntaDepois: 'Mas não vou cobrar caro.',
   promessaAntes: 'Você vai botar o abdômen trincado e ',
   promessaDestaque: 'sentir a autoconfiança dos deuses…',
-  destaque: 'Por apenas 1 real por dia.',
-  reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$42.',
-  fecho: 'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida.',
+  destaque: 'Por apenas R$64, uma vez só.',
+  reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$64.',
+  fecho: 'São apenas 64 reais pra você trincar a barriga e mudar completamente sua vida.',
   fechoDestaque: 'Vamos destravar uma vida épica, estética, equilibrada e livre.',
   tempoLimitado: 'Oferta por tempo limitado.',
 } as const;
@@ -447,6 +447,13 @@ export type PaginaFunil = {
   alerta?: string;
   /** Parágrafos de apoio. Trechos entre **asteriscos** saem em negrito. */
   paragrafos: string[];
+  /**
+   * Preço e periodicidade, em texto, exibidos COLADOS no botão.
+   * Obrigatório em oferta recorrente: as duas do funil são assinatura, e o
+   * botão sozinho não diz isso. Quem clica tem que saber o que vai ser
+   * cobrado e de quanto em quanto tempo antes de clicar, não no checkout.
+   */
+  condicoes?: string;
   vsl: Vsl;
   aceitar: BotaoFunil;
   /** O destino do "não" é fixo pela ordem do funil — só o texto mora aqui. */
@@ -454,18 +461,27 @@ export type PaginaFunil = {
 };
 
 export const upsell: PaginaFunil = {
-  metaTitulo: 'Compra em andamento — Desafio Abdômen Insano',
+  metaTitulo: 'Oferta exclusiva — Shape Insano 360',
   produtoId: 'si360-upsell',
-  progresso: 67,
-  tituloAntes: 'Compra em andamento!',
-  alerta: 'Atenção, não feche essa página!',
+  // Sem barra de progresso: ela dizia que a compra estava a 67% do fim. A
+  // compra já está paga quando esta página abre — medido em 21/10/2026, o
+  // acesso foi registrado 1 segundo depois da aprovação.
+  tituloAntes: 'Sua compra está ',
+  tituloDestaque: 'confirmada',
+  tituloDepois: '.',
+  alerta: 'Esta oferta só aparece agora, nesta página.',
   paragrafos: [
-    'A sua compra do **Desafio Abdômen Insano** ainda está em andamento.',
-    'Assista esse vídeo até o final e **siga os passos para confirmar a sua compra.**',
+    'O **Desafio Abdômen Insano** já é seu — nada aqui muda isso, e você não precisa fazer mais nada para garantir o seu acesso.',
+    'Antes de entrar, uma oferta que não volta depois: assista o vídeo e decida.',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero o Shape Insano 360', url: 'https://pay.cakto.com.br/39rfuow_1081230' },
-  recusarTexto: 'Não, quero seguir só com o Desafio',
+  condicoes:
+    'Assinatura de R$ 197, cobrada a cada 30 dias. Renova sozinha até você cancelar, e dá pra cancelar quando quiser.',
+  aceitar: {
+    texto: 'Quero o Shape Insano 360 — R$ 197/mês',
+    url: 'https://pay.cakto.com.br/39rfuow_1081230',
+  },
+  recusarTexto: 'Não quero, seguir só com o Desafio',
 };
 
 export const downsell: PaginaFunil = {
@@ -474,9 +490,15 @@ export const downsell: PaginaFunil = {
   tituloAntes: 'Aumentei o seu desconto em ',
   tituloDestaque: '35%',
   paragrafos: [
-    'Você liberou o **Melhor Plano do Projeto Shape Insano 360**. Assista o vídeo abaixo e **não feche nem atualize essa página!**',
+    'Sua compra do **Desafio Abdômen Insano** segue confirmada. Isto aqui é só a última chance do **Shape Insano 360**, agora com desconto.',
+    'Assista o vídeo e decida — esta página não volta.',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero com 35% de desconto', url: 'https://pay.cakto.com.br/vx548za' },
+  condicoes:
+    'Assinatura de R$ 127, cobrada a cada 30 dias. Renova sozinha até você cancelar, e dá pra cancelar quando quiser.',
+  aceitar: {
+    texto: 'Quero com 35% de desconto — R$ 127/mês',
+    url: 'https://pay.cakto.com.br/vx548za',
+  },
   recusarTexto: 'Não, obrigado',
 };

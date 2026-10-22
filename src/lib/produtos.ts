@@ -36,7 +36,7 @@ export type Produto = {
 export type Precos = Partial<Record<string, number>>;
 
 export const PRODUTOS = [
-  { id: 'dai-front', nome: 'Desafio Abdômen Insano', degrau: 'front', centavos: 4200, oferta: 'jegvaw9_1000225' },
+  { id: 'dai-front', nome: 'Desafio Abdômen Insano', degrau: 'front', centavos: 6400, oferta: 'jegvaw9_1000225' },
   { id: 'bump-op3em10', nome: 'Operação -3kg em 10 dias', degrau: 'bump', centavos: 1490 },
   { id: 'bump-testosterona', nome: 'Testosterona 5x', degrau: 'bump', centavos: 990 },
   { id: 'bump-vitalicio', nome: 'Acesso Vitalício', degrau: 'bump', centavos: 1990 },
