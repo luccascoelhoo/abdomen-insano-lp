@@ -472,7 +472,14 @@ export const upsell: PaginaFunil = {
     'O **Desafio Abdômen Insano** já é seu — nada aqui muda isso, e você não precisa fazer mais nada para garantir o seu acesso.',
     'Antes de entrar, uma oferta que não volta depois: assista o vídeo e decida.',
   ],
-  vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
+  vsl: {
+    playerId: '6ad930babdfe8274ec2e99c3',
+    scriptUrl:
+      'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ad930babdfe8274ec2e99c3/v4/player.js',
+    // 0 = botões visíveis desde o início. O segundo do pitch ainda não veio
+    // do time; number chutado aqui esconderia o botão na hora errada.
+    delaySegundos: 0,
+  },
   aceitar: {
     texto: 'Quero o Shape Insano 360',
     url: 'https://pay.cakto.com.br/39rfuow_1081230',
@@ -489,7 +496,12 @@ export const downsell: PaginaFunil = {
     'Sua compra do **Desafio Abdômen Insano** segue confirmada. Isto aqui é só a última chance do **Shape Insano 360**, agora com desconto.',
     'Assista o vídeo e decida — esta página não volta.',
   ],
-  vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
+  vsl: {
+    playerId: '6ad909948b6fe1ef3d42e9dd',
+    scriptUrl:
+      'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ad909948b6fe1ef3d42e9dd/v4/player.js',
+    delaySegundos: 0,
+  },
   aceitar: {
     texto: 'Quero com o desconto',
     url: 'https://pay.cakto.com.br/vx548za',
