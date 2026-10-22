@@ -1,5 +1,6 @@
 import { Countdown } from '@/components/ui/Countdown';
 import { CtaButton } from '@/components/ui/CtaButton';
+import { PrecoFront } from '@/components/ui/PrecoFront';
 import { Reveal } from '@/components/ui/Reveal';
 import { oferta, ofertaGarantias } from '@/content/desafio';
 
@@ -66,10 +67,10 @@ export function Oferta() {
           <div className="oferta-card__preco">
             <span className="oferta-card__preco-pequeno">Por apenas</span>
             <p className="oferta-card__preco-grande">
-              R${oferta.precoNumero}<i>,00</i>
+              <PrecoFront />
             </p>
             <span className="oferta-card__preco-obs">
-              equivale a R$1 por dia · pagamento único
+              pagamento único · sem mensalidade
             </span>
           </div>
 

@@ -8,7 +8,7 @@ import { MetaPixel } from '@/components/ui/MetaPixel';
 import { PIXEL_ID } from '@/lib/pixel';
 import { UtmCatcher } from '@/components/ui/UtmCatcher';
 import { PrecosProvider } from '@/components/ui/Precos';
-import { precosAtuais } from '@/lib/precos';
+import { precosAtuais, recorrenciasAtuais } from '@/lib/precos';
 import { faq, marca, oferta } from '@/content/desafio';
 
 /**
@@ -139,7 +139,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Preço vivo da Cakto para os eventos do pixel (ver lib/precos).
-  const precos = await precosAtuais();
+  const [precos, recorrencias] = await Promise.all([precosAtuais(), recorrenciasAtuais()]);
   return (
     <html lang="pt-BR" className={`${display.variable} ${corpo.variable} ${dado.variable}`}>
       <head>
@@ -171,7 +171,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <SmoothScroll />
         <ScrollProgress />
         <Grain />
-        <PrecosProvider precos={precos}>{children}</PrecosProvider>
+        <PrecosProvider precos={precos} recorrencias={recorrencias}>
+          {children}
+        </PrecosProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

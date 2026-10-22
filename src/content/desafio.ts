@@ -33,15 +33,15 @@ export const marca = {
   nome: 'Desafio Abdômen Insano',
   titulo: 'Desafio Abdômen Insano — 42 dias para o abdômen trincado',
   descricao:
-    'Em 42 dias você elimina a gordura chata do abdômen e conquista os gomos definidos. Treino avançado, alimentação simplificada e cardio calculado, tudo dentro do app. Por R$42.',
+    'Em 42 dias você elimina a gordura chata do abdômen e conquista os gomos definidos. Treino avançado, alimentação simplificada e cardio calculado, tudo dentro do app. Por R$64, pagamento único.',
   logo: '/img/logo-desafio.svg',
 } as const;
 
 export const oferta = {
-  precoNumero: 42,
+  /** Reserva: o preço exibido vem vivo da Cakto. Só vale se a consulta falhar. */
+  precoNumero: 64,
   precoMoeda: 'BRL',
   precoRotulo: 'R$',
-  precoDia: 'Por apenas R$1/dia',
   checkoutUrl: 'https://pay.cakto.com.br/jegvaw9_1000225',
   ctaTexto: 'Aceito o desafio!',
   provocacao: 'Aceita o desafio?',
@@ -54,9 +54,9 @@ export const oferta = {
   perguntaDepois: 'Mas não vou cobrar caro.',
   promessaAntes: 'Você vai botar o abdômen trincado e ',
   promessaDestaque: 'sentir a autoconfiança dos deuses…',
-  destaque: 'Por apenas 1 real por dia.',
-  reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$42.',
-  fecho: 'São apenas 42 reais pra você trincar a barriga e mudar completamente sua vida.',
+  destaque: 'Por apenas R$64, uma vez só.',
+  reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas R$64.',
+  fecho: 'São apenas 64 reais pra você trincar a barriga e mudar completamente sua vida.',
   fechoDestaque: 'Vamos destravar uma vida épica, estética, equilibrada e livre.',
   tempoLimitado: 'Oferta por tempo limitado.',
 } as const;
@@ -445,8 +445,43 @@ export type PaginaFunil = {
   tituloDepois?: string;
   /** Faixa de alerta acima do texto de apoio. */
   alerta?: string;
+  /**
+   * Degrau de referência para o "em N%" do título: o percentual sai da
+   * comparação entre o preço VIVO dele e o desta página. Número de desconto
+   * escrito à mão vira mentira na primeira troca de preço.
+   */
+  descontoSobre?: ProdutoId;
+  /**
+   * Preço cheio de ancoragem, em centavos, quando o desconto é anunciado
+   * contra um valor de tabela em vez do degrau anterior.
+   *
+   * ⚠️ Vive aqui, e não na Cakto, porque a Cakto não conhece este número — o
+   * maior valor que ela tem para o Shape Insano 360 é R$ 197. Âncora que a
+   * plataforma não pratica é decisão comercial, e o CDC cobra que preço de
+   * referência tenha sido efetivamente praticado. Quem puser um número aqui
+   * assume isso.
+   */
+  precoCheioCentavos?: number;
+  /**
+   * Percentual ANUNCIADO, quando ele não sai da conta dos preços.
+   *
+   * ⚠️ NÃO É BUG, E NÃO CONSERTE PARA O VALOR CALCULADO. É alegação de
+   * marketing, decidida pelo dono em 22/10/2026 para casar com o que a VSL
+   * fala. A conta real, contra a âncora de R$ 299 e o preço de R$ 147, dá
+   * 50,8% — a diferença é de 9,2 pontos.
+   *
+   * Está num campo separado de propósito: enquanto o resto da página é
+   * derivado da Cakto e não pode divergir, este número é escolha humana e
+   * fica visível como tal. Apagar este campo devolve o percentual calculado.
+   */
+  descontoDeclarado?: number;
   /** Parágrafos de apoio. Trechos entre **asteriscos** saem em negrito. */
   paragrafos: string[];
+  /*
+   * Preço e periodicidade NÃO moram aqui: vêm vivos da Cakto e são montados
+   * em `lib/condicoes.ts`. O rótulo abaixo é só a parte estável do botão — o
+   * valor e o ritmo da cobrança entram depois dele, em tempo de render.
+   */
   vsl: Vsl;
   aceitar: BotaoFunil;
   /** O destino do "não" é fixo pela ordem do funil — só o texto mora aqui. */
@@ -454,29 +489,56 @@ export type PaginaFunil = {
 };
 
 export const upsell: PaginaFunil = {
-  metaTitulo: 'Compra em andamento — Desafio Abdômen Insano',
+  metaTitulo: 'Oferta exclusiva — Shape Insano 360',
   produtoId: 'si360-upsell',
-  progresso: 67,
-  tituloAntes: 'Compra em andamento!',
-  alerta: 'Atenção, não feche essa página!',
+  // Sem barra de progresso: ela dizia que a compra estava a 67% do fim. A
+  // compra já está paga quando esta página abre — medido em 21/10/2026, o
+  // acesso foi registrado 1 segundo depois da aprovação.
+  tituloAntes: 'Sua compra está ',
+  tituloDestaque: 'confirmada',
+  tituloDepois: '.',
+  alerta: 'Esta oferta só aparece agora, nesta página.',
   paragrafos: [
-    'A sua compra do **Desafio Abdômen Insano** ainda está em andamento.',
-    'Assista esse vídeo até o final e **siga os passos para confirmar a sua compra.**',
+    'O **Desafio Abdômen Insano** já é seu — nada aqui muda isso, e você não precisa fazer mais nada para garantir o seu acesso.',
+    'Antes de entrar, uma oferta que não volta depois: assista o vídeo e decida.',
   ],
-  vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero o Shape Insano 360', url: 'https://pay.cakto.com.br/39rfuow_1081230' },
-  recusarTexto: 'Não, quero seguir só com o Desafio',
+  vsl: {
+    playerId: '6ada62344e1a50542a6594ac',
+    scriptUrl:
+      'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ada62344e1a50542a6594ac/v4/player.js',
+    /* 10:11 — minuto do pitch informado pelo time em 22/10/2026. */
+    delaySegundos: 611,
+  },
+  aceitar: {
+    texto: 'Quero o Shape Insano 360',
+    url: 'https://pay.cakto.com.br/39rfuow_1081230',
+  },
+  recusarTexto: 'Não quero, seguir só com o Desafio',
 };
 
 export const downsell: PaginaFunil = {
   metaTitulo: 'Seu desconto aumentou — Projeto Shape Insano 360',
   produtoId: 'si360-downsell',
-  tituloAntes: 'Aumentei o seu desconto em ',
-  tituloDestaque: '35%',
+  tituloAntes: 'Aumentei o seu desconto',
+  descontoSobre: 'si360-upsell',
+  /* Valor cheio de marketing, informado pelo dono em 22/10/2026. */
+  precoCheioCentavos: 29900,
+  /* O que a VSL fala. Ver o aviso no tipo: a conta contra 299/147 dá 50,8%. */
+  descontoDeclarado: 60,
   paragrafos: [
-    'Você liberou o **Melhor Plano do Projeto Shape Insano 360**. Assista o vídeo abaixo e **não feche nem atualize essa página!**',
+    'Sua compra do **Desafio Abdômen Insano** segue confirmada. Isto aqui é só a última chance do **Shape Insano 360**, agora com desconto.',
+    'Assista o vídeo e decida — esta página não volta.',
   ],
-  vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  aceitar: { texto: 'Sim, quero com 35% de desconto', url: 'https://pay.cakto.com.br/vx548za' },
+  vsl: {
+    playerId: '6ad909948b6fe1ef3d42e9dd',
+    scriptUrl:
+      'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ad909948b6fe1ef3d42e9dd/v4/player.js',
+    /* 1:00 — minuto do pitch informado pelo time em 22/10/2026. */
+    delaySegundos: 60,
+  },
+  aceitar: {
+    texto: 'Quero com o desconto',
+    url: 'https://pay.cakto.com.br/vx548za',
+  },
   recusarTexto: 'Não, obrigado',
 };

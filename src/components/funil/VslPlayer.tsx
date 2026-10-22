@@ -19,6 +19,13 @@ declare module 'react' {
 /** Seletor dos elementos que só aparecem no minuto do pitch. */
 export const SELETOR_ESCONDIDO = '.esconder';
 
+/**
+ * Quanto esperar o player dar sinal de vida antes de assumir que ele morreu.
+ * Generoso de propósito: 3G ruim carrega o `player.js` em alguns segundos, e
+ * revelar cedo demais entrega o botão antes do argumento.
+ */
+const ESPERA_PELO_PLAYER_MS = 12000;
+
 function revelarEscondidos() {
   document.querySelectorAll<HTMLElement>(SELETOR_ESCONDIDO).forEach((el) => {
     el.classList.remove('esconder');
@@ -52,13 +59,34 @@ export function VslPlayer({ vsl }: { vsl: Vsl }) {
 
     if (v4) {
       const player = wrapper.querySelector<SmartPlayer>('vturb-smartplayer');
+      let playerRespondeu = false;
       const aoFicarPronto = () => {
+        playerRespondeu = true;
         if (vsl.delaySegundos > 0) {
           player?.displayHiddenElements?.(vsl.delaySegundos, [SELETOR_ESCONDIDO], { persist: true });
         }
       };
       player?.addEventListener('player:ready', aoFicarPronto);
       limpar.push(() => player?.removeEventListener('player:ready', aoFicarPronto));
+
+      /*
+       * Rede de segurança: com delay, os DOIS botões ficam escondidos — o de
+       * compra e o de recusa. Se o player não subir (bloqueador, rede ruim,
+       * VTurb fora do ar), quem JÁ PAGOU fica numa página sem nenhuma saída,
+       * nem para o /obrigado. Perder o upsell é caro; prender o comprador é
+       * pior.
+       *
+       * A rede só dispara se o player NUNCA respondeu. Player vivo manda
+       * sozinho — é por isso que pausar o vídeo não antecipa o botão.
+       */
+      if (vsl.delaySegundos > 0) {
+        const prazo = window.setTimeout(() => {
+          if (playerRespondeu) return;
+          console.error('[vsl] player não respondeu; revelando os botões', { playerId: vsl.playerId });
+          revelarEscondidos();
+        }, ESPERA_PELO_PLAYER_MS);
+        limpar.push(() => window.clearTimeout(prazo));
+      }
     } else if (vsl.delaySegundos > 0) {
       try {
         if (localStorage.getItem(chaveVisto)) revelarEscondidos();
@@ -83,6 +111,11 @@ export function VslPlayer({ vsl }: { vsl: Vsl }) {
       const s = document.createElement('script');
       s.src = vsl.scriptUrl;
       s.async = true;
+      // Falha de carga é resposta definitiva: não adianta esperar o prazo.
+      s.addEventListener('error', () => {
+        console.error('[vsl] player.js não carregou; revelando os botões', { src: vsl.scriptUrl });
+        revelarEscondidos();
+      });
       if (v4) {
         document.head.appendChild(s);
       } else {

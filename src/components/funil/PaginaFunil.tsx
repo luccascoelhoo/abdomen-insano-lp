@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { rodape, type PaginaFunil as Pagina } from '@/content/desafio';
 import { BotoesFunil } from './BotoesFunil';
+import { DescontoDinamico } from './DescontoDinamico';
 import { ViewContentFunil } from './ViewContentFunil';
 import { VslPlayer } from './VslPlayer';
 
@@ -55,6 +56,14 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
         <h1 className="funil__titulo">
           {pagina.tituloAntes}
           {pagina.tituloDestaque && <span>{pagina.tituloDestaque}</span>}
+          {pagina.descontoSobre && (
+            <DescontoDinamico
+              base={pagina.descontoSobre}
+              oferta={pagina.produtoId}
+              cheioCentavos={pagina.precoCheioCentavos}
+              declarado={pagina.descontoDeclarado}
+            />
+          )}
           {pagina.tituloDepois}
         </h1>
 
