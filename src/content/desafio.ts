@@ -451,6 +451,17 @@ export type PaginaFunil = {
    * escrito à mão vira mentira na primeira troca de preço.
    */
   descontoSobre?: ProdutoId;
+  /**
+   * Preço cheio de ancoragem, em centavos, quando o desconto é anunciado
+   * contra um valor de tabela em vez do degrau anterior.
+   *
+   * ⚠️ Vive aqui, e não na Cakto, porque a Cakto não conhece este número — o
+   * maior valor que ela tem para o Shape Insano 360 é R$ 197. Âncora que a
+   * plataforma não pratica é decisão comercial, e o CDC cobra que preço de
+   * referência tenha sido efetivamente praticado. Quem puser um número aqui
+   * assume isso.
+   */
+  precoCheioCentavos?: number;
   /** Parágrafos de apoio. Trechos entre **asteriscos** saem em negrito. */
   paragrafos: string[];
   /*
@@ -497,6 +508,8 @@ export const downsell: PaginaFunil = {
   produtoId: 'si360-downsell',
   tituloAntes: 'Aumentei o seu desconto',
   descontoSobre: 'si360-upsell',
+  /* Valor cheio informado pelo dono em 22/10/2026. Contra R$ 127 dá 57%. */
+  precoCheioCentavos: 29900,
   paragrafos: [
     'Sua compra do **Desafio Abdômen Insano** segue confirmada. Isto aqui é só a última chance do **Shape Insano 360**, agora com desconto.',
     'Assista o vídeo e decida — esta página não volta.',

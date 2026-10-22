@@ -57,7 +57,11 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
           {pagina.tituloAntes}
           {pagina.tituloDestaque && <span>{pagina.tituloDestaque}</span>}
           {pagina.descontoSobre && (
-            <DescontoDinamico base={pagina.descontoSobre} oferta={pagina.produtoId} />
+            <DescontoDinamico
+              base={pagina.descontoSobre}
+              oferta={pagina.produtoId}
+              cheioCentavos={pagina.precoCheioCentavos}
+            />
           )}
           {pagina.tituloDepois}
         </h1>

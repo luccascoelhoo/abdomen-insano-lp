@@ -13,9 +13,19 @@ import { usePrecoCentavos } from '@/components/ui/Precos';
  * Se algum dos dois preços não vier, não renderiza nada — e o título fica
  * "Aumentei o seu desconto", que continua uma frase inteira e verdadeira.
  */
-export function DescontoDinamico({ base, oferta }: { base: string; oferta: string }) {
-  const precoBase = usePrecoCentavos(base);
+export function DescontoDinamico({
+  base,
+  oferta,
+  cheioCentavos,
+}: {
+  base: string;
+  oferta: string;
+  /** Âncora declarada. Quando existe, vence o preço do degrau anterior. */
+  cheioCentavos?: number;
+}) {
+  const precoDoDegrau = usePrecoCentavos(base);
   const precoOferta = usePrecoCentavos(oferta);
+  const precoBase = cheioCentavos ?? precoDoDegrau;
 
   if (!precoBase || !precoOferta || precoOferta >= precoBase) return null;
 
