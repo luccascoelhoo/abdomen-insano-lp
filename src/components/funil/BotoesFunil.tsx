@@ -4,15 +4,14 @@ import type { MouseEvent } from 'react';
 import { oferta, type BotaoFunil } from '@/content/desafio';
 import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { produtoPorId, type ProdutoId } from '@/lib/produtos';
-import { usePreco } from '@/components/ui/Precos';
+import { usePreco, usePrecoCentavos, useRecorrencia } from '@/components/ui/Precos';
+import { condicoesDaOferta, sufixoDoBotao } from '@/lib/condicoes';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
   aceitar: BotaoFunil;
   /** Degrau que esta página vende — define o produto e o valor do evento. */
   produtoId: ProdutoId;
-  /** Preço e periodicidade da oferta, exibidos imediatamente acima do botão. */
-  condicoes?: string;
   recusarTexto: string;
   /** Próxima parada de quem recusa — vem da ordem do funil (`lib/funil.ts`). */
   recusarHref: string;
@@ -40,8 +39,23 @@ function repassarParametros(evento: MouseEvent<HTMLAnchorElement>) {
  * O "sim" só existe com link de checkout; o "não" sempre existe — a página
  * nunca vira beco sem saída pra quem já pagou.
  */
-export function BotoesFunil({ aceitar, produtoId, condicoes, recusarTexto, recusarHref, esconder }: Props) {
+export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esconder }: Props) {
   const preco = usePreco(produtoId);
+  const centavos = usePrecoCentavos(produtoId);
+  const recorrencia = useRecorrencia(produtoId);
+
+  /*
+   * Preço e periodicidade saem da Cakto, não do arquivo de conteúdo.
+   * Escritos à mão eles envelhecem calados: em 22/10/2026 as duas ofertas do
+   * funil cobravam em ritmos diferentes (upsell a cada 30 dias, downsell a
+   * cada 365) e a mesma frase valia para as duas. Derivando daqui, quem mexe
+   * no painel mexe no texto junto.
+   */
+  const condicoes = condicoesDaOferta(centavos, recorrencia);
+  const rotulo =
+    recorrencia?.tipo === 'subscription' && preco
+      ? `${aceitar.texto} — R$ ${preco.toFixed(2).replace('.', ',')}${sufixoDoBotao(recorrencia.periodoDias)}`
+      : aceitar.texto;
   /**
    * O "sim" é um checkout começando, igual ao CTA da LP — e o Meta precisa
    * saber de qual degrau, senão o upsell vira número do front.
@@ -79,10 +93,10 @@ export function BotoesFunil({ aceitar, produtoId, condicoes, recusarTexto, recus
       <div className="funil__acoes">
         {/* As condições vêm ANTES do botão de propósito: quem lê de cima pra
             baixo encontra o preço e a recorrência antes de poder clicar. */}
-        {condicoes && <p className="funil__condicoes">{condicoes}</p>}
+        <p className="funil__condicoes">{condicoes}</p>
         {aceitar.url && (
           <a className="cta funil__cta" href={aceitar.url} onClick={aceitarOferta} data-origem="funil-aceitar">
-            {aceitar.texto}
+            {rotulo}
           </a>
         )}
         <a className="funil__recusar" href={recusarHref} onClick={repassarParametros} data-origem="funil-recusar">

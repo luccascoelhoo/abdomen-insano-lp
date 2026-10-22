@@ -35,6 +35,17 @@ export type Produto = {
 /** Preço em centavos por id de produto. Parcial: o que faltar usa o de referência. */
 export type Precos = Partial<Record<string, number>>;
 
+/**
+ * Como a Cakto cobra cada degrau, lido da própria Cakto.
+ *
+ * `periodoDias` é literalmente o `recurrence_period` da oferta — a doc da
+ * Cakto define como "número de dias entre cada cobrança". Não é o mesmo que o
+ * acesso concedido, e não dá para inferir de um degrau para o outro: em
+ * 22/10/2026 o upsell estava em 30 e o downsell em 365.
+ */
+export type Recorrencia = { tipo: 'unique' | 'subscription'; periodoDias: number };
+export type Recorrencias = Partial<Record<string, Recorrencia>>;
+
 export const PRODUTOS = [
   { id: 'dai-front', nome: 'Desafio Abdômen Insano', degrau: 'front', centavos: 6400, oferta: 'jegvaw9_1000225' },
   { id: 'bump-op3em10', nome: 'Operação -3kg em 10 dias', degrau: 'bump', centavos: 1490 },

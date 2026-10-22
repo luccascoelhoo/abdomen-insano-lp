@@ -447,13 +447,11 @@ export type PaginaFunil = {
   alerta?: string;
   /** Parágrafos de apoio. Trechos entre **asteriscos** saem em negrito. */
   paragrafos: string[];
-  /**
-   * Preço e periodicidade, em texto, exibidos COLADOS no botão.
-   * Obrigatório em oferta recorrente: as duas do funil são assinatura, e o
-   * botão sozinho não diz isso. Quem clica tem que saber o que vai ser
-   * cobrado e de quanto em quanto tempo antes de clicar, não no checkout.
+  /*
+   * Preço e periodicidade NÃO moram aqui: vêm vivos da Cakto e são montados
+   * em `lib/condicoes.ts`. O rótulo abaixo é só a parte estável do botão — o
+   * valor e o ritmo da cobrança entram depois dele, em tempo de render.
    */
-  condicoes?: string;
   vsl: Vsl;
   aceitar: BotaoFunil;
   /** O destino do "não" é fixo pela ordem do funil — só o texto mora aqui. */
@@ -475,10 +473,8 @@ export const upsell: PaginaFunil = {
     'Antes de entrar, uma oferta que não volta depois: assista o vídeo e decida.',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  condicoes:
-    'Assinatura de R$ 197, cobrada a cada 30 dias. Renova sozinha até você cancelar, e dá pra cancelar quando quiser.',
   aceitar: {
-    texto: 'Quero o Shape Insano 360 — R$ 197/mês',
+    texto: 'Quero o Shape Insano 360',
     url: 'https://pay.cakto.com.br/39rfuow_1081230',
   },
   recusarTexto: 'Não quero, seguir só com o Desafio',
@@ -494,10 +490,8 @@ export const downsell: PaginaFunil = {
     'Assista o vídeo e decida — esta página não volta.',
   ],
   vsl: { playerId: '', scriptUrl: '', delaySegundos: 0 },
-  condicoes:
-    'Assinatura de R$ 127, cobrada a cada 30 dias. Renova sozinha até você cancelar, e dá pra cancelar quando quiser.',
   aceitar: {
-    texto: 'Quero com 35% de desconto — R$ 127/mês',
+    texto: 'Quero com o desconto',
     url: 'https://pay.cakto.com.br/vx548za',
   },
   recusarTexto: 'Não, obrigado',
