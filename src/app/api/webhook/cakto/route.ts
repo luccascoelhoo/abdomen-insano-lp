@@ -68,6 +68,10 @@ type PayloadCakto = {
     fbc?: string | null;
     fbp?: string | null;
     fbclid?: string | null;
+    /** Taxa da Cakto descontada da venda. */
+    fees?: number | string;
+    /** Divisão do valor: a linha `producer` é o que cai para o Igor. */
+    commissions?: Array<{ type?: string; totalAmount?: number | string }>;
     /** Quando o pagamento foi aprovado; o nome muda conforme a versão da Cakto. */
     paidAt?: string | null;
     paid_at?: string | null;
@@ -214,6 +218,7 @@ export async function POST(request: Request) {
   const valor_centavos = centavos(
     payload.data?.amount ?? payload.transaction?.amount ?? payload.amount,
   );
+  const liquido = liquidoDoProdutor(payload.data, valor_centavos);
   // O Cakto manda os UTMs PLANOS em data (utm_source, utm_medium, …, sck) e
   // fbc/fbp também em data — não existe data.utm. Sem isto, utm era sempre nulo.
   const utm =
@@ -244,6 +249,8 @@ export async function POST(request: Request) {
     por,
     campos_oferta: ofertas.map((o) => o.campo),
     valor_centavos,
+    liquido_centavos: liquido.centavos,
+    liquido_por: liquido.por,
   });
   // A venda aprovada guarda o produto ao lado das UTMs, onde `/api/compra/status`
   // o lê para o Purchase do navegador citar o mesmo produto que o do servidor.
@@ -335,6 +342,7 @@ export async function POST(request: Request) {
     transacao_id,
     status,
     valor_centavos,
+    liquido_centavos: liquido.centavos,
     produto: produto.nome,
     utm,
     // Só a data de pagamento, e só da venda aprovada. A data de criação do pedido
@@ -345,6 +353,34 @@ export async function POST(request: Request) {
   });
 
   return NextResponse.json({ ok: true, medicao, medicao_gravada, painel });
+}
+
+/**
+ * O que cai para o produtor depois da taxa da Cakto. Pela comissão `producer`
+ * quando ela vem; senão, valor menos a taxa. Sem nenhum dos dois, nulo: o painel
+ * fica só com o bruto em vez de inventar um líquido. Valores em reais no aviso.
+ * O formato veio da documentação da Cakto e ainda não de uma venda real: o log
+ * diz qual caminho decidiu.
+ */
+function liquidoDoProdutor(
+  data: PayloadCakto['data'],
+  valor_centavos: number,
+): { centavos: number | null; por: 'comissao' | 'taxa' | 'ausente' } {
+  const emCentavos = (v: unknown) => {
+    const n = typeof v === 'string' ? Number(v) : v;
+    return typeof n === 'number' && Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : null;
+  };
+  const doProdutor = (data?.commissions ?? []).filter((c) => c?.type === 'producer');
+  if (doProdutor.length > 0) {
+    const partes = doProdutor.map((c) => emCentavos(c.totalAmount));
+    if (partes.every((p) => p != null)) {
+      const soma = partes.reduce<number>((a, p) => a + (p ?? 0), 0);
+      if (soma <= valor_centavos) return { centavos: soma, por: 'comissao' };
+    }
+  }
+  const taxa = emCentavos(data?.fees);
+  if (taxa != null && taxa <= valor_centavos) return { centavos: valor_centavos - taxa, por: 'taxa' };
+  return { centavos: null, por: 'ausente' };
 }
 
 /** Compara em tempo constante (evita medir o segredo pelo tempo de resposta). */
