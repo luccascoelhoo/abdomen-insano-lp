@@ -134,14 +134,23 @@ export function produtoPorOferta(texto: string | null | undefined): Produto | un
  * Front com bump volta com o id do front (`dai-front`), porque é isso que a
  * conversão personalizada do front filtra, e com os bumps no nome.
  */
-export function classificarPorValor(centavos: number, precos?: Precos): Produto {
+function candidatosPorValor(precos?: Precos): readonly Produto[] {
   // Preço vivo e preço de referência valem os dois: a venda feita antes de uma
   // troca de preço pode ser reentregue ou estornada depois dela.
   const vivos: Produto[] = PRODUTOS.map((p) => ({ ...p, centavos: precoDe(p, precos) }));
   const base: Produto[] = [...vivos, ...PRODUTOS.filter((p, i) => p.centavos !== vivos[i].centavos)];
   const fronts = base.filter((p) => p.id === ID_FRONT);
-  const candidatos: readonly Produto[] = [...base, ...fronts.flatMap(combinacoesDoFront)];
-  const exato = candidatos.find((p) => p.centavos === centavos);
+  return [...base, ...fronts.flatMap(combinacoesDoFront)];
+}
+
+/** Só o valor idêntico a um degrau, sem folga nenhuma. */
+function produtoDoValorExato(centavos: number, precos?: Precos): Produto | undefined {
+  return candidatosPorValor(precos).find((p) => p.centavos === centavos);
+}
+
+export function classificarPorValor(centavos: number, precos?: Precos): Produto {
+  const candidatos = candidatosPorValor(precos);
+  const exato = produtoDoValorExato(centavos, precos);
   if (exato) return exato;
 
   let melhor: Produto | null = null;
@@ -163,10 +172,15 @@ export function classificarPorValor(centavos: number, precos?: Precos): Produto 
  *
  * O aviso pode citar mais de uma oferta: o do upsell pode trazer a do Desafio
  * como pedido de origem. Com várias, decide a que tem o preço do valor pago.
- * Com uma só, ela decide, a menos que o valor aponte com clareza para OUTRO
+ * Com uma só, ela decide, a menos que o valor seja IDÊNTICO ao de outro
  * degrau conhecido: aí a oferta achada é provavelmente a de origem, não a
- * vendida, e o valor decide (`por: 'conflito'`). Cupom não cai aqui, porque
- * valor com desconto não bate com degrau nenhum e volta "não classificada".
+ * vendida, e o valor decide (`por: 'conflito'`).
+ *
+ * Idêntico, e não "perto": a folga de R$ 2 do `classificarPorValor` serve para
+ * quando não há oferta nenhuma. Usada contra uma oferta, ela deixava o cupom
+ * decidir o produto. Em 22/10/2026 o Desafio comprado com cupom por R$ 13,79
+ * caiu a R$ 1,11 do bump de R$ 14,90 e foi ao Meta como bump, fora da conversão
+ * do front que a campanha otimiza.
  */
 export function classificarVenda(venda: {
   ofertas?: readonly string[];
@@ -181,15 +195,25 @@ export function classificarVenda(venda: {
         .map((p) => [p.id, p]),
     ).values(),
   ];
-  const peloValor = classificarPorValor(venda.centavos, venda.precos);
   if (achados.length === 1) {
     const [unica] = achados;
-    if (peloValor.id !== DESCONHECIDO.id && peloValor.id !== unica.id) {
-      return { produto: peloValor, por: 'conflito' };
+    const exato = produtoDoValorExato(venda.centavos, venda.precos);
+    if (exato && exato.id !== unica.id) return { produto: exato, por: 'conflito' };
+    // Acima do preço da oferta, a folga volta a valer: cupom só reduz, então um
+    // valor maior que a oferta achada é outro degrau, deslocado por centavos.
+    if (!exato && venda.centavos > precoDe(unica, venda.precos)) {
+      const proximo = classificarPorValor(venda.centavos, venda.precos);
+      if (proximo.id !== DESCONHECIDO.id && proximo.id !== unica.id) return { produto: proximo, por: 'conflito' };
     }
     return { produto: unica, por: 'oferta' };
   }
   const pelaOferta = achados.find((p) => precoDe(p, venda.precos) === venda.centavos);
   if (pelaOferta) return { produto: pelaOferta, por: 'oferta' };
-  return { produto: peloValor, por: 'valor' };
+  // Várias ofertas e nenhuma no valor exato: cupom. Vale a mais barata que
+  // ainda fica acima do que foi pago, antes de arriscar a folga por valor.
+  const comCupom = achados
+    .filter((p) => precoDe(p, venda.precos) > venda.centavos)
+    .sort((x, y) => precoDe(x, venda.precos) - precoDe(y, venda.precos))[0];
+  if (comCupom) return { produto: comCupom, por: 'oferta' };
+  return { produto: classificarPorValor(venda.centavos, venda.precos), por: 'valor' };
 }
