@@ -25,6 +25,8 @@ export async function repassarVendaAoMetrics(venda: {
   transacao_id: string;
   status: string;
   valor_centavos: number;
+  /** O que cai para o produtor depois da taxa; nulo quando a Cakto não informa. */
+  liquido_centavos?: number | null;
   produto: string;
   utm: Record<string, string> | null;
   /** Data da venda segundo o gateway. Sem ela, vale a hora do processamento. */
@@ -48,6 +50,7 @@ export async function repassarVendaAoMetrics(venda: {
         gateway: venda.gateway,
         external_id: venda.transacao_id,
         amount: venda.valor_centavos / 100,
+        net_amount: venda.liquido_centavos != null ? venda.liquido_centavos / 100 : null,
         product_name: venda.produto,
         status,
         occurred_at: dataDaVenda(venda.ocorrido_em),
