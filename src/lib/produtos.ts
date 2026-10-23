@@ -52,7 +52,7 @@ export const PRODUTOS = [
   { id: 'bump-testosterona', nome: 'Testosterona 5x', degrau: 'bump', centavos: 990 },
   { id: 'bump-vitalicio', nome: 'Acesso Vitalício', degrau: 'bump', centavos: 1990 },
   { id: 'si360-upsell', nome: 'Shape Insano 360', degrau: 'upsell', centavos: 19700, oferta: '39rfuow_1081230' },
-  { id: 'si360-downsell', nome: 'Shape Insano 360 (downsell)', degrau: 'downsell', centavos: 12700, oferta: 'vx548za' },
+  { id: 'si360-downsell', nome: 'Shape Insano 360 (downsell)', degrau: 'downsell', centavos: 14700, oferta: 'vx548za' },
 ] as const satisfies readonly Produto[];
 
 /**
