@@ -1,13 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { rodape } from '@/content/desafio';
-import { linksApp } from '@/lib/apps';
-import { AppleIcon, PlayStoreIcon } from '@/components/ui/StoreIcons';
 
 export function Rodape() {
-  const temApple = Boolean(linksApp.appStore);
-  const temGoogle = Boolean(linksApp.playStore);
-
   return (
     <footer className="footer relative pb-16">
       <div className="wrap">
@@ -35,45 +30,6 @@ export function Rodape() {
             </Link>
           ))}
         </nav>
-
-        {/* Botões do App */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mx-auto mt-10 mb-12">
-          <a
-            href={temApple ? linksApp.appStore : '#'}
-            className="flex-1 flex items-center justify-center gap-3 bg-black/50 hover:bg-[#ff6b00]/10 border border-gray-800 hover:border-[#ff6b00]/50 rounded-2xl py-4 transition-all"
-          >
-            <AppleIcon className="w-7 h-7 text-white" />
-            <div className="text-left">
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-none mb-1">Baixar na</p>
-              <p className="text-base font-bold leading-none text-white">App Store</p>
-            </div>
-          </a>
-
-          {temGoogle ? (
-            <a
-              href={linksApp.playStore}
-              className="flex-1 flex items-center justify-center gap-3 bg-black/50 hover:bg-[#ff6b00]/10 border border-gray-800 hover:border-[#ff6b00]/50 rounded-2xl py-4 transition-all"
-            >
-              <PlayStoreIcon className="w-6 h-6 text-white" />
-              <div className="text-left">
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-none mb-1">Disponível no</p>
-                <p className="text-base font-bold leading-none text-white">Google Play</p>
-              </div>
-            </a>
-          ) : (
-            // Sem link publicado não há botão: `href="#"` leva ao topo da página.
-            <span
-              aria-disabled="true"
-              className="flex-1 flex items-center justify-center gap-3 bg-black/30 border border-gray-800 rounded-2xl py-4"
-            >
-              <PlayStoreIcon className="w-6 h-6 text-gray-500" />
-              <div className="text-left">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest leading-none mb-1">Google Play</p>
-                <p className="text-base font-bold leading-none text-gray-400">Em análise</p>
-              </div>
-            </span>
-          )}
-        </div>
 
         <p className="legal">
           <b>Responsáveis técnicos:</b>
