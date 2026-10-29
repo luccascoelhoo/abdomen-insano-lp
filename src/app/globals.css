@@ -198,7 +198,7 @@ p:last-child {
   margin: 0;
 }
 
-/* ---------- granulado e fio de progresso ---------- */
+/* ---------- granulado ---------- */
 .grain {
   position: fixed;
   inset: 0;
@@ -210,18 +210,6 @@ p:last-child {
 .grain svg {
   width: 100%;
   height: 100%;
-}
-.progresso {
-  position: fixed;
-  inset: 0 0 auto 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--orange), var(--amber));
-  box-shadow: 0 1px 6px rgba(255, 107, 0, 0.55);
-  transform: scaleX(0);
-  transform-origin: left;
-  z-index: 70;
-  pointer-events: none;
-  will-change: transform;
 }
 
 /* ---------- topo ---------- */
