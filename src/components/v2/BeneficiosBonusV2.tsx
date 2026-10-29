@@ -10,6 +10,20 @@ export function BeneficiosBonusV2() {
   return (
     <section className="v2-sec v2-sec--branco">
       <div className="v2-col">
+        {/* O GIF virou vídeo mudo em loop: 44 MB → ~1 MB, mesma imagem. */}
+        <video
+          className="v2-transformacao"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          poster="/video/transformacao-poster.webp"
+          aria-label="Dia 01, dia 42 e 1 ano: a transformação de quem faz o desafio"
+        >
+          <source src="/video/transformacao.webm" type="video/webm" />
+          <source src="/video/transformacao.mp4" type="video/mp4" />
+        </video>
         <h2 className="v2-h2">
           {beneficiosV2.titulo}{' '}
           <span className="v2-acento">

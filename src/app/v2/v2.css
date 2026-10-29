@@ -640,6 +640,15 @@ body:has(.v2) {
 }
 
 /* ---------- [7] benefícios ---------- */
+.v2-transformacao {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1138 / 640;
+  margin: 0 auto 28px;
+  border-radius: 14px;
+  background: #111;
+}
 .v2-checks {
   list-style: none;
   margin: 8px 0 0;

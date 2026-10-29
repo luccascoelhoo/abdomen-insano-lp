@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Grain } from '@/components/ui/Grain';
-import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
 import { MetaPixel } from '@/components/ui/MetaPixel';
 import { PIXEL_ID } from '@/lib/pixel';
@@ -170,7 +169,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <MetaPixel />
         <UtmCatcher />
         <SmoothScroll />
-        <ScrollProgress />
         <Grain />
         <PrecosProvider precos={precos} recorrencias={recorrencias}>
           {children}
