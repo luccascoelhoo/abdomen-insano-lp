@@ -283,7 +283,7 @@ export const ofertaV2 = {
     pergunta: '**Na boa?** Eu poderia cobrar caro por esse desafio, porque ele funciona! Mas não vou cobrar caro.',
     promessa: 'Você vai botar o abdômen trincado e [[sentir a autoconfiança dos deuses.]]',
     // R$ 64 em 42 dias = R$ 1,52/dia (a copy dizia "1 real por dia").
-    chamada: 'POR APENAS R$ 1,52 POR DIA.',
+    chamada: 'POR MENOS DE R$2 POR DIA.',
     reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas **R$64**',
     fecho: 'São apenas 64 reais pra você trincar a barriga e mudar completamente sua vida.',
     lema: 'Vamos destravar uma vida épica, estética, equilibrada e livre.',
@@ -369,7 +369,7 @@ export const faqV2 = {
       pergunta:
         'Já fiz dieta e emagreci o rosto e os braços, mas a barriga não saiu. Por que dessa vez seria diferente?',
       resposta:
-        'Porque dieta genérica emagrece o corpo todo, mas não ataca especificamente a gordura visceral que blinda seu abdômen. O Método Capa Zero sincroniza as 3 alavancas certas, ativação de core, queima calculada e déficit sob medida. A ideia não é só reduzir peso no geral, é construir músculo de verdade.',
+        'Porque só dieta não fecha a conta. O corpo não escolhe de onde tira a gordura, e o abdômen costuma ser um dos últimos lugares a secar: por isso o rosto e os braços afinam primeiro e a barriga fica. Se você para no meio do caminho, a capa continua lá. E mesmo quando ela afina, sem treinar o abdômen com carga e progressão os gomos não aparecem: você vira o "falso magro". O Método Capa Zero ataca as 2 frentes ao mesmo tempo: o déficit calculado pra tirar a capa até o fim e o treino de abdômen que constrói o músculo por baixo dela.',
     },
     {
       pergunta: 'Já treino na academia. Preciso mudar meu treino todo?',
@@ -393,7 +393,7 @@ export const faqV2 = {
     {
       pergunta: 'Definição abdominal não depende de genética? Meu corpo consegue mudar isso?',
       resposta:
-        'A genética facilita, mas não decide sozinha. O que realmente define o abdômen é acionar as alavancas certas. Ativação de core, queima calculada e déficit sob medida. Quando a metodologia é bem feita, a grande maioria consegue um ótimo resultado.',
+        'A genética facilita, mas não decide sozinha. Ela influencia o formato dos gomos e onde a gordura acumula primeiro, mas o que faz o abdômen aparecer são as 2 frentes juntas: tirar a capa de gordura com o déficit certo e construir o músculo com treino progressivo. Quando a metodologia é bem feita, a grande maioria consegue um ótimo resultado.',
     },
     {
       pergunta: 'O déficit calórico vai me deixar sem energia ou fraco no treino?',
