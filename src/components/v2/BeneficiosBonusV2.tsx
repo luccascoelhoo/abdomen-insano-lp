@@ -1,6 +1,7 @@
 import { beneficiosV2, bonusV2 } from '@/content/lp-v2';
 import { IconeCheck } from './Icones';
 import { Rico } from './Rico';
+import { ValidoAte } from './ValidoAte';
 
 /**
  * [7] Benefícios e [8] Bônus — no mesmo fundo claro, como na referência
@@ -44,6 +45,7 @@ export function BeneficiosBonusV2() {
         <div className="v2-bonus-topo">
           <h2 className="v2-h2 v2-acento">{bonusV2.titulo}</h2>
           <p className="v2-bonus-topo__sub">{bonusV2.sub}</p>
+          <ValidoAte />
         </div>
 
         <div className="v2-bonus-grade">
