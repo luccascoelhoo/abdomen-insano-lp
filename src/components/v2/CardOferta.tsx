@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import { CtaButton } from '@/components/ui/CtaButton';
-import { ofertaV2 } from '@/content/lp-v2';
+import { ofertaV2, telasApp } from '@/content/lp-v2';
 import { reais, type Parcelamento } from '@/lib/parcelamento';
+import { CelularApp } from './CelularApp';
 import { IconeCheck } from './Icones';
 
 /**
@@ -16,9 +17,8 @@ export function CardOferta({ parcelamento, origem }: { parcelamento: Parcelament
   const c = ofertaV2.card;
   return (
     <div className="v2-card-oferta">
-      <div className="v2-card-oferta__vitrine" aria-hidden="true">
-        <Image src="/img/bonus-mockup-2.webp" alt="" width={1080} height={1920} sizes="150px" className="v2-card-oferta__tela v2-card-oferta__tela--1" />
-        <Image src="/img/bonus-mockup-1.webp" alt="" width={1080} height={1920} sizes="150px" className="v2-card-oferta__tela v2-card-oferta__tela--2" />
+      <div className="v2-card-oferta__vitrine">
+        <CelularApp telas={telasApp.vitrine} rotulo="O app do desafio: treino, séries e dieta" pontos={false} className="v2-celular--vitrine" />
       </div>
 
       <div className="v2-card-oferta__corpo">

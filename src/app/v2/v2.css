@@ -773,26 +773,19 @@ body:has(.v2) {
 }
 .v2-card-oferta__vitrine {
   position: relative;
-  height: 230px;
+  height: 240px;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  gap: 0;
+  align-items: flex-start;
+  padding-top: 26px;
   background: radial-gradient(ellipse at 50% 100%, rgba(255, 107, 0, 0.55), transparent 65%), #141414;
   overflow: hidden;
 }
-.v2-card-oferta__tela {
-  width: 128px;
-  height: auto;
-  margin-bottom: -60px;
-  border-radius: 14px;
-  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.55));
-}
-.v2-card-oferta__tela--1 {
-  transform: rotate(-8deg) translateX(14px);
-}
-.v2-card-oferta__tela--2 {
-  transform: rotate(7deg) translate(-14px, -18px);
+/* Celular animado na vitrine: sai pela base, como produto em destaque. */
+.v2-celular--vitrine {
+  width: 150px;
+  margin-bottom: -150px;
+  transform: rotate(-4deg);
 }
 .v2-card-oferta__corpo {
   padding: 22px 20px 20px;
@@ -1101,5 +1094,77 @@ body:has(.v2) {
 @media (prefers-reduced-motion: reduce) {
   .v2-hero__seta {
     animation: none;
+  }
+}
+
+/* ---------- celular com as telas reais do app (motion) ---------- */
+.v2-celular {
+  width: min(230px, 64vw);
+  margin-inline: auto;
+}
+.v2-celular__tela {
+  position: relative;
+  aspect-ratio: 9 / 20;
+  border-radius: 30px;
+  overflow: hidden;
+  background: #0b0b0b;
+  border: 7px solid #0d0d0d;
+  outline: 2px solid #2f2f2f;
+  box-shadow: 0 30px 50px -24px rgba(0, 0, 0, 0.65), 0 0 0 1px #000;
+}
+/* Câmera furada no topo, como no Pixel das capturas. */
+.v2-celular__tela::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 5;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: 0 0 0 1.5px #1c1c1c;
+}
+.v2-celular__quadro {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: translateX(22%);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+}
+.v2-celular__quadro.is-ativa {
+  z-index: 2;
+  opacity: 1;
+  transform: none;
+}
+.v2-celular__quadro.is-saindo {
+  z-index: 1;
+  opacity: 0;
+  transform: translateX(-22%);
+}
+.v2-celular__pontos {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 12px;
+}
+.v2-celular__pontos span {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.22);
+  transition: width 0.35s ease, background 0.35s ease;
+}
+.v2-celular__pontos span.is-ativa {
+  width: 18px;
+  background: var(--v2-laranja);
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-celular__quadro {
+    transition: none;
   }
 }

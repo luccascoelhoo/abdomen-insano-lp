@@ -112,7 +112,7 @@ export const solucaoV2 = {
       titulo: 'Dados',
       texto:
         'Você registra a carga, as repetições e o descanso de cada série no app. **Sua evolução é guiada pelo que você realmente fez, não por achismo.**',
-      imagem: { src: '/img/bonus-mockup-1.webp', alt: 'Tela de treinos do aplicativo', width: 1080, height: 1920 },
+      imagem: { src: '/img/app/serie-marcada.webp', alt: 'Série marcada no app: repetições, carga e descanso', width: 540, height: 1200 },
     },
   ],
 } as const;
@@ -128,6 +128,42 @@ export const depoimentosV2 = {
   })),
 } as const;
 
+/**
+ * Telas REAIS do app Flameer, capturadas no emulador (projeto Flameer-Android,
+ * pasta capturas/). Aparecem passando sozinhas dentro de um celular
+ * (`components/v2/CelularApp.tsx`).
+ */
+const tela = (nome: string, alt: string) => ({ src: `/img/app/${nome}.webp`, alt });
+export const telasApp = {
+  baixe: [
+    tela('abertura', 'Abertura do app Flameer'),
+    tela('boas-vindas', 'Boas-vindas: forje sua evolução física e mental'),
+    tela('inicio', 'Início do app: monte seu treino'),
+  ],
+  avaliacao: [
+    tela('nome', 'Avaliação: como podemos te chamar'),
+    tela('altura', 'Avaliação: sua altura'),
+    tela('peso', 'Avaliação: seu peso atual'),
+    tela('objetivo', 'Avaliação: qual é o seu objetivo'),
+    tela('foco', 'Avaliação: foco de desenvolvimento'),
+    tela('lesoes', 'Avaliação: dores ou limitações físicas'),
+    tela('protocolo', 'Montando o seu protocolo'),
+  ],
+  treinos: [tela('treino-monta', 'Seu treino se monta sozinho'), tela('ficha', 'Ficha do treino do dia')],
+  dieta: [tela('dieta', 'Sua dieta no número exato'), tela('refeicoes', 'Quantas refeições diárias')],
+  evolucao: [
+    tela('serie', 'Treino em andamento com cronômetro'),
+    tela('serie-marcada', 'Série marcada: repetições, carga e descanso'),
+    tela('registrado', 'Treino registrado'),
+  ],
+  vitrine: [
+    tela('inicio', 'Início do app'),
+    tela('ficha', 'Ficha do treino'),
+    tela('serie-marcada', 'Série marcada'),
+    tela('dieta', 'Dieta no número exato'),
+  ],
+} as const;
+
 export const entregaveisV2 = {
   titulo: 'Como funciona',
   tituloDestaque: 'essa parada?',
@@ -138,24 +174,27 @@ export const entregaveisV2 = {
       titulo: 'BAIXE O APLICATIVO',
       texto: 'O aplicativo do desafio te dará acesso ao seu treino e à sua dieta específica.',
       fundo: 'BAIXE',
-      imagem: { src: '/img/bonus-mockup-2.webp', alt: 'Tela inicial do aplicativo', width: 1080, height: 1920 },
+      telas: telasApp.baixe,
     },
     {
       titulo: 'AVALIAÇÃO EXCLUSIVA',
       texto:
         'Você vai responder cerca de 25 a 40 perguntas sobre a sua rotina, hábitos, e alimentação para o desenvolvimento do desafio personalizado.',
       fundo: 'RESPONDA',
+      telas: telasApp.avaliacao,
     },
     {
       titulo: 'TRILHA DE TREINOS INTENSIVOS',
       texto:
         'Com base no que você responder, você recebe o seu desafio pra trincar e definir o abdômen, em casa ou na academia.',
       fundo: 'TREINE',
+      telas: telasApp.treinos,
     },
     {
       titulo: 'SUA ALIMENTAÇÃO SIMPLIFICADA',
       texto: 'A sua dieta individualizada fica disponível na área "Dieta" do aplicativo.',
       fundo: 'COMA',
+      telas: telasApp.dieta,
     },
     {
       titulo: 'VÍDEOS DE EXECUÇÃO',
@@ -168,6 +207,7 @@ export const entregaveisV2 = {
       texto:
         'Você anota o peso de cada série, quantas repetições você fez e o principal: intensifica os treinos de abdômen semana a semana.',
       fundo: 'ANOTE',
+      telas: telasApp.evolucao,
     },
     {
       titulo: 'ABDÔMEN INSANO',

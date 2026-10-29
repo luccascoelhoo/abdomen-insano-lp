@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { entregaveisV2 } from '@/content/lp-v2';
+import { CelularApp } from './CelularApp';
 import { Rico } from './Rico';
 
 /**
@@ -30,6 +31,11 @@ export function EntregaveisV2() {
                   <span className="v2-acento">{i + 1}.</span> {p.titulo}
                 </h3>
                 <p>{p.texto}</p>
+                {'telas' in p && p.telas && (
+                  <div className="v2-passo__img">
+                    <CelularApp telas={p.telas} rotulo={`Telas do app: ${p.titulo.toLowerCase()}`} />
+                  </div>
+                )}
                 {'imagem' in p && p.imagem && (
                   <div className="v2-passo__img">
                     <Image
