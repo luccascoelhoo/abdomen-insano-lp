@@ -581,7 +581,8 @@ body:has(.v2) {
   border-radius: 10px;
   padding: 14px;
 }
-.v2-passo__img img {
+/* Só a imagem solta do passo (o antes e depois); as telas do celular têm regra própria. */
+.v2-passo__img > img {
   width: auto;
   height: auto;
   max-height: 300px;
@@ -1126,7 +1127,7 @@ body:has(.v2) {
   background: #000;
   box-shadow: 0 0 0 1.5px #1c1c1c;
 }
-.v2-celular__quadro {
+.v2-celular .v2-celular__quadro {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1136,12 +1137,12 @@ body:has(.v2) {
   transform: translateX(22%);
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
 }
-.v2-celular__quadro.is-ativa {
+.v2-celular .v2-celular__quadro.is-ativa {
   z-index: 2;
   opacity: 1;
   transform: none;
 }
-.v2-celular__quadro.is-saindo {
+.v2-celular .v2-celular__quadro.is-saindo {
   z-index: 1;
   opacity: 0;
   transform: translateX(-22%);
@@ -1164,7 +1165,7 @@ body:has(.v2) {
   background: var(--v2-laranja);
 }
 @media (prefers-reduced-motion: reduce) {
-  .v2-celular__quadro {
+  .v2-celular .v2-celular__quadro {
     transition: none;
   }
 }
