@@ -9,7 +9,8 @@ import { PIXEL_ID } from '@/lib/pixel';
 import { UtmCatcher } from '@/components/ui/UtmCatcher';
 import { PrecosProvider } from '@/components/ui/Precos';
 import { precosAtuais, recorrenciasAtuais } from '@/lib/precos';
-import { faq, marca, oferta } from '@/content/desafio';
+import { marca, oferta } from '@/content/desafio';
+import { faqV2 } from '@/content/lp-v2';
 
 /**
  * SISTEMA TIPOGRÁFICO
@@ -75,13 +76,13 @@ export const viewport: Viewport = {
   themeColor: '#0C0B0A',
 };
 
-/** Rich result de graça: as 12 perguntas que já existiam na página. */
+/** Rich result de graça: as perguntas da página oficial (V.2). */
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
     {
       '@type': 'FAQPage',
-      mainEntity: faq.map((item) => ({
+      mainEntity: faqV2.itens.map((item) => ({
         '@type': 'Question',
         name: item.pergunta,
         acceptedAnswer: { '@type': 'Answer', text: item.resposta },
