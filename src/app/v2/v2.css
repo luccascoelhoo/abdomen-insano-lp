@@ -697,6 +697,41 @@ body:has(.v2) {
   color: #111 !important;
   margin-bottom: 24px !important;
 }
+.v2-valido {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 24px !important;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff !important;
+  font-size: 1rem !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.v2-valido strong {
+  color: var(--v2-amarelo);
+  font-weight: 800;
+}
+.v2-valido__ponto {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--v2-vermelho);
+  animation: v2-valido-pulso 1.6s ease-in-out infinite;
+}
+@keyframes v2-valido-pulso {
+  50% {
+    opacity: 0.3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-valido__ponto {
+    animation: none;
+  }
+}
+
 .v2-bonus-grade {
   display: grid;
   gap: 14px;
