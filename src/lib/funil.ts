@@ -21,9 +21,11 @@ export function paginaPronta(pagina: PaginaFunil): boolean {
 
 /** Pra onde o checkout do Desafio devolve o comprador. */
 export function destinoPosCompra(): string {
-  if (paginaPronta(upsell)) return ROTA_UPSELL;
-  if (paginaPronta(downsell)) return ROTA_DOWNSELL;
-  return ROTA_OBRIGADO;
+  // Só o upsell abre o funil. O downsell é a segunda chance de quem recusou o
+  // upsell ("aumentei o seu desconto" só faz sentido depois de um desconto
+  // menor): com o upsell fora do ar, o comprador vai ao /obrigado — nunca
+  // direto ao downsell, mesmo que ele esteja pronto.
+  return paginaPronta(upsell) ? ROTA_UPSELL : ROTA_OBRIGADO;
 }
 
 /** Pra onde vai quem clica "não" no upsell. */
