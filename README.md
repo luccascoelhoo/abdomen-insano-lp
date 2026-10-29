@@ -1,5 +1,8 @@
 # Desafio Abdômen Insano — página de vendas
 
+> **Vai mexer no projeto? Leia primeiro o [`GUIA-DESENVOLVEDOR.md`](GUIA-DESENVOLVEDOR.md)** — repositório certo,
+> acessos, variáveis de ambiente, como o funil funciona, o que está pendente e o que não fazer.
+
 Reescrita do `index.html` de arquivo único em **Next.js 16 + TypeScript + Tailwind v4**,
 para poder ter animação de verdade, integração com gateway de pagamento e banco de dados —
 coisas que um HTML estático não faz.
