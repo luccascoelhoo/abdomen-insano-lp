@@ -17,6 +17,11 @@ type Props = {
   recusarHref: string;
   /** Esconde até a VTurb liberar (delay do pitch). */
   esconder: boolean;
+  /**
+   * Saída que NÃO depende do pitch: pra onde vai quem já pagou o Desafio e só
+   * quer o acesso (`/obrigado`). Fica visível o tempo todo.
+   */
+  pularHref: string;
 };
 
 /**
@@ -39,7 +44,7 @@ function repassarParametros(evento: MouseEvent<HTMLAnchorElement>) {
  * O "sim" só existe com link de checkout; o "não" sempre existe — a página
  * nunca vira beco sem saída pra quem já pagou.
  */
-export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esconder }: Props) {
+export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esconder, pularHref }: Props) {
   const preco = usePreco(produtoId);
   const centavos = usePrecoCentavos(produtoId);
   const recorrencia = useRecorrencia(produtoId);
@@ -89,6 +94,7 @@ export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esc
   // A VTurb revela o elemento com `display: block` — por isso o `.esconder`
   // fica numa casca por fora e o flex do layout mora no filho.
   return (
+    <>
     <div className={esconder ? 'esconder' : undefined}>
       <div className="funil__acoes">
         {/* As condições vêm ANTES do botão de propósito: quem lê de cima pra
@@ -104,5 +110,13 @@ export function BotoesFunil({ aceitar, produtoId, recusarTexto, recusarHref, esc
         </a>
       </div>
     </div>
+    {/* Quem acabou de pagar o Desafio não pode ficar sem caminho enquanto o
+        pitch não chega: os botões acima só aparecem no segundo do vídeo
+        (`delaySegundos`), e é no /obrigado que ficam as instruções do app.
+        Este link nunca é escondido. */}
+    <a className="funil__pular" href={pularHref} onClick={repassarParametros} data-origem="funil-pular">
+      Pular a oferta e ir para o meu acesso ao app
+    </a>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { rodape, type PaginaFunil as Pagina } from '@/content/desafio';
 import { BotoesFunil } from './BotoesFunil';
 import { DescontoDinamico } from './DescontoDinamico';
 import { ViewContentFunil } from './ViewContentFunil';
+import { ROTA_OBRIGADO } from '@/lib/funil';
 import { VslPlayer } from './VslPlayer';
 
 /** `**trecho**` vira <b>trecho</b> — mantém a copy inteira no arquivo de conteúdo. */
@@ -90,6 +91,7 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
           recusarTexto={pagina.recusarTexto}
           recusarHref={destinoRecusa}
           esconder={esconderBotoes}
+          pularHref={ROTA_OBRIGADO}
         />
       </main>
 

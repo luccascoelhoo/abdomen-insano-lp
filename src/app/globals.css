@@ -2799,6 +2799,20 @@ a.provoke:focus-visible {
   color: var(--paper);
 }
 
+/* Saída de quem já pagou o Desafio e quer só o acesso: sempre visível, discreta. */
+.funil__pular {
+  display: block;
+  width: fit-content;
+  margin: 22px auto 0;
+  font-size: 0.85rem;
+  color: rgba(241, 238, 231, 0.55);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.funil__pular:hover {
+  color: rgba(241, 238, 231, 0.85);
+}
+
 .funil__rodape {
   border-top: 1px solid var(--line-dark);
   padding: 28px 16px calc(28px + env(safe-area-inset-bottom));
