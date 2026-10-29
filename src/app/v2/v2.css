@@ -729,16 +729,9 @@ body:has(.v2) {
   font-size: 0.97rem !important;
 }
 .v2-bonus__valor {
-  margin-top: auto !important;
-  padding-top: 8px;
-  color: #9a9a9a !important;
-  font-weight: 700;
-}
-.v2-bonus__valor s {
-  color: var(--v2-vermelho);
-}
-.v2-bonus__valor b {
-  color: #22c55e !important;
+  color: var(--v2-laranja);
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 /* ---------- [9] oferta ---------- */
@@ -890,30 +883,6 @@ body:has(.v2) {
   outline: 3px solid #fff;
   outline-offset: 3px;
 }
-.v2-prova {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin: 14px 0 0 !important;
-  color: #666 !important;
-  font-size: 0.88rem !important;
-}
-.v2-prova__avatares {
-  display: inline-flex;
-}
-.v2-prova__avatares img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--v2-claro);
-  margin-left: -8px;
-  object-fit: cover;
-}
-.v2-prova__avatares img:first-child {
-  margin-left: 0;
-}
-
 /* ---------- [10] garantia ---------- */
 .v2-selo {
   width: 150px;

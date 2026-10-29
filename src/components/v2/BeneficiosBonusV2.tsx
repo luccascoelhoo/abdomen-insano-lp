@@ -36,17 +36,11 @@ export function BeneficiosBonusV2() {
           {bonusV2.itens.map((b) => (
             <article key={b.titulo} className="v2-bonus">
               <span className="v2-bonus__rotulo">{b.rotulo}</span>
-              <h3 className="v2-h3">{b.titulo}</h3>
+              <h3 className="v2-h3">
+                {b.titulo}
+                {b.valor && <span className="v2-bonus__valor"> ({b.valor})</span>}
+              </h3>
               <p>{b.texto}</p>
-              <p className="v2-bonus__valor">
-                {b.valor ? (
-                  <>
-                    De <s>{b.valor}</s> por <b>R$ 0</b>
-                  </>
-                ) : (
-                  <b>Incluso no desafio</b>
-                )}
-              </p>
             </article>
           ))}
         </div>

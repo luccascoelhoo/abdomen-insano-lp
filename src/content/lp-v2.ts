@@ -300,8 +300,6 @@ export const ofertaV2 = {
     reserva: { vezes: 12, parcelaCentavos: 662, avistaCentavos: 6400 },
     provocacao: 'Aceita o desafio?',
     cta: 'ACEITO O DESAFIO!',
-    /** Prova social já publicada na página atual. */
-    prova: '+5.500 alunos já estão no desafio',
   },
 } as const;
 

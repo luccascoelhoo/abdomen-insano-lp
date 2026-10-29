@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { CtaButton } from '@/components/ui/CtaButton';
 import { ofertaV2, telasApp } from '@/content/lp-v2';
 import { reais, type Parcelamento } from '@/lib/parcelamento';
@@ -63,14 +62,6 @@ export function CardOferta({ parcelamento, origem }: { parcelamento: Parcelament
           {c.cta}
         </CtaButton>
 
-        <p className="v2-prova">
-          <span className="v2-prova__avatares" aria-hidden="true">
-            {[1, 2, 3, 4].map((n) => (
-              <Image key={n} src={`/img/avatar-${n}.jpg`} alt="" width={120} height={120} sizes="28px" />
-            ))}
-          </span>
-          {c.prova}
-        </p>
       </div>
     </div>
   );
