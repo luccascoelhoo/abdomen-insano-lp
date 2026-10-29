@@ -11,9 +11,15 @@
  *   ((texto))  → destaque com sublinhado desenhado à mão
  *   ~~texto~~  → riscado (preço "de")
  *
- * Ajustes feitos sobre a copy recebida, só de grafia e pontuação:
- * "pisicna" → "piscina", "À partir" → "A partir", "IOS" → "iOS", e os itens de
- * lista sem o ";" final.
+ * Ajustes feitos sobre a copy recebida (29/10/2026, a pedido):
+ *  - grafia e pontuação: "pisicna" → "piscina", "À partir" → "A partir",
+ *    "IOS" → "iOS", "à sério" → "a sério", vírgula antes de "e", "mas… mas";
+ *  - números que não fechavam: "1 real por dia" → "R$ 1,52 por dia" (64 ÷ 42) e
+ *    "R$ 300 em bônus" → "mais de R$ 300" (os valores somam R$ 377);
+ *  - nomes iguais aos da página: "Protocolo Seca-3" → "Método Capa Zero",
+ *    "Guia Sobrevivência Social" → "Guia Fim de Semana Sem Culpa",
+ *    "Antifalhas" → "Anti Falhas";
+ *  - a parcela de "5 REAIS" não existe na Cakto: o card mostra a real, lida de lá.
  */
 
 export const heroV2 = {
@@ -77,7 +83,7 @@ export const funcaoV2 = {
       ],
     },
     {
-      pergunta: 'Mas eu já tenho baixo percentual de gordura mas não sou definido.',
+      pergunta: 'Mas eu já tenho baixo percentual de gordura e não sou definido.',
       respostas: [
         'Então a sua capa já está fina, e **o problema é o treino.**',
         'Abdômen sem carga e sem progressão não cresce, do mesmo jeito que o peito não cresceria se você fizesse sempre as mesmas flexões sem peso.',
@@ -179,7 +185,7 @@ export const entregaveisV2 = {
     {
       titulo: 'AVALIAÇÃO EXCLUSIVA',
       texto:
-        'Você vai responder cerca de 25 a 40 perguntas sobre a sua rotina, hábitos, e alimentação para o desenvolvimento do desafio personalizado.',
+        'Você vai responder cerca de 25 a 40 perguntas sobre a sua rotina, hábitos e alimentação para o desenvolvimento do desafio personalizado.',
       fundo: 'RESPONDA',
       telas: telasApp.avaliacao,
     },
@@ -233,7 +239,8 @@ export const beneficiosV2 = {
 
 export const bonusV2 = {
   titulo: 'Hoje é o seu dia de sorte.',
-  sub: 'Você acabou de ganhar R$ 300 em bônus especiais!',
+  // Os valores listados somam R$ 377 (a copy dizia "R$ 300").
+  sub: 'Você acabou de ganhar mais de R$ 300 em bônus especiais!',
   itens: [
     {
       rotulo: 'Bônus 1',
@@ -275,7 +282,8 @@ export const ofertaV2 = {
   narrativa: {
     pergunta: '**Na boa?** Eu poderia cobrar caro por esse desafio, porque ele funciona! Mas não vou cobrar caro.',
     promessa: 'Você vai botar o abdômen trincado e [[sentir a autoconfiança dos deuses.]]',
-    chamada: 'POR APENAS 1 REAL POR DIA.',
+    // R$ 64 em 42 dias = R$ 1,52/dia (a copy dizia "1 real por dia").
+    chamada: 'POR APENAS R$ 1,52 POR DIA.',
     reforco: 'Sim, isso mesmo! Por tempo limitado, o Desafio Abdômen Insano custa apenas **R$64**',
     fecho: 'São apenas 64 reais pra você trincar a barriga e mudar completamente sua vida.',
     lema: 'Vamos destravar uma vida épica, estética, equilibrada e livre.',
@@ -342,7 +350,7 @@ export const expertV2 = {
     'Eu me chamo **Igor Correa**,',
     'E sempre fui sacaneado por colegas de clube, escola e até mesmo no trabalho por ser magro demais, preguiçoso, e até sem comprometimento.',
     'Eu nunca gostei de ouvir essas palavras, e mesmo com todas as minhas dificuldades eu sempre soube que isso não fazia parte da minha identidade, isso não era quem eu sempre soube que seria.',
-    'Essas críticas me levaram a tomar ações que mudariam a minha vida para sempre: **entrei na academia, comecei a levar meus estudos na área da nutrição e educação física à sério** e desenvolvi uma mentalidade mais organizada e blindada.',
+    'Essas críticas me levaram a tomar ações que mudariam a minha vida para sempre: **entrei na academia, comecei a levar meus estudos na área da nutrição e educação física a sério** e desenvolvi uma mentalidade mais organizada e blindada.',
     'Hoje, eu crio conteúdo nas minhas redes sociais exatamente sobre o que eu mais estudei e **impacto todos os meses mais de 1 milhão de pessoas** a saírem da inércia, buscarem o seu melhor físico e a vida que elas merecem viver.',
     'O Desafio Abdômen Insano de 42 dias foi idealizado para que você dê **o primeiro passo** e sinta os primeiros resultados de uma vida incrível que você pode viver através da mudança de pequenas ações no seu dia a dia.',
     '**Eu acredito, de verdade, que você pode ser mais forte, mais focado e viver a vida dos seus sonhos.**',
@@ -361,7 +369,7 @@ export const faqV2 = {
       pergunta:
         'Já fiz dieta e emagreci o rosto e os braços, mas a barriga não saiu. Por que dessa vez seria diferente?',
       resposta:
-        'Porque dieta genérica emagrece o corpo todo, mas não ataca especificamente a gordura visceral que blinda seu abdômen. O Protocolo Seca-3 sincroniza as 3 alavancas certas, ativação de core, queima calculada e déficit sob medida. A ideia não é só reduzir peso no geral, é construir músculo de verdade.',
+        'Porque dieta genérica emagrece o corpo todo, mas não ataca especificamente a gordura visceral que blinda seu abdômen. O Método Capa Zero sincroniza as 3 alavancas certas, ativação de core, queima calculada e déficit sob medida. A ideia não é só reduzir peso no geral, é construir músculo de verdade.',
     },
     {
       pergunta: 'Já treino na academia. Preciso mudar meu treino todo?',
@@ -376,7 +384,7 @@ export const faqV2 = {
     {
       pergunta: 'Não sou disciplinado. Já comecei várias coisas e não terminei. Como sei que vou concluir esse?',
       resposta:
-        'O app foi feito pra quem já falhou sozinho antes. É gamificado, possui a comunidade Antifalhas te puxando nos dias difíceis e progresso visível semana a semana — você não depende só da sua força de vontade, o sistema não te deixa desistir.',
+        'O app foi feito pra quem já falhou sozinho antes. É gamificado, possui a Comunidade Anti Falhas te puxando nos dias difíceis e progresso visível semana a semana — você não depende só da sua força de vontade, o sistema não te deixa desistir.',
     },
     {
       pergunta: 'Vou precisar comprar suplemento ou algo a mais pra funcionar?',
@@ -400,7 +408,7 @@ export const faqV2 = {
     {
       pergunta: 'Eu saio com amigos nos finais de semana. Isso vai atrapalhar o resultado?',
       resposta:
-        'Sendo sincero? Depende de como você lida com isso. Por isso o Guia Sobrevivência Social está incluso no desafio. Ele te dá o script exato pra sair, aproveitar e continuar dentro do seu déficit, sem sacrificar sua vida social nem seu progresso.',
+        'Sendo sincero? Depende de como você lida com isso. Por isso o Guia Fim de Semana Sem Culpa está incluso no desafio. Ele te dá o script exato pra sair, aproveitar e continuar dentro do seu déficit, sem sacrificar sua vida social nem seu progresso.',
     },
   ],
 } as const;
