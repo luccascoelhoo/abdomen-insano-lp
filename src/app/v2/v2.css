@@ -1169,3 +1169,25 @@ body:has(.v2) {
     transition: none;
   }
 }
+
+/* Celular sobre a foto do topo. */
+.v2-celular--hero {
+  position: absolute;
+  right: 4%;
+  bottom: -18%;
+  z-index: 2;
+  width: 27%;
+  max-width: 170px;
+  transform: rotate(5deg);
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.6));
+}
+.v2-hero__foto:has(.v2-celular--hero) {
+  overflow: visible;
+  margin-bottom: calc(14% + 22px);
+}
+.v2-hero__foto:has(.v2-celular--hero)::after {
+  border-radius: 0 0 15px 15px;
+}
+.v2-hero__foto > img {
+  border-radius: 15px;
+}

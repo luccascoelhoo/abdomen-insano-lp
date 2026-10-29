@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { heroV2 } from '@/content/lp-v2';
+import { heroV2, telasApp } from '@/content/lp-v2';
+import { CelularApp } from './CelularApp';
 import { IconeChevrons } from './Icones';
 import { Rico } from './Rico';
 
@@ -24,6 +25,13 @@ export function HeroV2() {
             height={heroV2.foto.height}
             sizes="(max-width: 720px) 100vw, 680px"
             priority
+          />
+          {/* O app logo no topo, como a referência: telas reais passando. */}
+          <CelularApp
+            telas={telasApp.vitrine}
+            rotulo="O app do desafio: treino, séries e dieta"
+            pontos={false}
+            className="v2-celular--hero"
           />
         </div>
         <h1 className="v2-hero__titulo">
