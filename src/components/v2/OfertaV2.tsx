@@ -3,12 +3,12 @@ import type { Parcelamento } from '@/lib/parcelamento';
 import { CardOferta } from './CardOferta';
 import { Rico } from './Rico';
 
-/** [9] Oferta — a narrativa do preço e o card de compra. `id="oferta"` é a âncora do preço. */
+/** [9] Oferta — a narrativa do preço (alinhada à esquerda) e o card de compra. `id="oferta"` é a âncora do preço. */
 export function OfertaV2({ parcelamento }: { parcelamento: Parcelamento }) {
   const n = ofertaV2.narrativa;
   return (
     <section className="v2-sec v2-sec--preto v2-oferta" id="oferta">
-      <div className="v2-col v2-centro">
+      <div className="v2-col">
         <p className="v2-oferta__pergunta">
           <Rico texto={n.pergunta} />
         </p>

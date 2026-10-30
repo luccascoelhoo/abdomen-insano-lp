@@ -174,12 +174,17 @@ export const entregaveisV2 = {
   titulo: 'Como funciona',
   tituloDestaque: 'essa parada?',
   sub: 'Ao entrar no desafio, siga esse **EXATO passo a passo** para trincar o abdômen nos próximos 42 dias:',
-  /** `fundo` é a palavra grande e desfocada atrás de cada passo (desktop). */
+  /**
+   * `fundo` é a palavra grande e desfocada atrás de cada passo (desktop).
+   * `video` é a gravação real do app no iPhone (`public/video/app/<nome>`),
+   * que a home mostra; a /v3 ainda usa as `telas`.
+   */
   passos: [
     {
       titulo: 'BAIXE O APLICATIVO',
       texto: 'O aplicativo do desafio te dará acesso ao seu treino e à sua dieta específica.',
       fundo: 'BAIXE',
+      video: 'baixe',
       telas: telasApp.baixe,
     },
     {
@@ -187,6 +192,7 @@ export const entregaveisV2 = {
       texto:
         'Você vai responder cerca de 25 a 40 perguntas sobre a sua rotina, hábitos e alimentação para o desenvolvimento do desafio personalizado.',
       fundo: 'RESPONDA',
+      video: 'avaliacao',
       telas: telasApp.avaliacao,
     },
     {
@@ -194,12 +200,14 @@ export const entregaveisV2 = {
       texto:
         'Com base no que você responder, você recebe o seu desafio pra trincar e definir o abdômen, em casa ou na academia.',
       fundo: 'TREINE',
+      video: 'treinos',
       telas: telasApp.treinos,
     },
     {
       titulo: 'SUA ALIMENTAÇÃO SIMPLIFICADA',
       texto: 'A sua dieta individualizada fica disponível na área "Dieta" do aplicativo.',
       fundo: 'COMA',
+      video: 'dieta',
       telas: telasApp.dieta,
     },
     {
@@ -207,12 +215,14 @@ export const entregaveisV2 = {
       texto:
         'Ficou com dúvida em um exercício? Eu gravei vídeos explicando cada execução, pra você não ter nenhuma lesão.',
       fundo: 'ASSISTA',
+      video: 'execucao',
     },
     {
       titulo: 'ACOMPANHE A SUA EVOLUÇÃO',
       texto:
         'Você anota o peso de cada série, quantas repetições você fez e o principal: intensifica os treinos de abdômen semana a semana.',
       fundo: 'ANOTE',
+      video: 'evolucao',
       telas: telasApp.evolucao,
     },
     {
@@ -241,6 +251,11 @@ export const bonusV2 = {
   titulo: 'Hoje é o seu dia de sorte.',
   // Os valores listados somam R$ 377 (a copy dizia "R$ 300").
   sub: 'Você acabou de ganhar mais de R$ 300 em bônus especiais!',
+  /**
+   * `valor` aparece riscado ao lado de "GRÁTIS" (pedido do Igor em 29/10/2026).
+   * `capa` é o e-book desenhado em CSS: foto em preto e branco e o título com
+   * a parte [[em laranja]].
+   */
   itens: [
     {
       rotulo: 'Bônus 1',
@@ -248,6 +263,7 @@ export const bonusV2 = {
       texto:
         'Receba o contato pessoal da minha equipe de profissionais para tirar suas dúvidas e guiar o seu caminho durante o desafio.',
       valor: null,
+      capa: { foto: '/img/igor-hoje.webp', titulo: 'WhatsApp [[24h]] com a equipe', posicao: '50% 30%' },
     },
     {
       rotulo: 'Bônus 2',
@@ -255,6 +271,7 @@ export const bonusV2 = {
       texto:
         'O desafio dura 42 dias, mas você mantém acesso a tudo por 1 ano: refaça, ajuste e mantenha o resultado.',
       valor: 'R$ 256',
+      capa: { foto: '/img/metodo-03.jpg', titulo: 'Passe livre de [[1 ano]]', posicao: '50% 40%' },
     },
     {
       rotulo: 'Bônus 3',
@@ -262,18 +279,21 @@ export const bonusV2 = {
       texto:
         'A partir de hoje você não está mais sozinho! Eu, você e a comunidade vamos correr juntos atrás de um só objetivo!',
       valor: 'R$ 47',
+      capa: { foto: '/img/hero-atleta.jpg', titulo: 'Comunidade [[anti falhas]]', posicao: '50% 30%' },
     },
     {
       rotulo: 'Bônus 4',
       titulo: 'Guia Fim de Semana Sem Culpa',
       texto: 'Como encaixar churrasco, rodízio, delivery e cerveja dentro do plano, sem jogar a semana fora.',
       valor: 'R$ 37',
+      capa: { foto: '/img/metodo-02.jpg', titulo: 'Guia fim de semana [[sem culpa]]', posicao: '50% 50%' },
     },
     {
       rotulo: 'Bônus 5',
       titulo: 'Protocolo Anti-Inchaço',
       texto: 'Sono, água, sal e fibras: os ajustes simples que deixam a barriga menos estufada no dia a dia.',
       valor: 'R$ 37',
+      capa: { foto: '/img/metodo-01.jpg', titulo: 'Protocolo [[anti-inchaço]]', posicao: '40% 40%' },
     },
   ],
 } as const;

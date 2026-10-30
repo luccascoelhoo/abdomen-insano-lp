@@ -156,74 +156,6 @@ body:has(.v2) {
   pointer-events: none;
 }
 
-/* ---------- [1] topo ---------- */
-.v2-hero {
-  background: radial-gradient(ellipse 90% 60% at 50% 0%, #2a1406 0%, #0b0b0b 55%, #000 100%);
-  padding: 28px 0 clamp(48px, 7vw, 80px);
-  text-align: center;
-}
-.v2-hero__logo {
-  width: 150px;
-  height: auto;
-  margin: 0 auto 22px;
-}
-.v2-hero__foto {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-  margin-bottom: 26px;
-  border: 1px solid rgba(255, 107, 0, 0.25);
-  box-shadow: 0 30px 80px -30px rgba(255, 107, 0, 0.45);
-}
-.v2-hero__foto img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 32%;
-}
-.v2-hero__foto::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 35%;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
-}
-.v2-hero__titulo {
-  font-size: clamp(1.85rem, 1.1rem + 3.4vw, 3.3rem);
-  font-weight: 900;
-  text-transform: uppercase;
-  line-height: 1.04 !important;
-  color: #fff;
-}
-.v2-hero__sub {
-  margin: 18px auto 0 !important;
-  max-width: 36em;
-  color: #c9c9c9;
-  font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.18rem) !important;
-}
-.v2-hero__sub b {
-  color: #fff;
-}
-.v2-hero__provoca {
-  margin: 26px 0 6px !important;
-  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem) !important;
-  font-weight: 900;
-  color: var(--v2-laranja);
-  letter-spacing: -0.01em;
-}
-.v2-hero__seta {
-  width: 30px;
-  height: 30px;
-  color: #fff;
-  opacity: 0.85;
-  animation: v2-desce 1.8s ease-in-out infinite;
-}
-@keyframes v2-desce {
-  50% {
-    transform: translateY(6px);
-  }
-}
 
 /* ---------- [2] problema ---------- */
 .v2-texto {
@@ -582,6 +514,55 @@ body:has(.v2) {
   padding: 14px;
 }
 /* Só a imagem solta do passo (o antes e depois); as telas do celular têm regra própria. */
+/* O iPhone fica direto no escuro do card, sem a caixa clara das imagens. */
+.v2-passo__img--iphone {
+  background: none;
+  padding: 6px 0 4px;
+}
+/* iPhone com a gravação real do app (CelularVideo). */
+.v2-iphone {
+  position: relative;
+  width: min(230px, 62vw);
+  margin-inline: auto;
+}
+.v2-iphone__tela {
+  aspect-ratio: 524 / 1138;
+  overflow: hidden;
+  border: 8px solid #0a0a0a;
+  border-radius: 40px;
+  background: #0a0a0a;
+  box-shadow:
+    0 0 0 2px #4a4a4e,
+    0 0 0 3px #1a1a1a,
+    0 30px 50px -24px rgba(0, 0, 0, 0.7);
+}
+.v2-iphone__tela video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 32px;
+}
+/* Botões laterais: volume à esquerda, power à direita. */
+.v2-iphone::before,
+.v2-iphone::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  border-radius: 2px;
+  background: #3a3a3e;
+}
+.v2-iphone::before {
+  left: -4px;
+  top: 22%;
+  height: 12%;
+  box-shadow: 0 -16% 0 #3a3a3e;
+}
+.v2-iphone::after {
+  right: -4px;
+  top: 28%;
+  height: 15%;
+}
 .v2-passo__img > img {
   width: auto;
   height: auto;
@@ -778,12 +759,122 @@ body:has(.v2) {
   white-space: nowrap;
 }
 
+/* Bônus da home: e-book à esquerda (como no Modo Caverna), texto e preço
+   riscado à direita. Uma coluna só, pra capa ter tamanho. */
+.v2-bonus-grade--livros {
+  grid-template-columns: 1fr !important;
+  gap: 16px;
+}
+.v2-bonus--livro {
+  display: grid;
+  grid-template-columns: clamp(104px, 30%, 150px) 1fr;
+  align-items: center;
+  gap: clamp(14px, 3vw, 24px);
+  padding: clamp(14px, 3vw, 22px);
+}
+.v2-bonus__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.v2-bonus .v2-bonus__preco {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 4px !important;
+}
+.v2-bonus__preco s {
+  color: var(--v2-vermelho);
+  font-weight: 700;
+  font-size: 1rem;
+}
+.v2-bonus__preco b {
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--v2-verde);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+/* O e-book: capa com foto em P&B, lombada laranja e as páginas à direita. */
+.v2-livro {
+  perspective: 700px;
+}
+.v2-livro__capa {
+  position: relative;
+  aspect-ratio: 3 / 4.3;
+  border-radius: 2px 6px 6px 2px;
+  overflow: hidden;
+  background: #0c0c0c;
+  transform: rotateY(-16deg);
+  transform-origin: left center;
+  box-shadow:
+    5px 0 0 -1px #e9e9e9,
+    7px 1px 0 -1px #cfcfcf,
+    9px 2px 0 -1px #b9b9b9,
+    16px 18px 28px -6px rgba(0, 0, 0, 0.75);
+}
+.v2-livro__capa::before {
+  /* Lombada laranja com o vinco da dobra. */
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 2;
+  width: 9%;
+  background: linear-gradient(90deg, #b84a00, var(--v2-laranja) 55%, #8a3700);
+}
+.v2-livro__capa::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(105deg, rgba(255, 255, 255, 0.14), transparent 30%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 25%, rgba(0, 0, 0, 0.85) 75%);
+}
+.v2-livro__foto {
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.15);
+}
+.v2-livro__titulo {
+  position: absolute;
+  inset: auto 8% 22% 15%;
+  z-index: 3;
+  color: #fff;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(0.72rem, 0.55rem + 0.8vw, 1rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+.v2-livro__titulo .v2-acento {
+  color: var(--v2-laranja);
+}
+.v2-livro__logo {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  z-index: 3;
+  width: 46%;
+  height: auto;
+  transform: translateX(-42%);
+}
+
 /* ---------- [9] oferta ---------- */
 .v2-oferta__pergunta {
   font-size: clamp(1.05rem, 1rem + 0.4vw, 1.25rem) !important;
 }
 .v2-oferta .v2-h2 {
   color: #fff;
+}
+.v2-oferta .v2-card-oferta {
+  margin-inline: auto;
 }
 .v2-oferta__chamada {
   color: var(--v2-amarelo) !important;
@@ -1209,11 +1300,6 @@ body:has(.v2) {
   color: #6f6f6f !important;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .v2-hero__seta {
-    animation: none;
-  }
-}
 
 /* ---------- celular com as telas reais do app (motion) ---------- */
 .v2-celular {
@@ -1287,24 +1373,3 @@ body:has(.v2) {
   }
 }
 
-/* Celular sobre a foto do topo. */
-.v2-celular--hero {
-  position: absolute;
-  right: 4%;
-  bottom: -18%;
-  z-index: 2;
-  width: 27%;
-  max-width: 170px;
-  transform: rotate(5deg);
-  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.6));
-}
-.v2-hero__foto:has(.v2-celular--hero) {
-  overflow: visible;
-  margin-bottom: calc(14% + 22px);
-}
-.v2-hero__foto:has(.v2-celular--hero)::after {
-  border-radius: 0 0 15px 15px;
-}
-.v2-hero__foto > img {
-  border-radius: 15px;
-}

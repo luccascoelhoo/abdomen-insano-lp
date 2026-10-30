@@ -5,11 +5,11 @@ import { ExpertV2 } from '@/components/v2/ExpertV2';
 import { FaqV2, RodapeV2, SuporteV2 } from '@/components/v2/FinalV2';
 import { FuncaoV2 } from '@/components/v2/FuncaoV2';
 import { GarantiaV2 } from '@/components/v2/GarantiaV2';
-import { HeroV2 } from '@/components/v2/HeroV2';
 import { OfertaV2 } from '@/components/v2/OfertaV2';
 import { ProblemaV2 } from '@/components/v2/ProblemaV2';
 import { SolucaoV2 } from '@/components/v2/SolucaoV2';
 import { ViewContentWatcher } from '@/components/ui/ViewContentWatcher';
+import { HeroV3 } from '@/components/v3/HeroV3';
 import { oferta } from '@/content/desafio';
 import { ofertaV2 } from '@/content/lp-v2';
 import { parcelamentoDaOferta } from '@/lib/parcelamento';
@@ -28,7 +28,7 @@ export async function LpV2() {
   return (
     <div className="v2">
       <ViewContentWatcher moeda={oferta.precoMoeda} />
-      <HeroV2 />
+      <HeroV3 />
       <ProblemaV2 />
       <FuncaoV2 />
       <SolucaoV2 />

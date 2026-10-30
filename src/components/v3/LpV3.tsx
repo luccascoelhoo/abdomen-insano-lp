@@ -28,6 +28,7 @@ import { parcelamentoDaOferta, reais, type Parcelamento } from '@/lib/parcelamen
 import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import { CapaDesenho } from './CapaDesenho';
 import { CarrosselV3 } from './CarrosselV3';
+import { HeroV3 } from './HeroV3';
 import { KitV3 } from './KitV3';
 import { StickyCta } from './StickyCta';
 import { VideoJornada } from './VideoJornada';
@@ -73,50 +74,25 @@ export async function LpV3() {
   );
 }
 
-/** [1] Topo: o banner, o selo de alunos, a headline e a lead do Igor, o botão e o preço. */
+/** [1] Topo: o banner, o selo, a headline e a lead do Igor; aqui com o botão, o preço e os selos. */
 function Hero({ preco }: { preco: string }) {
-  const h = heroV3;
   return (
-    <section className="v3-hero">
-      <div className="v3-hero__foto">
-        <Image src={h.foto.src} alt={h.foto.alt} width={h.foto.width} height={h.foto.height} sizes="(max-width: 900px) 100vw, 50vw" priority />
-        <Image className="v3-hero__logo" src="/img/logo-desafio.svg" alt="Desafio Abdômen Insano" width={140} height={79} />
+    <HeroV3>
+      <div data-v3="topo">
+        <CtaButton className="v2-cta" origem="v3-hero">
+          {ctaV3}
+        </CtaButton>
       </div>
-      <div className="v3-hero__texto">
-        <div className="prova-pill v3-pill">
-          <span className="prova-pill__avatares" aria-hidden="true">
-            <span className="prova-pill__av prova-pill__av--1" />
-            <span className="prova-pill__av prova-pill__av--2" />
-            <span className="prova-pill__av prova-pill__av--3" />
-            <span className="prova-pill__av prova-pill__av--4" />
-          </span>
-          <span className="prova-pill__txt">
-            <b>{h.prova.numero}</b> {h.prova.texto}
-          </span>
-        </div>
-        <h1 className="v3-hero__titulo">
-          <span className="v2-acento">{h.tituloDestaque}</span> {h.tituloResto}
-        </h1>
-        <p className="v3-hero__sub">
-          <Rico texto={h.sub} />
-        </p>
-        <p className="v3-hero__provoca">{h.provocacao}</p>
-        <div data-v3="topo">
-          <CtaButton className="v2-cta" origem="v3-hero">
-            {ctaV3}
-          </CtaButton>
-        </div>
-        <p className="v3-hero__preco">{preco}</p>
-        <ul className="v3-confianca">
-          {h.confianca.map((c) => (
-            <li key={c}>
-              <IconeCheck />
-              {c}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+      <p className="v3-hero__preco">{preco}</p>
+      <ul className="v3-confianca">
+        {heroV3.confianca.map((c) => (
+          <li key={c}>
+            <IconeCheck />
+            {c}
+          </li>
+        ))}
+      </ul>
+    </HeroV3>
   );
 }
 
