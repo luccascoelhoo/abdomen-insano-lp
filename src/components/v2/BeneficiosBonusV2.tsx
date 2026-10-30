@@ -23,8 +23,8 @@ export function BeneficiosBonusV2() {
           poster="/video/transformacao-poster.webp"
           aria-label="Dia 01, dia 42 e 1 ano: a transformação de quem faz o desafio"
         >
-          <source src="/video/transformacao.webm" type="video/webm" />
           <source src="/video/transformacao.mp4" type="video/mp4" />
+          <source src="/video/transformacao.webm" type="video/webm" />
         </video>
         <h2 className="v2-h2">
           {beneficiosV2.titulo}{' '}
