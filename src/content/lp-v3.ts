@@ -19,6 +19,7 @@
  * Marcação dos textos: a mesma do `components/v2/Rico.tsx`.
  */
 
+import { semanas } from './desafio';
 import { bonusV2, depoimentosV2, expertV2, garantiaV2, telasApp } from './lp-v2';
 
 export const ctaV3 = 'ACEITO O DESAFIO';
@@ -29,6 +30,8 @@ export const heroV3 = {
   tituloDestaque: 'Falta arrancar a capa.',
   sub: 'Treino de abdômen com **carga que sobe toda semana** e **dieta calculada pra você**, no mesmo app. Em casa ou na academia, **sem passar fome**.',
   confianca: ['15 dias de garantia', 'Acesso na hora', 'Pagamento único'],
+  /** Da V.1: o número é o que a própria página do Igor afirmava. Confirmar com ele. */
+  prova: { numero: '+5.500 alunos', texto: 'já estão no desafio' },
   foto: { src: '/img/hero-atleta.jpg', alt: 'Igor Correa mostrando o abdômen trincado', width: 1400, height: 1750 },
 } as const;
 
@@ -83,6 +86,14 @@ export const metodoV3 = {
       imagem: { src: '/img/app/serie-marcada.webp', alt: 'Série marcada no app: repetições, carga e descanso' },
     },
   ],
+  /** Da V.1: a progressão semana a semana, que é o que "carga que sobe" quer dizer. */
+  semanasTitulo: 'Semana a semana, a carga sobe',
+  semanas,
+  /**
+   * Da V.1: os responsáveis técnicos saem do rodapé e viram selo de autoridade.
+   * Mesmos registros do rodapé (`rodape.responsaveis` em desafio.ts).
+   */
+  responsaveis: 'Dieta com nutricionista (**Karla, CRN1 23440**) e treino com educador físico (**Gledson, CREF 015440-G/DF**).',
   comecoTitulo: 'Em 3 passos você tá dentro',
   passos: [
     { titulo: 'Baixa o app', texto: 'iOS ou Android, com o e-mail da compra.' },
@@ -101,6 +112,17 @@ export const provaV3 = {
   sub: 'Alunos reais do desafio. Arrasta pro lado.',
   aviso: 'Resultados variam conforme dedicação e condição física de cada pessoa.',
   casos: depoimentosV2.casos,
+  /*
+   * Da V.2: os benefícios de desejo, só os que não prometem resultado no corpo
+   * nem falam mal da aparência de quem lê (política de saúde do Meta). Ficam
+   * de fora o "inchado ou retido" e a "gordurinha debaixo do umbigo".
+   */
+  beneficiosTitulo: 'O que muda quando a capa sai',
+  beneficios: [
+    'Vai ter **um plano que os amigos vão querer copiar**.',
+    '**Vai correr na direção certa**, sem se matar de treinar nem passar fome.',
+    '**Vai ganhar rotina e disciplina** que ficam depois dos 42 dias.',
+  ],
 } as const;
 
 /**
@@ -131,6 +153,13 @@ const bonus = bonusV2.itens.map((b) => ({
 }));
 
 export const ofertaV3 = {
+  /** Da V.2: a jornada do app em três quadros, dia 01, dia 42 e 1 ano. */
+  video: {
+    poster: '/video/transformacao-poster.webp',
+    webm: '/video/transformacao.webm',
+    mp4: '/video/transformacao.mp4',
+    rotulo: 'Dia 01, dia 42 e 1 ano: a jornada de quem faz o desafio',
+  },
   etiqueta: 'O que você leva hoje',
   titulo: 'Tudo o que eu queria ter tido no começo, [[num app só]].',
   sub: '42 dias de desafio, 1 ano de acesso, pagamento único. Sem mensalidade.',

@@ -24,13 +24,19 @@ import { parcelamentoDaOferta, reais, type Parcelamento } from '@/lib/parcelamen
 import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import { CapaDesenho } from './CapaDesenho';
 import { CarrosselV3 } from './CarrosselV3';
+import { KitV3 } from './KitV3';
 import { StickyCta } from './StickyCta';
+import { VideoJornada } from './VideoJornada';
 import '@/app/v2/v2.css';
 import '@/app/v3/v3.css';
 
 /**
  * LP V.3 "Capa Zero": cada seção responde a próxima dúvida de quem lê.
  * Herda o visual da V.2 (`.v2`) e só acrescenta o que é dela (`.v3`).
+ *
+ * Junta o melhor das duas anteriores: da V.1, o selo de alunos, a progressão
+ * semana a semana e os responsáveis técnicos à vista; da V.2, o app passando
+ * sobre a foto do Igor, o kit saindo do card de compra e o vídeo da jornada.
  *
  * Medição idêntica à da home: ViewContentWatcher e CtaButton, com `origem`
  * própria em cada botão (v3-hero, v3-oferta, v3-fechamento, v3-sticky).
@@ -66,8 +72,20 @@ function Hero({ preco }: { preco: string }) {
       <div className="v3-hero__foto">
         <Image src={h.foto.src} alt={h.foto.alt} width={h.foto.width} height={h.foto.height} sizes="(max-width: 900px) 100vw, 50vw" priority />
         <Image className="v3-hero__logo" src="/img/logo-desafio.svg" alt="Desafio Abdômen Insano" width={140} height={79} />
+        <CelularApp telas={telasApp.vitrine} rotulo="O app do desafio: treino, séries e dieta" pontos={false} className="v3-hero__celular" />
       </div>
       <div className="v3-hero__texto">
+        <div className="prova-pill v3-pill">
+          <span className="prova-pill__avatares" aria-hidden="true">
+            <span className="prova-pill__av prova-pill__av--1" />
+            <span className="prova-pill__av prova-pill__av--2" />
+            <span className="prova-pill__av prova-pill__av--3" />
+            <span className="prova-pill__av prova-pill__av--4" />
+          </span>
+          <span className="prova-pill__txt">
+            <b>{h.prova.numero}</b> {h.prova.texto}
+          </span>
+        </div>
         <p className="v3-etiqueta">{h.etiqueta}</p>
         <h1 className="v3-hero__titulo">
           {h.titulo} <span className="v2-acento">{h.tituloDestaque}</span>
@@ -191,6 +209,21 @@ function Metodo() {
           ))}
         </ol>
 
+        <div className="v3-semanas">
+          <h3 className="v3-semanas__titulo">{m.semanasTitulo}</h3>
+          <ol>
+            {m.semanas.map((s) => (
+              <li key={s.rotulo}>
+                <span>{s.rotulo.replace('Semana ', '')}</span>
+                {s.titulo}
+              </li>
+            ))}
+          </ol>
+          <p className="v3-responsaveis">
+            <Rico texto={m.responsaveis} />
+          </p>
+        </div>
+
         <div className="v3-comeco">
           <CelularApp telas={m.telas} rotulo={m.telasRotulo} pontos={false} className="v3-comeco__celular" />
           <div>
@@ -236,6 +269,19 @@ function Prova() {
         <p className="v2-sub v2-centro">{provaV3.sub}</p>
         <CarrosselV3 casos={provaV3.casos} />
         <p className="v3-aviso v2-centro">{provaV3.aviso}</p>
+        <div className="v3-beneficios">
+          <h3>{provaV3.beneficiosTitulo}</h3>
+          <ul>
+            {provaV3.beneficios.map((b) => (
+              <li key={b}>
+                <IconeCheck />
+                <span>
+                  <Rico texto={b} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
@@ -253,64 +299,67 @@ function Oferta({ parcelamento }: { parcelamento: Parcelamento }) {
             <Rico texto={o.titulo} />
           </h2>
           <p className="v2-sub">{o.sub}</p>
-          <CelularApp telas={telasApp.vitrine} rotulo="O app do desafio: treino, séries e dieta" pontos={false} className="v3-oferta__celular" />
+          <VideoJornada {...o.video} />
         </div>
 
         <div className="v3-card" data-v3="oferta">
-          <ul className="v3-pilha">
-            {o.principal.map((p) => (
-              <li key={p.titulo}>
-                <IconeCheck />
-                <div>
-                  <b>{p.titulo}</b>
-                  <span>{p.linha}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <p className="v3-card__rotulo">Bônus</p>
-          <ul className="v3-pilha">
-            {o.bonus.map((b) => (
-              <li key={b.titulo}>
-                <IconeCheck />
-                <div>
-                  <b>{b.titulo}</b>
-                  <span>{b.linha}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <KitV3 />
+          <div className="v3-card__corpo">
+            <ul className="v3-pilha">
+              {o.principal.map((p) => (
+                <li key={p.titulo}>
+                  <IconeCheck />
+                  <div>
+                    <b>{p.titulo}</b>
+                    <span>{p.linha}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="v3-card__rotulo">Bônus</p>
+            <ul className="v3-pilha">
+              {o.bonus.map((b) => (
+                <li key={b.titulo}>
+                  <IconeCheck />
+                  <div>
+                    <b>{b.titulo}</b>
+                    <span>{b.linha}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-          <div className="v3-preco">
-            <p className="v3-preco__provoca">{o.preco.provocacao}</p>
-            <p className="v3-preco__linha">{o.preco.linha}</p>
-            <p className="v3-preco__valor">
-              <span>{parcelamento.vezes}x</span> R$ {reais(parcelamento.parcelaCentavos)}
-            </p>
-            <p className="v3-preco__avista">ou R$ {reais(parcelamento.avistaCentavos)} à vista</p>
-            {/* 42 dias: só afirma "menos de R$ 2 por dia" se o preço vivo da Cakto deixar. */}
-            {parcelamento.avistaCentavos / 42 < 200 && (
-              <p className="v3-preco__reforco">
-                <Rico texto={o.preco.reforco} />
+            <div className="v3-preco">
+              <p className="v3-preco__provoca">{o.preco.provocacao}</p>
+              <p className="v3-preco__linha">{o.preco.linha}</p>
+              <p className="v3-preco__valor">
+                <span>{parcelamento.vezes}x</span> R$ {reais(parcelamento.parcelaCentavos)}
               </p>
-            )}
-          </div>
-
-          <CtaButton className="v2-cta" origem="v3-oferta" microcopy={o.preco.microcopy}>
-            {ctaV3}
-          </CtaButton>
-
-          <div className="v3-garantia">
-            <div className="v2-selo" aria-hidden="true">
-              <span className="v2-selo__numero">{o.garantia.numero}</span>
-              <span className="v2-selo__rotulo">{o.garantia.rotulo}</span>
+              <p className="v3-preco__avista">ou R$ {reais(parcelamento.avistaCentavos)} à vista</p>
+              {/* 42 dias: só afirma "menos de R$ 2 por dia" se o preço vivo da Cakto deixar. */}
+              {parcelamento.avistaCentavos / 42 < 200 && (
+                <p className="v3-preco__reforco">
+                  <Rico texto={o.preco.reforco} />
+                </p>
+              )}
             </div>
-            <div>
-              <h3>{o.garantia.titulo}</h3>
-              <p>{o.garantia.texto}</p>
-              <a className="v2-link" href={`mailto:${o.garantia.email}`}>
-                {o.garantia.email}
-              </a>
+
+            <CtaButton className="v2-cta" origem="v3-oferta" microcopy={o.preco.microcopy}>
+              {ctaV3}
+            </CtaButton>
+
+            <div className="v3-garantia">
+              <div className="v2-selo" aria-hidden="true">
+                <span className="v2-selo__numero">{o.garantia.numero}</span>
+                <span className="v2-selo__rotulo">{o.garantia.rotulo}</span>
+              </div>
+              <div>
+                <h3>{o.garantia.titulo}</h3>
+                <p>{o.garantia.texto}</p>
+                <a className="v2-link" href={`mailto:${o.garantia.email}`}>
+                  {o.garantia.email}
+                </a>
+              </div>
             </div>
           </div>
         </div>
