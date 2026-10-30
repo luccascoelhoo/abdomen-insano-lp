@@ -12,9 +12,7 @@ import {
   bonusV3,
   ctaV3,
   expertV3,
-  faixaV3,
   faqV3,
-  fechamentoV3,
   funcaoV3,
   garantiaV3,
   heroV3,
@@ -27,7 +25,9 @@ import {
 import { parcelamentoDaOferta, reais, type Parcelamento } from '@/lib/parcelamento';
 import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import { CapaDesenho } from './CapaDesenho';
+import { FaixaV3, FechamentoV3, Responsaveis } from './Blocos';
 import { CarrosselV3 } from './CarrosselV3';
+import { HeroV3 } from './HeroV3';
 import { KitV3 } from './KitV3';
 import { StickyCta } from './StickyCta';
 import { VideoJornada } from './VideoJornada';
@@ -58,7 +58,7 @@ export async function LpV3() {
       <Problema />
       <Funcao />
       <Solucao />
-      <Faixa />
+      <FaixaV3 />
       <Prova />
       <Passos />
       <BeneficiosBonus />
@@ -66,57 +66,32 @@ export async function LpV3() {
       <Garantia />
       <Expert />
       <Faq />
-      <Fechamento preco={preco} />
+      <FechamentoV3 preco={preco} origem="v3-fechamento" />
       <RodapeV2 />
       <StickyCta parcelamento={parcelamento} texto={ctaV3} />
     </div>
   );
 }
 
-/** [1] Topo: o banner, o selo de alunos, a headline e a lead do Igor, o botão e o preço. */
+/** [1] Topo: o banner, o selo, a headline e a lead do Igor; aqui com o botão, o preço e os selos. */
 function Hero({ preco }: { preco: string }) {
-  const h = heroV3;
   return (
-    <section className="v3-hero">
-      <div className="v3-hero__foto">
-        <Image src={h.foto.src} alt={h.foto.alt} width={h.foto.width} height={h.foto.height} sizes="(max-width: 900px) 100vw, 50vw" priority />
-        <Image className="v3-hero__logo" src="/img/logo-desafio.svg" alt="Desafio Abdômen Insano" width={140} height={79} />
+    <HeroV3>
+      <div data-v3="topo">
+        <CtaButton className="v2-cta" origem="v3-hero">
+          {ctaV3}
+        </CtaButton>
       </div>
-      <div className="v3-hero__texto">
-        <div className="prova-pill v3-pill">
-          <span className="prova-pill__avatares" aria-hidden="true">
-            <span className="prova-pill__av prova-pill__av--1" />
-            <span className="prova-pill__av prova-pill__av--2" />
-            <span className="prova-pill__av prova-pill__av--3" />
-            <span className="prova-pill__av prova-pill__av--4" />
-          </span>
-          <span className="prova-pill__txt">
-            <b>{h.prova.numero}</b> {h.prova.texto}
-          </span>
-        </div>
-        <h1 className="v3-hero__titulo">
-          <span className="v2-acento">{h.tituloDestaque}</span> {h.tituloResto}
-        </h1>
-        <p className="v3-hero__sub">
-          <Rico texto={h.sub} />
-        </p>
-        <p className="v3-hero__provoca">{h.provocacao}</p>
-        <div data-v3="topo">
-          <CtaButton className="v2-cta" origem="v3-hero">
-            {ctaV3}
-          </CtaButton>
-        </div>
-        <p className="v3-hero__preco">{preco}</p>
-        <ul className="v3-confianca">
-          {h.confianca.map((c) => (
-            <li key={c}>
-              <IconeCheck />
-              {c}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+      <p className="v3-hero__preco">{preco}</p>
+      <ul className="v3-confianca">
+        {heroV3.confianca.map((c) => (
+          <li key={c}>
+            <IconeCheck />
+            {c}
+          </li>
+        ))}
+      </ul>
+    </HeroV3>
   );
 }
 
@@ -278,27 +253,10 @@ function Solucao() {
               </li>
             ))}
           </ol>
-          <p className="v3-responsaveis">
-            <Rico texto={s.responsaveis} />
-          </p>
+          <Responsaveis />
         </div>
       </div>
     </section>
-  );
-}
-
-/** [5] A faixa laranja que corre: energia entre o método e os casos. Decorativa. */
-function Faixa() {
-  // Duas cópias seguidas: a animação anda metade da largura e recomeça sem emenda.
-  const itens = [...faixaV3, ...faixaV3];
-  return (
-    <div className="v3-faixa" aria-hidden="true">
-      <div className="v3-faixa__trilho">
-        {itens.map((t, n) => (
-          <span key={n}>{t}</span>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -574,19 +532,3 @@ function Faq() {
   );
 }
 
-/** [13] O último empurrão: a provocação do Igor e o botão de novo. */
-function Fechamento({ preco }: { preco: string }) {
-  return (
-    <section className="v2-sec v3-fechamento">
-      <div className="v2-col v2-centro">
-        <h2 className="v2-h2 v3-fechamento__titulo">{fechamentoV3.provocacao}</h2>
-        <div data-v3="oferta">
-          <CtaButton className="v2-cta" origem="v3-fechamento" microcopy={preco}>
-            {ctaV3}
-          </CtaButton>
-        </div>
-        <p className="v2-oferta__lema">{fechamentoV3.lema}</p>
-      </div>
-    </section>
-  );
-}

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { FaqItem } from '@/components/ui/FaqItem';
 import { rodape, suporte } from '@/content/desafio';
 import { faqV2, rodapeV2, suporteV2 } from '@/content/lp-v2';
+import { faqV3 } from '@/content/lp-v3';
 
 /** [12] Perguntas frequentes — sanfona escura. Reaproveita o `FaqItem` da página atual. */
 export function FaqV2() {
@@ -10,7 +11,7 @@ export function FaqV2() {
       <div className="v2-col">
         <h2 className="v2-h2 v2-centro">{faqV2.titulo}</h2>
         <div className="v2-faq">
-          {faqV2.itens.map((f, i) => (
+          {faqV3.itens.map((f, i) => (
             <FaqItem key={f.pergunta} numero={String(i + 1).padStart(2, '0')} pergunta={f.pergunta} resposta={f.resposta} />
           ))}
         </div>

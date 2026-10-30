@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { beneficiosV2, bonusV2 } from '@/content/lp-v2';
 import { IconeCheck } from './Icones';
 import { Rico } from './Rico';
@@ -48,15 +49,34 @@ export function BeneficiosBonusV2() {
           <ValidoAte />
         </div>
 
-        <div className="v2-bonus-grade">
+        <div className="v2-bonus-grade v2-bonus-grade--livros">
           {bonusV2.itens.map((b) => (
-            <article key={b.titulo} className="v2-bonus">
-              <span className="v2-bonus__rotulo">{b.rotulo}</span>
-              <h3 className="v2-h3">
-                {b.titulo}
-                {b.valor && <span className="v2-bonus__valor"> ({b.valor})</span>}
-              </h3>
-              <p>{b.texto}</p>
+            <article key={b.titulo} className="v2-bonus v2-bonus--livro">
+              <div className="v2-livro" aria-hidden="true">
+                <div className="v2-livro__capa">
+                  <Image
+                    src={b.capa.foto}
+                    alt=""
+                    fill
+                    sizes="150px"
+                    className="v2-livro__foto"
+                    style={{ objectPosition: b.capa.posicao }}
+                  />
+                  <span className="v2-livro__titulo">
+                    <Rico texto={b.capa.titulo} />
+                  </span>
+                  <Image src="/img/logo-desafio.svg" alt="" width={70} height={39} className="v2-livro__logo" />
+                </div>
+              </div>
+              <div className="v2-bonus__texto">
+                <span className="v2-bonus__rotulo">{b.rotulo}</span>
+                <h3 className="v2-h3">{b.titulo}</h3>
+                <p>{b.texto}</p>
+                <p className="v2-bonus__preco">
+                  {b.valor && <s>{b.valor}</s>}
+                  <b>GRÁTIS</b>
+                </p>
+              </div>
             </article>
           ))}
         </div>

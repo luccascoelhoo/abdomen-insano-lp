@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import { entregaveisV2 } from '@/content/lp-v2';
-import { CelularApp } from './CelularApp';
+import { CelularVideo } from './CelularVideo';
 import { Rico } from './Rico';
 
 /**
  * [6] Entregáveis — o passo a passo em linha do tempo, como na referência:
  * cartões alternando de lado no desktop, com a palavra do passo grande e
  * desfocada no lado vazio; no celular, uma coluna com a linha à esquerda.
+ * Cada passo mostra a gravação real do app num iPhone.
  */
 export function EntregaveisV2() {
   return (
@@ -31,9 +32,9 @@ export function EntregaveisV2() {
                   <span className="v2-acento">{i + 1}.</span> {p.titulo}
                 </h3>
                 <p>{p.texto}</p>
-                {'telas' in p && p.telas && (
-                  <div className="v2-passo__img">
-                    <CelularApp telas={p.telas} rotulo={`Telas do app: ${p.titulo.toLowerCase()}`} />
+                {'video' in p && p.video && (
+                  <div className="v2-passo__img v2-passo__img--iphone">
+                    <CelularVideo video={p.video} rotulo={`O app na prática: ${p.titulo.toLowerCase()}`} />
                   </div>
                 )}
                 {'imagem' in p && p.imagem && (
