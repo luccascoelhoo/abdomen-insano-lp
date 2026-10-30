@@ -19,9 +19,9 @@ export function FaixaV3() {
 }
 
 /** Nutricionista e educador físico à vista (os mesmos registros do rodapé). */
-export function Responsaveis({ solto = false }: { solto?: boolean }) {
+export function Responsaveis() {
   return (
-    <p className={`v3-responsaveis${solto ? ' v3-responsaveis--solto' : ''}`}>
+    <p className="v3-responsaveis">
       <Rico texto={solucaoV3.responsaveis} />
     </p>
   );

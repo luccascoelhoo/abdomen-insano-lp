@@ -22,9 +22,9 @@ import '@/app/v2/v2.css';
  * desafio.modocaverna.com/ative. É a home (`/`); a anterior (V.1) está em
  * `/antiga` e na etiqueta `lp-v1-antiga` do Git.
  *
- * Da V.3 (29/10/2026) entraram o topo, a faixa laranja, os responsáveis
- * técnicos, o carrossel com contador, as perguntas novas do FAQ e o
- * fechamento. Não entram a barra fixa nem o botão com preço no topo, e as
+ * Da V.3 (29/10/2026) entraram o topo, a faixa laranja, as perguntas novas
+ * do FAQ e o fechamento (responsáveis e carrossel com contador saíram
+ * em 30/10). Não entram a barra fixa nem o botão com preço no topo, e as
  * urgências ("por tempo limitado", "válido até hoje") ficam.
  */
 export async function LpV2() {
