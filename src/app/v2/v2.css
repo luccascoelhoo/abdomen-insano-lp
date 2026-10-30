@@ -579,6 +579,9 @@ body:has(.v2) {
     transform: translateX(-1px);
   }
   .v2-passo {
+    /* A palavra do fundo mede-se pela largura do passo (cqi), pra caber inteira
+       na coluna em qualquer tela; "RESPONDA" é a mais longa. */
+    container-type: inline-size;
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 72px;
@@ -610,7 +613,7 @@ body:has(.v2) {
   }
   .v2-passo__fundo {
     display: block;
-    font-size: clamp(3rem, 6.2vw, 5.6rem);
+    font-size: min(5.6rem, 7.6cqi);
     font-weight: 900;
     letter-spacing: 0.02em;
     color: rgba(255, 255, 255, 0.07);
