@@ -118,7 +118,7 @@ export const solucaoV2 = {
       titulo: 'Dados',
       texto:
         'Você registra a carga, as repetições e o descanso de cada série no app. **Sua evolução é guiada pelo que você realmente fez, não por achismo.**',
-      imagem: { src: '/img/app/serie-marcada.webp', alt: 'Série marcada no app: repetições, carga e descanso', width: 540, height: 1200 },
+      imagem: { src: '/img/metodo-dados.webp', alt: 'Séries marcadas no app: repetições, carga e o check de cada série', width: 430, height: 430 },
     },
   ],
 } as const;
