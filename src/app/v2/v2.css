@@ -1268,19 +1268,73 @@ body:has(.v2) {
 .v2-suporte {
   padding-top: 0;
 }
-.v2-botao-contorno {
+/* Card do suporte, no molde da página antiga. */
+.v2-suporte__card {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(28px, 6vw, 64px) clamp(22px, 6vw, 80px);
+  border: 1px solid rgba(255, 107, 0, 0.45);
+  border-radius: 10px;
+  background: #101010;
+}
+.v2-suporte__texto {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+}
+.v2-suporte__texto p {
+  margin: 0 0 28px !important;
+  color: #fff !important;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(1.3rem, 1rem + 1.4vw, 2.1rem) !important;
+  font-weight: 600;
+  line-height: 1.45 !important;
+}
+.v2-suporte__destaque {
+  color: var(--v2-laranja);
+  font-weight: 900;
+}
+.v2-suporte__botao {
   display: inline-flex;
-  margin-top: 6px;
-  padding: 14px 26px;
+  justify-content: center;
+  align-items: center;
+  min-width: min(100%, 300px);
+  min-height: 64px;
+  padding: 14px 32px;
   border-radius: 999px;
-  border: 2px solid var(--v2-laranja);
+  border: 2px solid #84f04a;
+  background: #08b83a;
   color: #fff;
   font-weight: 800;
+  font-size: 1.1rem;
   text-decoration: none;
-  transition: background 0.2s;
+  box-shadow: 0 0 18px rgba(132, 240, 74, 0.35);
+  transition: filter 0.2s, box-shadow 0.2s;
 }
-.v2-botao-contorno:hover {
-  background: rgba(255, 107, 0, 0.12);
+.v2-suporte__botao:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 26px rgba(132, 240, 74, 0.5);
+}
+.v2-suporte__botao:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+.v2-suporte__whats {
+  position: absolute;
+  top: 50%;
+  right: clamp(-60px, -4vw, 0px);
+  width: clamp(200px, 32vw, 390px);
+  height: auto;
+  color: #fff;
+  opacity: 0.08;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+@media (min-width: 760px) {
+  .v2-suporte__whats {
+    right: 6%;
+    opacity: 0.12;
+  }
 }
 
 /* ---------- [14] rodapé ---------- */

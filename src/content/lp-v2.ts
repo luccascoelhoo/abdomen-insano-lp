@@ -433,10 +433,6 @@ export const faqV2 = {
   ],
 } as const;
 
-export const suporteV2 = {
-  texto: 'Se você ainda ficou alguma dúvida ou gostaria de falar com a nossa equipe, pode entrar em contato conosco agora mesmo.',
-} as const;
-
 export const rodapeV2 = {
   responsaveisTitulo: 'Responsáveis Técnicos:',
   responsaveis: 'Karla: CRN1 23440 • Gledson: CREF 015440-G /DF',
