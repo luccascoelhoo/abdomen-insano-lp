@@ -28,6 +28,9 @@ body:has(.v2) {
   --v2-verde-sombra: #11803a;
   --v2-vermelho: #ef4444;
   --v2-acento: var(--v2-laranja);
+  /* Degradê dos destaques das headlines: laranja em cima, amarelo embaixo. */
+  --v2-grad-topo: var(--v2-laranja);
+  --v2-grad-base: var(--v2-amarelo);
 
   background: var(--v2-preto);
   color: #f2f2f2;
@@ -51,11 +54,16 @@ body:has(.v2) {
 }
 .v2-sec--claro {
   --v2-acento: var(--v2-laranja-texto);
+  /* No fundo claro o amarelo some: o degradê desce pra um âmbar escuro. */
+  --v2-grad-topo: var(--v2-laranja-texto);
+  --v2-grad-base: #d97706;
   background: var(--v2-claro);
   color: #1e1e1e;
 }
 .v2-sec--branco {
   --v2-acento: var(--v2-laranja-texto);
+  --v2-grad-topo: var(--v2-laranja-texto);
+  --v2-grad-base: #d97706;
   background: var(--v2-branco);
   color: #1e1e1e;
 }
@@ -102,6 +110,19 @@ body:has(.v2) {
 }
 .v2-acento {
   color: var(--v2-acento);
+}
+/* Nas headlines (e nos "Aceita o desafio?") o laranja vira degradê, linha a
+   linha: o fundo se repete a cada 1lh, então cada linha começa laranja. */
+.v2 :is(.v2-h2, .v3-hero__titulo) .v2-acento,
+.v2 :is(.v2-h2, .v3-hero__titulo) .v2-acento .v2-rabisco,
+.v2 .v2-h2.v2-acento,
+.v2 .v3-hero__provoca,
+.v2 .v2-punch,
+.v2 .v3-fechamento__titulo {
+  background: linear-gradient(180deg, var(--v2-grad-topo) 20%, var(--v2-grad-base) 100%) 0 0 / 100% 1lh repeat-y;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* ---------- tipografia ---------- */

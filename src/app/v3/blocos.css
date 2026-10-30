@@ -1,6 +1,5 @@
 /* ============================================================
-   Blocos da V.3 que também estão na home: faixa laranja, responsáveis
-   técnicos, carrossel com contador e o aviso, e o fechamento.
+   Blocos da V.3; a faixa laranja e o fechamento também estão na home.
 
    As duas páginas têm a raiz `.v2` (a /v3 é `.v2.v3`), então `.v2
    .classe` (0,2,0) vale nas duas e vence `.v2 p` (0,1,1).
@@ -102,21 +101,6 @@
   font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
   color: var(--v2-laranja);
   margin-bottom: 22px;
-}
-
-/* Na home ele fica sozinho no fim do método, que é uma seção clara. */
-.v2 .v3-responsaveis--solto {
-  max-width: 760px;
-  margin: 28px auto 0;
-  padding: 14px 18px;
-  border: 1px solid #e2e2e2;
-  border-radius: 14px;
-  background: #fff;
-  color: #555;
-  text-align: center;
-}
-.v2 .v3-responsaveis--solto b {
-  color: #111;
 }
 
 @media (prefers-reduced-motion: reduce) {

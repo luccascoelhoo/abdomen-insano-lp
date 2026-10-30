@@ -1,6 +1,5 @@
 import { depoimentosV2 } from '@/content/lp-v2';
-import { CarrosselV3 } from '@/components/v3/CarrosselV3';
-import { provaV3 } from '@/content/lp-v3';
+import { CarrosselCasos } from './CarrosselCasos';
 import { Rico } from './Rico';
 
 /** [5] Depoimentos — antes e depois reais em trilho. */
@@ -15,8 +14,7 @@ export function DepoimentosV2() {
           </span>
         </h2>
         <p className="v2-sub v2-centro">{depoimentosV2.sub}</p>
-        <CarrosselV3 casos={depoimentosV2.casos} />
-        <p className="v3-aviso v2-centro">{provaV3.aviso}</p>
+        <CarrosselCasos casos={depoimentosV2.casos} />
       </div>
     </section>
   );

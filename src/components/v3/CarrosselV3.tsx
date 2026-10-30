@@ -7,7 +7,7 @@ import { IconeSeta } from '@/components/v2/Icones';
 type Caso = { src: string; alt: string };
 
 /**
- * Trilho de casos (home e /v3): encaixe nativo do navegador, com contador
+ * Trilho de casos da /v3: encaixe nativo do navegador, com contador
  * "3/9" e as setas embaixo, fora da foto, pra não cobrirem o antes e depois.
  */
 export function CarrosselV3({ casos }: { casos: readonly Caso[] }) {
