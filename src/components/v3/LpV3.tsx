@@ -1,58 +1,73 @@
 import Image from 'next/image';
-import { CardOferta } from '@/components/v2/CardOferta';
-import { CarrosselCasos } from '@/components/v2/CarrosselCasos';
 import { CelularApp } from '@/components/v2/CelularApp';
-import { RodapeV2, SuporteV2 } from '@/components/v2/FinalV2';
+import { RodapeV2 } from '@/components/v2/FinalV2';
 import { IconeCheck, IconeX } from '@/components/v2/Icones';
 import { Rico } from '@/components/v2/Rico';
 import { CtaButton } from '@/components/ui/CtaButton';
 import { FaqItem } from '@/components/ui/FaqItem';
 import { ViewContentWatcher } from '@/components/ui/ViewContentWatcher';
-import { oferta } from '@/content/desafio';
-import { ofertaV2 } from '@/content/lp-v2';
-import { capaV3, faqV3, heroV3, igorV3, metodoV3, ofertaV3, provaV3, stickyV3 } from '@/content/lp-v3';
+import { oferta, suporte } from '@/content/desafio';
+import { ofertaV2, telasApp } from '@/content/lp-v2';
+import {
+  capaV3,
+  ctaV3,
+  faixaV3,
+  faqV3,
+  fechamentoV3,
+  heroV3,
+  igorV3,
+  metodoV3,
+  ofertaV3,
+  provaV3,
+} from '@/content/lp-v3';
 import { parcelamentoDaOferta, reais, type Parcelamento } from '@/lib/parcelamento';
 import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import { CapaDesenho } from './CapaDesenho';
+import { CarrosselV3 } from './CarrosselV3';
 import { StickyCta } from './StickyCta';
 import '@/app/v2/v2.css';
 import '@/app/v3/v3.css';
 
 /**
- * LP V.3 "Capa Zero": a V.2 condensada em 7 seções, cada uma respondendo a
- * próxima dúvida de quem está lendo. Herda o visual da V.2 (`.v2`) e só
- * acrescenta o que é dela (`.v3`). Medição idêntica: ViewContentWatcher e
- * CtaButton, com `origem` própria em cada botão.
+ * LP V.3 "Capa Zero": cada seção responde a próxima dúvida de quem lê.
+ * Herda o visual da V.2 (`.v2`) e só acrescenta o que é dela (`.v3`).
+ *
+ * Medição idêntica à da home: ViewContentWatcher e CtaButton, com `origem`
+ * própria em cada botão (v3-hero, v3-oferta, v3-fechamento, v3-sticky).
  */
 export async function LpV3() {
   const slug = produtoPorId(ID_FRONT)?.oferta;
   const parcelamento = (slug ? await parcelamentoDaOferta(slug) : null) ?? ofertaV2.card.reserva;
+  const preco = `${parcelamento.vezes}x R$ ${reais(parcelamento.parcelaCentavos)} ou R$ ${reais(parcelamento.avistaCentavos)} à vista`;
 
   return (
     <div className="v2 v3">
       <ViewContentWatcher moeda={oferta.precoMoeda} />
-      <Hero parcelamento={parcelamento} />
+      <Hero preco={preco} />
       <Capa />
+      <Igor />
       <Metodo />
+      <Faixa />
       <Prova />
       <Oferta parcelamento={parcelamento} />
-      <Igor />
-      <Fim />
-      <StickyCta parcelamento={parcelamento} texto={stickyV3.cta} />
+      <Faq />
+      <Fechamento preco={preco} />
+      <RodapeV2 />
+      <StickyCta parcelamento={parcelamento} texto={ctaV3} />
     </div>
   );
 }
 
 /** [1] O que é: mecanismo na headline, preço e botão já na primeira tela. */
-function Hero({ parcelamento }: { parcelamento: Parcelamento }) {
+function Hero({ preco }: { preco: string }) {
   const h = heroV3;
   return (
     <section className="v3-hero">
       <div className="v3-hero__foto">
         <Image src={h.foto.src} alt={h.foto.alt} width={h.foto.width} height={h.foto.height} sizes="(max-width: 900px) 100vw, 50vw" priority />
+        <Image className="v3-hero__logo" src="/img/logo-desafio.svg" alt="Desafio Abdômen Insano" width={140} height={79} />
       </div>
       <div className="v3-hero__texto">
-        <Image className="v3-hero__logo" src="/img/logo-desafio.svg" alt="Desafio Abdômen Insano" width={140} height={79} priority />
         <p className="v3-etiqueta">{h.etiqueta}</p>
         <h1 className="v3-hero__titulo">
           {h.titulo} <span className="v2-acento">{h.tituloDestaque}</span>
@@ -62,12 +77,10 @@ function Hero({ parcelamento }: { parcelamento: Parcelamento }) {
         </p>
         <div data-v3="topo">
           <CtaButton className="v2-cta" origem="v3-hero">
-            {h.cta}
+            {ctaV3}
           </CtaButton>
         </div>
-        <p className="v3-hero__preco">
-          {parcelamento.vezes}x de R$ {reais(parcelamento.parcelaCentavos)} ou <b>R$ {reais(parcelamento.avistaCentavos)} à vista</b>
-        </p>
+        <p className="v3-hero__preco">{preco}</p>
         <ul className="v3-confianca">
           {h.confianca.map((c) => (
             <li key={c}>
@@ -85,7 +98,7 @@ function Hero({ parcelamento }: { parcelamento: Parcelamento }) {
 function Capa() {
   const c = capaV3;
   return (
-    <section className="v2-sec v2-sec--claro">
+    <section className="v2-sec v3-sec--capa">
       <div className="v2-col v3-capa-grade">
         <div>
           <p className="v3-etiqueta">{c.etiqueta}</p>
@@ -114,7 +127,43 @@ function Capa() {
   );
 }
 
-/** [3] Como funciona: três engrenagens e os três passos de entrada, com o app de verdade. */
+/** [3] Quem está por trás: a única pausa clara da página. */
+function Igor() {
+  const i = igorV3;
+  return (
+    <section className="v2-sec v2-sec--claro">
+      <div className="v2-col v3-igor">
+        <div>
+          <p className="v3-etiqueta">{i.etiqueta}</p>
+          <h2 className="v2-h2">
+            <Rico texto={i.titulo} />
+          </h2>
+          <div className="v3-igor__fotos">
+            {[i.antes, i.depois].map((l) => (
+              <figure key={l.legenda}>
+                <Image src={l.foto.src} alt={l.foto.alt} width={l.foto.width} height={l.foto.height} sizes="(max-width: 720px) 40vw, 200px" />
+                <figcaption>{l.legenda}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+        <div>
+          {i.texto.map((p) => (
+            <p key={p}>
+              <Rico texto={p} />
+            </p>
+          ))}
+          <p className="v3-numero">
+            <b>{i.numero.valor}</b>
+            <span>{i.numero.legenda}</span>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** [4] Como funciona: três engrenagens e os três passos de entrada, com o app de verdade. */
 function Metodo() {
   const m = metodoV3;
   return (
@@ -161,7 +210,22 @@ function Metodo() {
   );
 }
 
-/** [4] Funciona com gente como eu: os casos num trilho só. */
+/** [5] A faixa laranja que corre: energia entre o método e os casos. Decorativa. */
+function Faixa() {
+  // Duas cópias seguidas: a animação anda metade da largura e recomeça sem emenda.
+  const itens = [...faixaV3, ...faixaV3];
+  return (
+    <div className="v3-faixa" aria-hidden="true">
+      <div className="v3-faixa__trilho">
+        {itens.map((t, n) => (
+          <span key={n}>{t}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** [6] Funciona com gente como eu: os casos num trilho só. */
 function Prova() {
   return (
     <section className="v2-sec v2-sec--escuro">
@@ -170,105 +234,128 @@ function Prova() {
           <Rico texto={provaV3.titulo} />
         </h2>
         <p className="v2-sub v2-centro">{provaV3.sub}</p>
-        <CarrosselCasos casos={provaV3.casos} />
+        <CarrosselV3 casos={provaV3.casos} />
+        <p className="v3-aviso v2-centro">{provaV3.aviso}</p>
       </div>
     </section>
   );
 }
 
-/** [5] A oferta, uma vez só: card de compra, o detalhe dos bônus sob demanda e a garantia. */
+/** [7] A oferta, uma vez só: o que vem, a pilha de bônus com valor, o preço e a garantia colada nele. */
 function Oferta({ parcelamento }: { parcelamento: Parcelamento }) {
   const o = ofertaV3;
   return (
     <section className="v2-sec v2-sec--preto v2-oferta" id="oferta">
-      <div className="v2-col v2-centro">
-        <p className="v3-etiqueta">{o.etiqueta}</p>
-        <h2 className="v2-h2">
-          <Rico texto={o.titulo} />
-        </h2>
-        <p className="v2-sub">{o.sub}</p>
-        <div data-v3="oferta">
-          <CardOferta parcelamento={parcelamento} origem="v3-oferta" />
+      <div className="v2-col v3-oferta">
+        <div className="v3-oferta__topo">
+          <p className="v3-etiqueta">{o.etiqueta}</p>
+          <h2 className="v2-h2">
+            <Rico texto={o.titulo} />
+          </h2>
+          <p className="v2-sub">{o.sub}</p>
+          <CelularApp telas={telasApp.vitrine} rotulo="O app do desafio: treino, séries e dieta" pontos={false} className="v3-oferta__celular" />
         </div>
 
-        <details className="v3-bonus">
-          <summary>{o.bonusTitulo}</summary>
-          <ul>
-            {o.bonus.map((b) => (
-              <li key={b.titulo}>
-                <p className="v3-bonus__titulo">
-                  {b.titulo}
-                  {b.valor && <s>{b.valor}</s>}
-                </p>
-                <p>{b.texto}</p>
+        <div className="v3-card" data-v3="oferta">
+          <ul className="v3-pilha">
+            {o.principal.map((p) => (
+              <li key={p.titulo}>
+                <IconeCheck />
+                <div>
+                  <b>{p.titulo}</b>
+                  <span>{p.linha}</span>
+                </div>
               </li>
             ))}
           </ul>
-        </details>
-
-        <div className="v3-garantia">
-          <div className="v2-selo" aria-hidden="true">
-            <span className="v2-selo__numero">{o.garantia.numero}</span>
-            <span className="v2-selo__rotulo">{o.garantia.rotulo}</span>
-          </div>
-          <div>
-            <h3>{o.garantia.titulo}</h3>
-            <p>
-              <Rico texto={o.garantia.texto} />
-            </p>
-            <a className="v2-link" href={`mailto:${o.garantia.email}`}>
-              {o.garantia.email}
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/** [6] Quem está por trás, em três frases. */
-function Igor() {
-  const i = igorV3;
-  return (
-    <section className="v2-sec v2-sec--claro">
-      <div className="v2-col v3-igor">
-        <div className="v3-igor__fotos">
-          {[i.antes, i.depois].map((l) => (
-            <figure key={l.legenda}>
-              <Image src={l.foto.src} alt={l.foto.alt} width={l.foto.width} height={l.foto.height} sizes="(max-width: 720px) 40vw, 200px" />
-              <figcaption>{l.legenda}</figcaption>
-            </figure>
-          ))}
-        </div>
-        <div>
-          <p className="v3-etiqueta">{i.etiqueta}</p>
-          {i.texto.map((p) => (
-            <p key={p}>
-              <Rico texto={p} />
-            </p>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/** [7] As dúvidas que sobram, suporte e rodapé. */
-function Fim() {
-  return (
-    <>
-      <section className="v2-sec v2-sec--fim">
-        <div className="v2-col">
-          <h2 className="v2-h2 v2-centro">{faqV3.titulo}</h2>
-          <div className="v2-faq">
-            {faqV3.itens.map((f, n) => (
-              <FaqItem key={f.pergunta} numero={String(n + 1).padStart(2, '0')} pergunta={f.pergunta} resposta={f.resposta} />
+          <p className="v3-card__rotulo">Bônus</p>
+          <ul className="v3-pilha">
+            {o.bonus.map((b) => (
+              <li key={b.titulo}>
+                <IconeCheck />
+                <div>
+                  <b>{b.titulo}</b>
+                  <span>{b.linha}</span>
+                </div>
+              </li>
             ))}
+          </ul>
+
+          <div className="v3-preco">
+            <p className="v3-preco__provoca">{o.preco.provocacao}</p>
+            <p className="v3-preco__linha">{o.preco.linha}</p>
+            <p className="v3-preco__valor">
+              <span>{parcelamento.vezes}x</span> R$ {reais(parcelamento.parcelaCentavos)}
+            </p>
+            <p className="v3-preco__avista">ou R$ {reais(parcelamento.avistaCentavos)} à vista</p>
+            {/* 42 dias: só afirma "menos de R$ 2 por dia" se o preço vivo da Cakto deixar. */}
+            {parcelamento.avistaCentavos / 42 < 200 && (
+              <p className="v3-preco__reforco">
+                <Rico texto={o.preco.reforco} />
+              </p>
+            )}
+          </div>
+
+          <CtaButton className="v2-cta" origem="v3-oferta" microcopy={o.preco.microcopy}>
+            {ctaV3}
+          </CtaButton>
+
+          <div className="v3-garantia">
+            <div className="v2-selo" aria-hidden="true">
+              <span className="v2-selo__numero">{o.garantia.numero}</span>
+              <span className="v2-selo__rotulo">{o.garantia.rotulo}</span>
+            </div>
+            <div>
+              <h3>{o.garantia.titulo}</h3>
+              <p>{o.garantia.texto}</p>
+              <a className="v2-link" href={`mailto:${o.garantia.email}`}>
+                {o.garantia.email}
+              </a>
+            </div>
           </div>
         </div>
-      </section>
-      <SuporteV2 />
-      <RodapeV2 />
-    </>
+      </div>
+    </section>
+  );
+}
+
+/** [8] As dúvidas que sobram, com o suporte rebaixado a link. */
+function Faq() {
+  return (
+    <section className="v2-sec v2-sec--fim">
+      <div className="v2-col">
+        <h2 className="v2-h2 v2-centro">{faqV3.titulo}</h2>
+        <div className="v2-faq">
+          {faqV3.itens.map((f, n) => (
+            <FaqItem key={f.pergunta} numero={String(n + 1).padStart(2, '0')} pergunta={f.pergunta} resposta={f.resposta} />
+          ))}
+        </div>
+        <p className="v3-suporte">
+          Ficou alguma dúvida?{' '}
+          <a href={suporte.linkUrl} target="_blank" rel="noopener noreferrer">
+            Fala com a equipe
+          </a>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/** [9] O último empurrão: o botão de novo, depois de todas as respostas. */
+function Fechamento({ preco }: { preco: string }) {
+  return (
+    <section className="v2-sec v3-fechamento">
+      <div className="v2-col v2-centro">
+        <h2 className="v2-h2">
+          <Rico texto={fechamentoV3.titulo} />
+        </h2>
+        <p className="v2-sub">{fechamentoV3.sub}</p>
+        <div data-v3="oferta">
+          <CtaButton className="v2-cta" origem="v3-fechamento" microcopy={preco}>
+            {ctaV3}
+          </CtaButton>
+        </div>
+      </div>
+    </section>
   );
 }

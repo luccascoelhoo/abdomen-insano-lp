@@ -10,7 +10,7 @@ import { reais, type Parcelamento } from '@/lib/parcelamento';
  * nunca haver dois botões de compra na mesma tela.
  *
  * Os alvos são achados por `data-v3`: `topo` (botão do hero) e `oferta`
- * (card de compra). O botão é o `CtaButton` de sempre, com origem própria.
+ * (card de compra e fechamento, qualquer bloco com botão próprio). O botão é o `CtaButton` de sempre, com origem própria.
  */
 export function StickyCta({ parcelamento, texto }: { parcelamento: Parcelamento; texto: string }) {
   const [topoVisivel, setTopoVisivel] = useState(true);
@@ -18,17 +18,24 @@ export function StickyCta({ parcelamento, texto }: { parcelamento: Parcelamento;
 
   useEffect(() => {
     const topo = document.querySelector('[data-v3="topo"]');
-    const oferta = document.querySelector('[data-v3="oferta"]');
+    const ofertas = document.querySelectorAll('[data-v3="oferta"]');
     const observadores: IntersectionObserver[] = [];
     if (topo) {
       const o = new IntersectionObserver(([e]) => setTopoVisivel(e.isIntersecting));
       o.observe(topo);
       observadores.push(o);
     }
-    if (oferta) {
-      // Fecha no primeiro pixel do card: o lado seguro, nunca dois botões na tela.
-      const o = new IntersectionObserver(([e]) => setOfertaVisivel(e.isIntersecting));
-      o.observe(oferta);
+    if (ofertas.length) {
+      // Fecha no primeiro pixel de qualquer bloco com botão: nunca dois botões na tela.
+      const visiveis = new Set<Element>();
+      const o = new IntersectionObserver((entradas) => {
+        for (const e of entradas) {
+          if (e.isIntersecting) visiveis.add(e.target);
+          else visiveis.delete(e.target);
+        }
+        setOfertaVisivel(visiveis.size > 0);
+      });
+      ofertas.forEach((el) => o.observe(el));
       observadores.push(o);
     }
     return () => observadores.forEach((o) => o.disconnect());
