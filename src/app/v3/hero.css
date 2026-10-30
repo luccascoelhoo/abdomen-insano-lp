@@ -98,12 +98,15 @@
     align-items: center;
     min-height: min(92vh, 860px);
   }
+  /* No computador o texto vem à esquerda e a foto à direita (pedido do Igor
+     em 30/10/2026); no celular a foto continua em cima. */
   .v3-hero__foto {
+    order: 2;
     aspect-ratio: auto;
     height: 100%;
   }
   .v3-hero__foto::after {
-    background: linear-gradient(to right, transparent 60%, #000 100%);
+    background: linear-gradient(to left, transparent 60%, #000 100%);
   }
   /* A headline do Igor é longa: no desktop ela cabe em cinco linhas, não em sete. */
   .v3-hero .v3-hero__titulo {
@@ -111,7 +114,8 @@
   }
   .v3-hero .v3-hero__logo {
     top: 28px;
-    left: 32px;
+    left: auto;
+    right: 32px;
     width: 120px;
   }
   .v3-hero__texto {
