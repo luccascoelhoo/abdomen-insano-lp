@@ -1,0 +1,126 @@
+/* ============================================================
+   Blocos da V.3 que também estão na home: faixa laranja, responsáveis
+   técnicos, carrossel com contador e o aviso, e o fechamento.
+
+   As duas páginas têm a raiz `.v2` (a /v3 é `.v2.v3`), então `.v2
+   .classe` (0,2,0) vale nas duas e vence `.v2 p` (0,1,1).
+   ============================================================ */
+
+.v2 .v3-responsaveis {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid #242424;
+  font-size: 0.88rem;
+  color: #a8a8a8;
+}
+/* ---------- [5] faixa laranja ---------- */
+.v3-faixa {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin-block: -14px;
+  padding-block: 14px;
+  background: var(--v2-laranja);
+  transform: skewY(-3deg);
+}
+.v3-faixa__trilho {
+  display: flex;
+  width: max-content;
+  animation: v3-faixa 26s linear infinite;
+}
+.v3-faixa__trilho span {
+  padding-inline: 18px;
+  font-weight: 900;
+  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.45rem);
+  letter-spacing: 0.02em;
+  color: #000;
+  white-space: nowrap;
+}
+.v3-faixa__trilho span::after {
+  content: '•';
+  margin-left: 36px;
+}
+@keyframes v3-faixa {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- [6] prova ---------- */
+.v2 .v3-carrossel .v2-carrossel__trilho {
+  grid-auto-columns: 82%;
+}
+@media (min-width: 720px) {
+  .v2 .v3-carrossel .v2-carrossel__trilho {
+    grid-auto-columns: 320px;
+  }
+}
+.v3-carrossel__controle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: #bdbdbd;
+}
+.v3-carrossel__controle button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1c1c1c;
+  border: 1px solid #333;
+  color: #fff;
+  cursor: pointer;
+}
+.v3-carrossel__controle button:hover {
+  border-color: var(--v2-laranja);
+}
+.v3-carrossel__controle button:focus-visible {
+  outline: 2px solid var(--v2-laranja);
+  outline-offset: 2px;
+}
+.v2 .v3-carrossel__controle .v2-icone {
+  width: 18px;
+  height: 18px;
+}
+
+.v2 .v3-aviso {
+  margin: 14px 0 0;
+  font-size: 0.78rem;
+  color: #7a7a7a;
+}
+/* ---------- [9] fechamento ---------- */
+.v2 .v3-fechamento {
+  background: radial-gradient(ellipse 80% 70% at 50% 100%, rgba(255, 107, 0, 0.18) 0%, #0a0a0a 70%);
+  border-top: 1px solid #1d1d1d;
+}
+.v2 .v3-fechamento__titulo {
+  font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+  color: var(--v2-laranja);
+  margin-bottom: 22px;
+}
+
+/* Na home ele fica sozinho no fim do método, que é uma seção clara. */
+.v2 .v3-responsaveis--solto {
+  max-width: 760px;
+  margin: 28px auto 0;
+  padding: 14px 18px;
+  border: 1px solid #e2e2e2;
+  border-radius: 14px;
+  background: #fff;
+  color: #555;
+  text-align: center;
+}
+.v2 .v3-responsaveis--solto b {
+  color: #111;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v3-faixa__trilho {
+    animation: none;
+  }
+}

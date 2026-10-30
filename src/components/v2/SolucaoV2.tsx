@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Responsaveis } from '@/components/v3/Blocos';
 import { solucaoV2 } from '@/content/lp-v2';
 import { Rico } from './Rico';
 
@@ -34,6 +35,7 @@ export function SolucaoV2() {
             </li>
           ))}
         </ol>
+        <Responsaveis solto />
       </div>
     </section>
   );

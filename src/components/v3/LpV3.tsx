@@ -12,9 +12,7 @@ import {
   bonusV3,
   ctaV3,
   expertV3,
-  faixaV3,
   faqV3,
-  fechamentoV3,
   funcaoV3,
   garantiaV3,
   heroV3,
@@ -27,6 +25,7 @@ import {
 import { parcelamentoDaOferta, reais, type Parcelamento } from '@/lib/parcelamento';
 import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import { CapaDesenho } from './CapaDesenho';
+import { FaixaV3, FechamentoV3, Responsaveis } from './Blocos';
 import { CarrosselV3 } from './CarrosselV3';
 import { HeroV3 } from './HeroV3';
 import { KitV3 } from './KitV3';
@@ -59,7 +58,7 @@ export async function LpV3() {
       <Problema />
       <Funcao />
       <Solucao />
-      <Faixa />
+      <FaixaV3 />
       <Prova />
       <Passos />
       <BeneficiosBonus />
@@ -67,7 +66,7 @@ export async function LpV3() {
       <Garantia />
       <Expert />
       <Faq />
-      <Fechamento preco={preco} />
+      <FechamentoV3 preco={preco} origem="v3-fechamento" />
       <RodapeV2 />
       <StickyCta parcelamento={parcelamento} texto={ctaV3} />
     </div>
@@ -254,27 +253,10 @@ function Solucao() {
               </li>
             ))}
           </ol>
-          <p className="v3-responsaveis">
-            <Rico texto={s.responsaveis} />
-          </p>
+          <Responsaveis />
         </div>
       </div>
     </section>
-  );
-}
-
-/** [5] A faixa laranja que corre: energia entre o método e os casos. Decorativa. */
-function Faixa() {
-  // Duas cópias seguidas: a animação anda metade da largura e recomeça sem emenda.
-  const itens = [...faixaV3, ...faixaV3];
-  return (
-    <div className="v3-faixa" aria-hidden="true">
-      <div className="v3-faixa__trilho">
-        {itens.map((t, n) => (
-          <span key={n}>{t}</span>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -550,19 +532,3 @@ function Faq() {
   );
 }
 
-/** [13] O último empurrão: a provocação do Igor e o botão de novo. */
-function Fechamento({ preco }: { preco: string }) {
-  return (
-    <section className="v2-sec v3-fechamento">
-      <div className="v2-col v2-centro">
-        <h2 className="v2-h2 v3-fechamento__titulo">{fechamentoV3.provocacao}</h2>
-        <div data-v3="oferta">
-          <CtaButton className="v2-cta" origem="v3-fechamento" microcopy={preco}>
-            {ctaV3}
-          </CtaButton>
-        </div>
-        <p className="v2-oferta__lema">{fechamentoV3.lema}</p>
-      </div>
-    </section>
-  );
-}

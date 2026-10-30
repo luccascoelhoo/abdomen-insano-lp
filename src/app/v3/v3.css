@@ -242,13 +242,6 @@ body:has(.v3) .grain {
   color: #fff;
   font-weight: 700;
 }
-.v3 .v3-responsaveis {
-  margin: 14px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid #242424;
-  font-size: 0.88rem;
-  color: #a8a8a8;
-}
 @media (min-width: 760px) {
   .v3-semanas {
     max-width: 760px;
@@ -259,86 +252,6 @@ body:has(.v3) .grain {
   }
 }
 
-/* ---------- [5] faixa laranja ---------- */
-.v3-faixa {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  margin-block: -14px;
-  padding-block: 14px;
-  background: var(--v2-laranja);
-  transform: skewY(-3deg);
-}
-.v3-faixa__trilho {
-  display: flex;
-  width: max-content;
-  animation: v3-faixa 26s linear infinite;
-}
-.v3-faixa__trilho span {
-  padding-inline: 18px;
-  font-weight: 900;
-  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.45rem);
-  letter-spacing: 0.02em;
-  color: #000;
-  white-space: nowrap;
-}
-.v3-faixa__trilho span::after {
-  content: '•';
-  margin-left: 36px;
-}
-@keyframes v3-faixa {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* ---------- [6] prova ---------- */
-.v3 .v3-carrossel .v2-carrossel__trilho {
-  grid-auto-columns: 82%;
-}
-@media (min-width: 720px) {
-  .v3 .v3-carrossel .v2-carrossel__trilho {
-    grid-auto-columns: 320px;
-  }
-}
-.v3-carrossel__controle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
-  margin-top: 14px;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  color: #bdbdbd;
-}
-.v3-carrossel__controle button {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #1c1c1c;
-  border: 1px solid #333;
-  color: #fff;
-  cursor: pointer;
-}
-.v3-carrossel__controle button:hover {
-  border-color: var(--v2-laranja);
-}
-.v3-carrossel__controle button:focus-visible {
-  outline: 2px solid var(--v2-laranja);
-  outline-offset: 2px;
-}
-.v3 .v3-carrossel__controle .v2-icone {
-  width: 18px;
-  height: 18px;
-}
-
-.v3 .v3-aviso {
-  margin: 14px 0 0;
-  font-size: 0.78rem;
-  color: #7a7a7a;
-}
 /* Da V.2: a jornada em vídeo, dia 01, dia 42 e 1 ano. */
 .v3 .v3-video {
   display: block;
@@ -477,17 +390,6 @@ body:has(.v3) .grain {
   padding: 10px 4px;
 }
 
-/* ---------- [9] fechamento ---------- */
-.v3 .v3-fechamento {
-  background: radial-gradient(ellipse 80% 70% at 50% 100%, rgba(255, 107, 0, 0.18) 0%, #0a0a0a 70%);
-  border-top: 1px solid #1d1d1d;
-}
-.v3 .v3-fechamento__titulo {
-  font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
-  color: var(--v2-laranja);
-  margin-bottom: 22px;
-}
-
 /* Respiro no fim pra barra fixa não cobrir o aviso legal do rodapé. */
 .v3 .v2-rodape {
   padding-bottom: 96px;
@@ -543,8 +445,5 @@ body:has(.v3) .grain {
   .v3-sticky,
   .v3-capa__gordura {
     transition: none;
-  }
-  .v3-faixa__trilho {
-    animation: none;
   }
 }
