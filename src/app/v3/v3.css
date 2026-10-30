@@ -1,26 +1,37 @@
 /* ============================================================
    LP V.3 "Capa Zero"
 
-   Herda tudo da V.2 (`.v2`): cores, tipografia, botão verde,
-   card da oferta, celular, carrossel, FAQ e rodapé. Aqui mora
-   só o que é da V.3, escopado em `.v3`, pra nada vazar pra V.2.
+   Herda da V.2 (`.v2`): cores, tipografia, botão verde, celular,
+   FAQ e rodapé. Aqui mora só o que é da V.3, escopado em `.v3`,
+   pra nada vazar pra home.
 
-   Regra de densidade: cada seção cabe em uma ou duas telas de
-   celular. Texto longo vira tabela, lista curta ou sanfona.
+   Especificidade: as regras usam `.v3 .classe` (0,2,0), que já
+   vence `.v2 p` e `.v2 h3` (0,1,1) sem `!important`. Assim uma
+   mudança na V.2 não fica escondida atrás de um `!important` aqui.
+
+   Revisão de 29/10/2026: capa escura com gomos em laranja, uma só
+   pausa clara (Igor), faixa laranja correndo, card de compra claro
+   com o verde só no botão, carrossel com contador, fechamento.
    ============================================================ */
+
+/* O granulado fixo da página cobre a tela inteira com blend, escurece o
+   botão verde e pesa na rolagem de celular simples. Na V.3 ele sai. */
+body:has(.v3) .grain {
+  display: none;
+}
 
 .v3 .v2-sec {
   padding-block: clamp(48px, 7vw, 88px);
 }
 
-.v3-etiqueta {
+.v3 .v3-etiqueta {
   font-family: var(--font-mono);
-  font-size: 0.78rem !important;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--v2-acento) !important;
-  margin: 0 0 14px !important;
+  color: var(--v2-acento);
+  margin: 0 0 14px;
 }
 
 /* ---------- [1] hero ---------- */
@@ -30,64 +41,105 @@
 }
 .v3-hero__foto {
   position: relative;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 16 / 13;
   overflow: hidden;
 }
-.v3-hero__foto img {
+.v3-hero__foto > img:first-child {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 50% 22%;
+  /* A foto é print de carrossel do Instagram: a seta e os pontinhos estão
+     pintados na borda direita e no pé. A ampliação leve tira os dois do
+     quadro até chegar o arquivo original. */
+  transform: scale(1.08);
+  transform-origin: 30% 22%;
 }
 .v3-hero__foto::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 55%, #000 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, transparent 22%, transparent 55%, #000 100%);
 }
+.v3 .v3-hero__logo {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  left: 20px;
+  width: 88px;
+  height: auto;
+}
+/* Da V.2: o app passando por cima da foto, logo no topo. */
+.v3 .v3-hero__celular {
+  position: absolute;
+  z-index: 2;
+  right: 5%;
+  bottom: 22%;
+  width: 25%;
+  max-width: 150px;
+  margin: 0;
+  transform: rotate(5deg);
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.6));
+}
+.v3 .v3-hero__celular .v2-celular__tela {
+  border-width: 4px;
+  border-radius: 18px;
+}
+
+/* Da V.1: o selo de alunos, adaptado ao fundo escuro. */
+.v3 .v3-pill {
+  margin-bottom: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.v3 .v3-pill .prova-pill__av {
+  width: 28px;
+  height: 28px;
+  border-color: #000;
+}
+.v3 .v3-pill .prova-pill__txt {
+  font-size: 0.84rem;
+  color: #d4d4d4;
+}
+.v3 .v3-pill .prova-pill__txt b {
+  color: #fff;
+}
+
 .v3-hero__texto {
   position: relative;
   z-index: 1;
   width: 100%;
   max-width: 560px;
-  margin: -56px auto 0;
-  padding: 0 20px 44px;
-}
-.v3-hero__logo {
-  display: block;
-  width: 112px;
-  height: auto;
-  margin-bottom: 18px;
+  margin: -44px auto 0;
+  padding: 0 20px 40px;
 }
 .v3 .v3-hero__titulo {
   font-size: clamp(2.15rem, 1.5rem + 3vw, 3.6rem);
   font-weight: 900;
   line-height: 1.02;
   letter-spacing: -0.035em;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   color: #fff;
 }
 .v3-hero__titulo .v2-acento {
   display: block;
 }
 .v3 .v3-hero__sub {
-  font-size: clamp(1.02rem, 0.98rem + 0.25vw, 1.15rem);
+  font-size: clamp(1rem, 0.97rem + 0.2vw, 1.12rem);
+  line-height: 1.45;
   color: #c9c9c9;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 .v3 .v3-hero__sub b {
   color: #fff;
 }
 .v3 .v3-hero__preco {
-  margin: 12px 0 14px;
+  margin: 10px 0 12px;
   text-align: center;
   font-size: 0.95rem;
-  color: #a8a8a8;
+  color: #d4d4d4;
 }
-.v3-hero__preco b {
-  color: #fff;
-}
-.v3-confianca {
+.v3 .v3-confianca {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -103,7 +155,7 @@
   align-items: center;
   gap: 6px;
 }
-.v3-confianca .v2-icone {
+.v3 .v3-confianca .v2-icone {
   width: 15px;
   height: 15px;
 }
@@ -121,6 +173,11 @@
   .v3-hero__foto::after {
     background: linear-gradient(to right, transparent 60%, #000 100%);
   }
+  .v3 .v3-hero__logo {
+    top: 28px;
+    left: 32px;
+    width: 120px;
+  }
   .v3-hero__texto {
     margin: 0;
     padding: 48px clamp(28px, 5vw, 72px);
@@ -128,70 +185,89 @@
   .v3 .v3-hero__preco {
     text-align: left;
   }
-  .v3-confianca {
+  .v3 .v3-confianca {
     justify-content: flex-start;
   }
 }
 
-/* ---------- [2] a capa ---------- */
+/* ---------- [2] a capa (escura) ---------- */
+.v3 .v3-sec--capa {
+  background: #0a0a0a;
+}
+.v3 .v3-sec--capa p {
+  color: #bdbdbd;
+}
+.v3 .v3-sec--capa b {
+  color: #fff;
+}
 .v3-capa-grade {
   display: grid;
   gap: 28px;
   align-items: center;
-  margin-bottom: 28px;
+  margin-bottom: 36px;
 }
 @media (min-width: 760px) {
-  .v3-capa-grade {
+  .v3 .v3-capa-grade {
+    max-width: 1000px;
     grid-template-columns: 1.25fr 1fr;
     gap: 44px;
   }
 }
 
+/* Um torso escuro, gomos em laranja acesos por baixo e uma camada que
+   desfoca e some quando o desenho entra na tela. */
 .v3-capa {
   position: relative;
-  width: min(210px, 56vw);
-  margin-inline: auto;
+  width: min(240px, 62vw);
+  margin: 0 auto 40px;
   aspect-ratio: 4 / 5;
-  border-radius: 36% 36% 28% 28% / 22% 22% 18% 18%;
-  background: linear-gradient(160deg, #e7b48f, #c98a62);
-  overflow: hidden;
-  box-shadow: inset 0 -20px 40px rgba(80, 30, 0, 0.25), 0 24px 40px -24px rgba(0, 0, 0, 0.45);
 }
-.v3-capa__gomos {
-  position: absolute;
-  inset: 16% 22% 14%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(3, 1fr);
-  gap: 9px 12px;
-}
-.v3-capa__gomos span {
-  border-radius: 40% 40% 34% 34%;
-  background: linear-gradient(170deg, #d99a70, #b5744c);
-  box-shadow: inset 0 -6px 10px rgba(90, 35, 5, 0.35), inset 0 4px 8px rgba(255, 220, 190, 0.35);
-}
+.v3-capa__gomos,
 .v3-capa__gordura {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 70% at 50% 58%, #f1c7a6 0%, #e4ad87 60%, #d49871 100%);
-  opacity: 0.94;
-  transition: opacity 2.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+  border-radius: 34% 34% 26% 26% / 20% 20% 16% 16%;
+}
+.v3-capa__gomos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px 12px;
+  padding: 18% 22% 14%;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.v3-capa__gomos span {
+  border-radius: 36% 36% 30% 30%;
+  background: linear-gradient(170deg, #ff8a33, #ff6b00 60%, #c24f00);
+  box-shadow: 0 0 24px rgba(255, 107, 0, 0.45), inset 0 -6px 10px rgba(0, 0, 0, 0.25);
+}
+.v3-capa__gordura {
+  background: rgba(70, 70, 70, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition:
+    opacity 2.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
+    backdrop-filter 2.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
 }
 .v3-capa.is-seca .v3-capa__gordura {
-  opacity: 0.06;
+  opacity: 0;
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
 }
-.v3-capa__rotulo {
+.v3 .v3-capa__rotulo {
   position: absolute;
   left: 50%;
-  bottom: 14px;
+  bottom: -34px;
   transform: translateX(-50%);
-  margin: 0 !important;
-  padding: 6px 12px;
+  margin: 0;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.82);
-  color: #fff !important;
+  border: 1px solid #2a2a2a;
+  color: #bdbdbd;
   font-family: var(--font-mono);
-  font-size: 0.74rem !important;
+  font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -221,39 +297,89 @@
   align-items: start;
   padding: 14px 16px;
   border-radius: 12px;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #141414;
+  border: 1px solid #242424;
 }
-.v3-frentes li .v2-icone {
+.v3 .v3-frentes li .v2-icone {
   grid-row: span 2;
   width: 22px;
   height: 22px;
   margin-top: 2px;
 }
-.v3-frentes li b {
-  color: #111;
-}
-.v3-frentes li span {
-  color: #555;
-  font-size: 0.95rem;
-}
-.v3-frentes li.is-funciona {
-  background: #111;
-  border-color: #111;
-}
-.v3-frentes li.is-funciona b {
+.v3 .v3-frentes li b {
   color: #fff;
 }
-.v3-frentes li.is-funciona span {
-  color: #cfcfcf;
+.v3 .v3-frentes li span {
+  color: #a8a8a8;
+  font-size: 0.95rem;
+}
+.v3 .v3-frentes li.is-funciona {
+  background: rgba(255, 107, 0, 0.1);
+  border-color: var(--v2-laranja);
+}
+.v3 .v3-frentes li.is-funciona span {
+  color: #e5e5e5;
 }
 .v3 .v3-fecho {
   text-align: center;
-  font-size: 1.15rem !important;
-  margin: 0 !important;
+  font-size: 1.12rem;
+  margin: 0;
 }
 
-/* ---------- [3] método ---------- */
+/* ---------- [3] Igor (a única pausa clara) ---------- */
+.v3-igor {
+  display: grid;
+  gap: 24px;
+  align-items: center;
+}
+.v3-igor__fotos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.v3-igor__fotos figure {
+  margin: 0;
+}
+.v3-igor__fotos img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: 50% 20%;
+  border-radius: 12px;
+}
+.v3 .v3-igor__fotos figcaption {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: #555;
+  text-align: center;
+}
+.v3 .v3-numero {
+  display: grid;
+  margin: 8px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.v3 .v3-numero b {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--v2-laranja-texto);
+}
+.v3 .v3-numero span {
+  font-size: 0.95rem;
+  color: #4a4a4a;
+}
+@media (min-width: 760px) {
+  .v3 .v3-igor {
+    max-width: 1000px;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 48px;
+  }
+}
+
+/* ---------- [4] método ---------- */
 .v3-engrenagens {
   list-style: none;
   margin: 8px 0 0;
@@ -279,22 +405,28 @@
 }
 .v3-engrenagens__foto img {
   object-fit: cover;
+  object-position: 50% 30%;
 }
 .v3 .v3-engrenagens__titulo {
-  font-size: 1.2rem !important;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 1.2rem;
   font-weight: 800;
-  color: #fff !important;
-  margin: 0 0 4px !important;
+  color: #fff;
+  margin: 0 0 4px;
 }
 .v3-engrenagens__titulo span {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
   color: var(--v2-laranja);
-  margin-right: 4px;
 }
 .v3 .v3-engrenagens p:last-child {
   margin: 0;
   font-size: 0.97rem;
+  color: #d4d4d4;
 }
 @media (min-width: 900px) {
   .v3-engrenagens {
@@ -381,133 +513,394 @@
   }
 }
 
-/* ---------- [5] oferta ---------- */
-.v3-bonus {
-  margin: 28px 0 0;
-  text-align: left;
-  border: 1px solid #2a2a2a;
-  border-radius: 14px;
-  background: #0f0f0f;
+/* Da V.1: a progressão semana a semana e os responsáveis técnicos à vista. */
+.v3-semanas {
+  margin-top: 28px;
+  padding: 20px;
+  border-radius: 20px;
+  background: #0e0e0e;
+  border: 1px solid #242424;
 }
-.v3-bonus summary {
-  cursor: pointer;
-  list-style: none;
-  padding: 16px 18px;
+.v3 .v3-semanas__titulo {
+  font-size: 1.15rem;
   font-weight: 800;
   color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin-bottom: 14px;
 }
-.v3-bonus summary::-webkit-details-marker {
-  display: none;
-}
-.v3-bonus summary::after {
-  content: '+';
-  font-size: 1.4rem;
-  color: var(--v2-laranja);
-  transition: transform 0.2s;
-}
-.v3-bonus[open] summary::after {
-  transform: rotate(45deg);
-}
-.v3-bonus ul {
+.v3-semanas ol {
   list-style: none;
   margin: 0;
-  padding: 0 18px 8px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
-.v3-bonus li {
-  padding: 12px 0;
-  border-top: 1px solid #222;
+.v3-semanas li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #161616;
+  font-size: 0.86rem;
+  line-height: 1.25;
+  color: #d4d4d4;
 }
-.v3 .v3-bonus__titulo {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  color: #fff !important;
+.v3-semanas li span {
+  font-family: var(--font-mono);
   font-weight: 700;
-  margin: 0 0 4px !important;
+  font-size: 1.05rem;
+  color: var(--v2-laranja);
 }
-.v3-bonus__titulo s {
-  color: #8a8a8a;
-  font-weight: 500;
+.v3-semanas li:last-child {
+  background: rgba(255, 107, 0, 0.12);
+  outline: 1px solid var(--v2-laranja);
+  color: #fff;
+  font-weight: 700;
+}
+.v3 .v3-responsaveis {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid #242424;
+  font-size: 0.88rem;
+  color: #a8a8a8;
+}
+@media (min-width: 760px) {
+  .v3-semanas {
+    max-width: 760px;
+    margin-inline: auto;
+  }
+  .v3-semanas ol {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- [5] faixa laranja ---------- */
+.v3-faixa {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin-block: -14px;
+  padding-block: 14px;
+  background: var(--v2-laranja);
+  transform: skewY(-3deg);
+}
+.v3-faixa__trilho {
+  display: flex;
+  width: max-content;
+  animation: v3-faixa 26s linear infinite;
+}
+.v3-faixa__trilho span {
+  padding-inline: 18px;
+  font-weight: 900;
+  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.45rem);
+  letter-spacing: 0.02em;
+  color: #000;
   white-space: nowrap;
 }
-.v3 .v3-bonus li p:last-child {
+.v3-faixa__trilho span::after {
+  content: '•';
+  margin-left: 36px;
+}
+@keyframes v3-faixa {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- [6] prova ---------- */
+.v3 .v3-carrossel .v2-carrossel__trilho {
+  grid-auto-columns: 82%;
+}
+@media (min-width: 720px) {
+  .v3 .v3-carrossel .v2-carrossel__trilho {
+    grid-auto-columns: 320px;
+  }
+}
+.v3-carrossel__controle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: #bdbdbd;
+}
+.v3-carrossel__controle button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1c1c1c;
+  border: 1px solid #333;
+  color: #fff;
+  cursor: pointer;
+}
+.v3-carrossel__controle button:hover {
+  border-color: var(--v2-laranja);
+}
+.v3-carrossel__controle button:focus-visible {
+  outline: 2px solid var(--v2-laranja);
+  outline-offset: 2px;
+}
+.v3 .v3-carrossel__controle .v2-icone {
+  width: 18px;
+  height: 18px;
+}
+/* Da V.2: os benefícios de desejo, só os seguros. */
+.v3-beneficios {
+  max-width: 560px;
+  margin: 32px auto 0;
+}
+.v3 .v3-beneficios h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.v3-beneficios ul {
+  list-style: none;
   margin: 0;
-  font-size: 0.93rem;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.v3-beneficios li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  color: #bdbdbd;
+}
+.v3 .v3-beneficios .v2-icone {
+  width: 20px;
+  height: 20px;
+  margin-top: 3px;
+}
+.v3 .v3-beneficios b {
+  color: #fff;
+}
+
+.v3 .v3-aviso {
+  margin: 14px 0 0;
+  font-size: 0.78rem;
+  color: #7a7a7a;
+}
+
+/* ---------- [7] oferta ---------- */
+.v3 .v3-oferta {
+  text-align: center;
+}
+/* Da V.2: a jornada em vídeo, dia 01, dia 42 e 1 ano. */
+.v3 .v3-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1138 / 640;
+  border-radius: 14px;
+  background: #111;
+}
+/* O kit da V.2 (celulares e guias) sai por cima do card: `flow-root` impede a
+   margem negativa dele de colapsar com a do card. */
+.v3-card {
+  display: flow-root;
+  max-width: 470px;
+  margin: 170px auto 0;
+  text-align: left;
+  border-radius: 20px;
+  background: #fcfcfc;
+  color: #111;
+  box-shadow: 0 30px 60px -30px rgba(255, 107, 0, 0.35);
+}
+.v3-card__corpo {
+  padding: 22px 18px;
+}
+@media (min-width: 560px) {
+  .v3-card {
+    margin-top: 180px;
+  }
+}
+.v3 .v3-card__rotulo {
+  margin: 18px 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--v2-laranja-texto);
+}
+.v3-pilha {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.v3-pilha li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.v3 .v3-pilha .v2-icone {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  color: #111;
+}
+.v3-pilha div {
+  display: grid;
+}
+.v3-pilha b {
+  font-size: 0.98rem;
+  color: #111;
+}
+.v3-pilha span {
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: #555;
+}
+.v3-preco {
+  margin: 18px 0;
+  padding: 18px 14px;
+  border: 2px solid #111;
+  border-radius: 14px;
+  text-align: center;
+}
+.v3 .v3-preco p {
+  margin: 0;
+}
+.v3 .v3-preco__provoca {
+  font-weight: 800;
+  color: #111;
+}
+.v3 .v3-preco__linha {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  color: #555;
+}
+.v3 .v3-preco__valor {
+  font-size: clamp(2.6rem, 2rem + 3vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #111;
+}
+.v3-preco__valor span {
+  font-size: 1rem;
+  font-weight: 800;
+  vertical-align: 0.9em;
+  margin-right: 2px;
+}
+.v3 .v3-preco__avista {
+  font-size: 1rem;
+  color: #333;
+}
+.v3 .v3-preco__reforco {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #4a4a4a;
+}
+.v3 .v3-card .v2-acento {
+  color: var(--v2-laranja-texto);
+}
+/* O microcopy global é mono a 0,58rem: ilegível no celular. Aqui ele é
+   texto de leitura, porque é onde está o preço e a objeção do clique. */
+.v3 .cta-microcopy {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  letter-spacing: 0;
+  color: #bdbdbd;
+}
+.v3 .v3-card .cta-microcopy {
+  color: #4a4a4a;
 }
 
 .v3-garantia {
   display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: 18px;
+  grid-template-columns: 84px 1fr;
+  gap: 14px;
   align-items: center;
-  margin-top: 28px;
-  padding: 20px;
-  border-radius: 16px;
-  background: #141414;
-  text-align: left;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e5e5;
 }
 .v3 .v3-garantia .v2-selo {
-  width: 96px;
-  height: 96px;
+  width: 84px;
+  height: 84px;
   margin: 0;
 }
 .v3 .v3-garantia .v2-selo__numero {
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 .v3 .v3-garantia .v2-selo__rotulo {
-  font-size: 0.55rem;
+  font-size: 0.5rem;
 }
-.v3-garantia h3 {
-  font-size: 1.1rem;
+.v3 .v3-garantia h3 {
+  font-size: 1.05rem;
   font-weight: 800;
-  color: #fff;
-  margin-bottom: 6px !important;
+  color: #111;
+  margin-bottom: 4px;
 }
 .v3 .v3-garantia p {
-  font-size: 0.93rem;
-  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #4a4a4a;
+  margin-bottom: 4px;
 }
-.v3-garantia .v2-link {
-  font-size: 0.85rem;
+.v3 .v3-garantia .v2-link {
+  font-size: 0.82rem;
+  color: var(--v2-laranja-texto);
   word-break: break-all;
 }
 
-/* ---------- [6] Igor ---------- */
-.v3-igor {
-  display: grid;
-  gap: 24px;
-  align-items: center;
-}
-.v3-igor__fotos {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.v3-igor__fotos figure {
-  margin: 0;
-}
-.v3-igor__fotos img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: 50% 20%;
-  border-radius: 12px;
-}
-.v3-igor__fotos figcaption {
-  margin-top: 6px;
-  font-size: 0.82rem;
-  color: #555;
-  text-align: center;
-}
-@media (min-width: 760px) {
-  .v3-igor {
-    grid-template-columns: 1fr 1.2fr;
-    gap: 44px;
+@media (min-width: 1024px) {
+  .v3 .v3-oferta {
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: 1fr 460px;
+    gap: 56px;
+    align-items: start;
+    text-align: left;
   }
+  .v3-oferta__topo {
+    position: sticky;
+    top: 48px;
+  }
+  .v3 .v3-video {
+    margin-top: 12px;
+  }
+}
+
+/* ---------- [8] FAQ e suporte ---------- */
+.v3 .v3-suporte {
+  margin: 28px 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #a8a8a8;
+}
+.v3-suporte a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 10px 4px;
+}
+
+/* ---------- [9] fechamento ---------- */
+.v3 .v3-fechamento {
+  background: radial-gradient(ellipse 80% 70% at 50% 100%, rgba(255, 107, 0, 0.18) 0%, #0a0a0a 70%);
+  border-top: 1px solid #1d1d1d;
+}
+.v3 .v3-fechamento .v2-sub {
+  color: #bdbdbd;
+}
+
+/* Respiro no fim pra barra fixa não cobrir o aviso legal do rodapé. */
+.v3 .v2-rodape {
+  padding-bottom: 96px;
 }
 
 /* ---------- barra fixa de compra (só celular) ---------- */
@@ -547,10 +940,6 @@
   padding: 10px 12px;
   font-size: 1rem;
 }
-/* Respiro no fim pra barra não cobrir o aviso legal do rodapé. */
-.v3 .v2-rodape {
-  padding-bottom: 96px;
-}
 @media (min-width: 900px) {
   .v3-sticky {
     display: none;
@@ -559,9 +948,13 @@
     padding-bottom: 56px;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .v3-sticky,
   .v3-capa__gordura {
     transition: none;
+  }
+  .v3-faixa__trilho {
+    animation: none;
   }
 }
