@@ -6,6 +6,7 @@ import { destinoPosCompra } from '@/lib/funil';
 import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
 import { usePreco } from '@/components/ui/Precos';
+import { sckDaCompra } from '@/lib/pagina-de-origem';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
@@ -51,6 +52,9 @@ export function CtaButton({
       return_url: returnUrl,
       thank_you_url: returnUrl,
       origem,
+      // A Cakto devolve o `sck` no aviso de venda (e não devolve `origem`):
+      // é por ele que a venda volta sabendo de qual página partiu.
+      sck: sckDaCompra(window.location.pathname, origem),
     });
   }, [origem]);
 

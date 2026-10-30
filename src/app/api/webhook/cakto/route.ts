@@ -12,6 +12,7 @@ import {
 import { capiConfigurado, enviarEventoCapi, fbcDeFbclid } from '@/lib/meta-capi';
 import { PIXEL_ID } from '@/lib/pixel';
 import { repassarVendaAoMetrics } from '@/lib/frota-metrics';
+import { urlDaPaginaDoSck } from '@/lib/pagina-de-origem';
 import { classificarVenda, produtoPorOferta } from '@/lib/produtos';
 import { precosAtuais } from '@/lib/precos';
 import { eventIdDaTransacao, idDaTransacao } from '@/lib/transacao';
@@ -48,6 +49,9 @@ import { supabaseConfigured } from '@/lib/supabase';
  * seja: nenhuma das duas pontas é sacrificada pela outra.
  */
 export const runtime = 'nodejs';
+
+/** Página de entrada padrão: a home. É o que vale quando a venda não diz de onde veio. */
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.abdomeninsano.com.br/';
 
 type PayloadCakto = {
   event?: string;
@@ -227,6 +231,12 @@ export async function POST(request: Request) {
     utmDosCamposPlanos(payload.data) ??
     null;
 
+  // De qual página a venda partiu (lib/pagina-de-origem.ts). `origem_por` vai
+  // no log: a primeira venda com `sck` prova que a Cakto o devolve.
+  const paginaDoSck = urlDaPaginaDoSck(utm?.sck, SITE);
+  const urlOrigem = utm?.url_origem ?? paginaDoSck ?? SITE;
+  const origemPor = utm?.url_origem ? 'url_origem' : paginaDoSck ? 'sck' : 'home';
+
   if (!email || !transacao_id) {
     return NextResponse.json(
       { ok: false, motivo: 'campos_obrigatorios_ausentes' },
@@ -251,6 +261,8 @@ export async function POST(request: Request) {
     valor_centavos,
     liquido_centavos: liquido.centavos,
     liquido_por: liquido.por,
+    url_origem: urlOrigem,
+    origem_por: origemPor,
   });
   // A venda aprovada guarda o produto ao lado das UTMs, onde `/api/compra/status`
   // o lê para o Purchase do navegador citar o mesmo produto que o do servidor.
@@ -284,13 +296,9 @@ export async function POST(request: Request) {
         fbc: utm?.fbc ?? fbcDeFbclid(utm?.fbclid),
         valor: valor_centavos / 100,
         moeda: 'BRL',
-        // A landing é a origem da jornada. Se o gateway devolver a URL real de
-        // onde a venda partiu, ela manda: gravar sempre a home é uma meia
-        // verdade que atrapalha quando existir mais de uma página de entrada.
-        urlOrigem:
-          utm?.url_origem ??
-          process.env.NEXT_PUBLIC_SITE_URL ??
-          'https://www.abdomeninsano.com.br/',
+        // A landing é a origem da jornada: a URL que o gateway devolver, senão
+        // a página do `sck` que o botão de compra escreveu, senão a home.
+        urlOrigem,
         conteudo: { id: produto.id, nome: produto.nome },
       });
       medicao = r.ok ? `enviado:${r.eventos}` : `falhou:${r.motivo}`;
