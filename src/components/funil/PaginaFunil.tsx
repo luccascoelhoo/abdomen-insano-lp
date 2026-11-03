@@ -1,10 +1,8 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { rodape, type PaginaFunil as Pagina } from '@/content/desafio';
+import { type PaginaFunil as Pagina } from '@/content/desafio';
 import { BotoesFunil } from './BotoesFunil';
 import { DescontoDinamico } from './DescontoDinamico';
 import { ViewContentFunil } from './ViewContentFunil';
-import { ROTA_OBRIGADO } from '@/lib/funil';
 import { VslPlayer } from './VslPlayer';
 
 /** `**trecho**` vira <b>trecho</b> — mantém a copy inteira no arquivo de conteúdo. */
@@ -19,8 +17,8 @@ function comNegrito(texto: string) {
  *
  * Mesma identidade da LP — tinta escura, laranja, Space Grotesk no título,
  * mono na camada de dado — mas numa coluna só, estreita, com o vídeo como
- * protagonista. Nada de menu, nada de link pra fora além do rodapé legal:
- * a única saída é assistir e decidir.
+ * protagonista. Nada de menu, nada de rodapé, nenhum link pra fora: a única
+ * saída é assistir e decidir.
  */
 export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destinoRecusa: string }) {
   const esconderBotoes = Boolean(pagina.vsl.playerId && pagina.vsl.delaySegundos > 0);
@@ -91,25 +89,8 @@ export function PaginaFunil({ pagina, destinoRecusa }: { pagina: Pagina; destino
           recusarTexto={pagina.recusarTexto}
           recusarHref={destinoRecusa}
           esconder={esconderBotoes}
-          pularHref={ROTA_OBRIGADO}
         />
       </main>
-
-      <footer className="funil__rodape">
-        <nav className="footer__nav">
-          {rodape.navegacao.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              target={item.href.startsWith('http') ? '_blank' : undefined}
-              rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-            >
-              {item.rotulo}
-            </Link>
-          ))}
-        </nav>
-        <p>{rodape.empresa}</p>
-      </footer>
     </div>
   );
 }

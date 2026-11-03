@@ -491,16 +491,14 @@ export type PaginaFunil = {
 export const upsell: PaginaFunil = {
   metaTitulo: 'Oferta exclusiva — Shape Insano 360',
   produtoId: 'si360-upsell',
-  // Sem barra de progresso: ela dizia que a compra estava a 67% do fim. A
-  // compra já está paga quando esta página abre — medido em 21/10/2026, o
-  // acesso foi registrado 1 segundo depois da aprovação.
-  tituloAntes: 'Sua compra está ',
-  tituloDestaque: 'confirmada',
-  tituloDepois: '.',
-  alerta: 'Esta oferta só aparece agora, nesta página.',
+  /* Copy enviada pelo dono em 03/11/2026. */
+  progresso: 67,
+  tituloAntes: 'COMPRA EM ',
+  tituloDestaque: 'ANDAMENTO!',
+  alerta: 'Atenção, não feche essa página!',
   paragrafos: [
-    'O **Desafio Abdômen Insano** já é seu — nada aqui muda isso, e você não precisa fazer mais nada para garantir o seu acesso.',
-    'Antes de entrar, uma oferta que não volta depois: assista o vídeo e decida.',
+    'A sua compra do **Desafio Abdômen Insano** ainda está em andamento.',
+    'Assista esse vídeo até o final e siga os passos para confirmar a sua compra.',
   ],
   vsl: {
     playerId: '6ada62344e1a50542a6594ac',
