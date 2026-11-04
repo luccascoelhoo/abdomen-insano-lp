@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { PaginaFunil } from '@/components/funil/PaginaFunil';
 import { PurchaseTracker } from '@/components/ui/PurchaseTracker';
 import { upsell } from '@/content/desafio';
-import { destinoRecusaUpsell } from '@/lib/funil';
+import { destinoAceite, destinoRecusaUpsell } from '@/lib/funil';
 import { idDaTransacao } from '@/lib/transacao';
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default async function UpsellPage({
   return (
     <>
       <PurchaseTracker transacaoId={transacaoId} />
-      <PaginaFunil pagina={upsell} destinoRecusa={destinoRecusaUpsell()} />
+      <PaginaFunil pagina={upsell} destinoAceite={destinoAceite()} destinoRecusa={destinoRecusaUpsell()} />
     </>
   );
 }

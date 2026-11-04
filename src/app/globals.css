@@ -2787,36 +2787,42 @@ a.provoke:focus-visible {
   color: var(--paper);
 }
 
-/* Saída de quem já pagou o Desafio e quer só o acesso: sempre visível, discreta. */
-.funil__pular {
-  display: block;
-  width: fit-content;
-  margin: 22px auto 0;
-  font-size: 0.85rem;
-  color: rgba(241, 238, 231, 0.55);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.funil__pular:hover {
-  color: rgba(241, 238, 231, 0.85);
-}
-
-.funil__rodape {
-  border-top: 1px solid var(--line-dark);
-  padding: 28px 16px calc(28px + env(safe-area-inset-bottom));
-  text-align: center;
-}
-.funil__rodape .footer__nav {
-  justify-content: center;
-  margin: 0 0 12px;
-}
-.funil__rodape p {
-  margin: 0;
-  font-size: 0.72rem;
-  color: rgba(241, 238, 231, 0.42);
-}
 @media (prefers-reduced-motion: reduce) {
   .funil__progresso-barra {
     animation: none;
   }
+}
+
+/* ---- botão de um clique da Cakto (shadow DOM: só `::part(button)` alcança) ---- */
+.funil__acoes cakto-upsell-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+.funil__acoes cakto-upsell-accept {
+  display: block;
+  width: 100%;
+}
+.funil__acoes cakto-upsell-accept::part(button) {
+  width: 100%;
+  border: 2px solid var(--orange);
+  border-radius: 999px;
+  padding: 20px 24px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+  line-height: 1.05;
+  text-align: center;
+  text-wrap: balance;
+}
+.funil__acoes cakto-upsell-reject::part(button) {
+  margin-top: 0;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: rgba(241, 238, 231, 0.5);
+}
+.funil__acoes cakto-upsell-reject::part(button):hover {
+  color: rgba(241, 238, 231, 0.8);
 }

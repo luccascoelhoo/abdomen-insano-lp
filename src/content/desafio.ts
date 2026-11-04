@@ -427,8 +427,23 @@ export type Vsl = {
   delaySegundos: number;
 };
 
-/** `url` = link do checkout da oferta na Cakto. */
-export type BotaoFunil = { texto: string; url: string };
+/**
+ * Oferta no botão de um clique da Cakto (`upsell.js`): cobra no cartão que a
+ * pessoa acabou de usar, sem abrir outro checkout.
+ */
+export type OfertaCakto = {
+  /** `offer-id` do código de incorporação do painel — o trecho antes do `_` na URL do checkout. */
+  id: string;
+  /** `offer-type` do código de incorporação do painel da Cakto. */
+  tipo: 'upsell' | 'downsell';
+};
+
+/**
+ * `url` = link do checkout da oferta na Cakto. Com `cakto`, o "sim" vira o
+ * botão de um clique e `url` fica só como reserva (script bloqueado ou fora
+ * do ar): quem não consegue o um clique ainda consegue comprar.
+ */
+export type BotaoFunil = { texto: string; url: string; cakto?: OfertaCakto };
 
 export type PaginaFunil = {
   metaTitulo: string;
@@ -491,16 +506,14 @@ export type PaginaFunil = {
 export const upsell: PaginaFunil = {
   metaTitulo: 'Oferta exclusiva — Shape Insano 360',
   produtoId: 'si360-upsell',
-  // Sem barra de progresso: ela dizia que a compra estava a 67% do fim. A
-  // compra já está paga quando esta página abre — medido em 21/10/2026, o
-  // acesso foi registrado 1 segundo depois da aprovação.
-  tituloAntes: 'Sua compra está ',
-  tituloDestaque: 'confirmada',
-  tituloDepois: '.',
-  alerta: 'Esta oferta só aparece agora, nesta página.',
+  /* Copy enviada pelo dono em 03/11/2026. */
+  progresso: 67,
+  tituloAntes: 'COMPRA EM ',
+  tituloDestaque: 'ANDAMENTO!',
+  alerta: 'Atenção, não feche essa página!',
   paragrafos: [
-    'O **Desafio Abdômen Insano** já é seu — nada aqui muda isso, e você não precisa fazer mais nada para garantir o seu acesso.',
-    'Antes de entrar, uma oferta que não volta depois: assista o vídeo e decida.',
+    'A sua compra do **Desafio Abdômen Insano** ainda está em andamento.',
+    'Assista esse vídeo até o final e siga os passos para confirmar a sua compra.',
   ],
   vsl: {
     playerId: '6ada62344e1a50542a6594ac',
@@ -512,6 +525,7 @@ export const upsell: PaginaFunil = {
   aceitar: {
     texto: 'Quero o Shape Insano 360',
     url: 'https://pay.cakto.com.br/39rfuow_1081230',
+    cakto: { id: '39rfuow', tipo: 'upsell' },
   },
   recusarTexto: 'Não quero, seguir só com o Desafio',
 };
