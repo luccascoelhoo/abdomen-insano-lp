@@ -127,6 +127,7 @@ export const depoimentosV2 = {
   titulo: 'Tá todo mundo botando',
   tituloDestaque: '((o abdômen insano!))',
   sub: 'Você é o próximo!',
+  cta: 'Quero ser o próximo',
   /** Antes e depois reais dos alunos, já usados na página atual. */
   casos: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
     src: `/img/caso-${String(n).padStart(2, '0')}.webp`,
