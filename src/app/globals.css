@@ -2747,7 +2747,8 @@ a.provoke:focus-visible {
 }
 
 /* Aceitar / recusar. `.esconder` é o seletor que a VTurb revela no pitch. */
-.esconder {
+.esconder,
+.esconder-fim {
   display: none;
 }
 .funil__acoes {

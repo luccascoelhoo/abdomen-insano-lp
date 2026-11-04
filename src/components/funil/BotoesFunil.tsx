@@ -4,8 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { oferta, type BotaoFunil } from '@/content/desafio';
 import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { produtoPorId, type ProdutoId } from '@/lib/produtos';
-import { usePreco, usePrecoCentavos, useRecorrencia } from '@/components/ui/Precos';
-import { condicoesDaOferta, sufixoDoBotao } from '@/lib/condicoes';
+import { usePreco } from '@/components/ui/Precos';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 /** Script do botão de um clique da Cakto — o mesmo do código de incorporação do painel. */
@@ -46,6 +45,8 @@ type Props = {
   recusarHref: string;
   /** Esconde até a VTurb liberar (delay do pitch). */
   esconder: boolean;
+  /** O "não quero" espera o fim do vídeo (`.esconder-fim`, revelado pelo VslPlayer). */
+  esconderRecusa?: boolean;
 };
 
 /**
@@ -91,23 +92,9 @@ function useEnderecoDaPagina(): string | null {
  * comprar. O "sim" só existe com link; o "não" sempre existe — a página nunca
  * vira beco sem saída pra quem já pagou.
  */
-export function BotoesFunil({ aceitar, produtoId, recusarTexto, aceiteHref, recusarHref, esconder }: Props) {
+export function BotoesFunil({ aceitar, produtoId, recusarTexto, aceiteHref, recusarHref, esconder, esconderRecusa }: Props) {
   const preco = usePreco(produtoId);
-  const centavos = usePrecoCentavos(produtoId);
-  const recorrencia = useRecorrencia(produtoId);
 
-  /*
-   * Preço e periodicidade saem da Cakto, não do arquivo de conteúdo.
-   * Escritos à mão eles envelhecem calados: em 22/10/2026 as duas ofertas do
-   * funil cobravam em ritmos diferentes (upsell a cada 30 dias, downsell a
-   * cada 365) e a mesma frase valia para as duas. Derivando daqui, quem mexe
-   * no painel mexe no texto junto.
-   */
-  const condicoes = condicoesDaOferta(centavos, recorrencia);
-  const rotulo =
-    recorrencia?.tipo === 'subscription' && preco
-      ? `${aceitar.texto} — R$ ${preco.toFixed(2).replace('.', ',')}${sufixoDoBotao(recorrencia.periodoDias)}`
-      : aceitar.texto;
 
   const casca = useRef<HTMLDivElement>(null);
   const [scriptFalhou, setScriptFalhou] = useState(false);
@@ -197,7 +184,6 @@ export function BotoesFunil({ aceitar, produtoId, recusarTexto, aceiteHref, recu
     <div ref={casca} className={esconder ? 'esconder' : undefined}>
       {modoCakto && aceitar.cakto && destinos ? (
         <div className="funil__acoes">
-          <p className="funil__condicoes">{condicoes}</p>
           <cakto-upsell-buttons>
             <cakto-upsell-accept
               bg-color="#ff6b00"
@@ -209,22 +195,25 @@ export function BotoesFunil({ aceitar, produtoId, recusarTexto, aceiteHref, recu
               upsell-reject-url={destinos.recusa}
               data-origem="funil-aceitar"
             >
-              {rotulo}
+              {aceitar.texto}
             </cakto-upsell-accept>
-            <cakto-upsell-reject upsell-reject-url={destinos.recusa} data-origem="funil-recusar">
+            <cakto-upsell-reject
+              className={esconderRecusa ? 'esconder-fim' : undefined}
+              upsell-reject-url={destinos.recusa} data-origem="funil-recusar">
               {recusarTexto}
             </cakto-upsell-reject>
           </cakto-upsell-buttons>
         </div>
       ) : (
         <div className="funil__acoes">
-          <p className="funil__condicoes">{condicoes}</p>
           {aceitar.url && (
             <a className="cta funil__cta" href={aceitar.url} onClick={aceitarPeloLink} data-origem="funil-aceitar">
-              {rotulo}
+              {aceitar.texto}
             </a>
           )}
-          <a className="funil__recusar" href={recusarHref} onClick={repassarParametros} data-origem="funil-recusar">
+          <a
+            className={esconderRecusa ? 'funil__recusar esconder-fim' : 'funil__recusar'}
+            href={recusarHref} onClick={repassarParametros} data-origem="funil-recusar">
             {recusarTexto}
           </a>
         </div>
