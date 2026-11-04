@@ -1139,6 +1139,16 @@ body:has(.v2) {
 .v2-cta:hover {
   filter: brightness(1.06);
 }
+/* A logo branca à esquerda do texto, como no botão do Modo Caverna. Só na home:
+   a /v3 do colega (`.v2.v3`) fica como estava. */
+.v2:not(.v3) .v2-cta::before {
+  content: '';
+  flex: none;
+  width: 2.1em;
+  height: 2.1em;
+  margin: -0.4em 0.35em -0.4em -0.3em;
+  background: url('/img/logo-branca.svg') center / contain no-repeat;
+}
 /* Botão avulso no meio da página (topo, fim do método, fim dos casos). */
 .v2-botao-secao {
   width: 100%;
