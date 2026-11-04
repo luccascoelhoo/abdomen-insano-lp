@@ -126,3 +126,15 @@
     text-align: left;
   }
 }
+
+/* Home no celular: a headline em 3 linhas (pedido do Igor em 04/11/2026). 6vw é
+   o maior corpo que ela aguenta em 3 linhas na coluna com 20px de margem.
+   Só na home (`.v2:not(.v3)`): a /v3 do colega fica como estava. */
+@media (max-width: 899px) {
+  .v2:not(.v3) .v3-hero .v3-hero__titulo {
+    font-size: min(6vw, 2.2rem);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+}

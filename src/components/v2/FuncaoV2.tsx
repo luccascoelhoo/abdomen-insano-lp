@@ -1,4 +1,6 @@
+import { CtaButton } from '@/components/ui/CtaButton';
 import { funcaoV2 } from '@/content/lp-v2';
+import { ctaV3 } from '@/content/lp-v3';
 import { IconeCheck, IconeX } from './Icones';
 import { Rico } from './Rico';
 
@@ -66,6 +68,12 @@ export function FuncaoV2() {
         <p className="v2-fecho">
           <Rico texto={funcaoV2.fecho} />
         </p>
+
+        <div className="v2-botao-secao">
+          <CtaButton className="v2-cta" origem="v2-metodo">
+            {ctaV3}
+          </CtaButton>
+        </div>
       </div>
     </section>
   );

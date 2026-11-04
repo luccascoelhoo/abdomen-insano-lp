@@ -9,10 +9,12 @@ import { OfertaV2 } from '@/components/v2/OfertaV2';
 import { ProblemaV2 } from '@/components/v2/ProblemaV2';
 import { SolucaoV2 } from '@/components/v2/SolucaoV2';
 import { ViewContentWatcher } from '@/components/ui/ViewContentWatcher';
+import { CtaButton } from '@/components/ui/CtaButton';
 import { FaixaV3, FechamentoV3 } from '@/components/v3/Blocos';
 import { HeroV3 } from '@/components/v3/HeroV3';
 import { oferta } from '@/content/desafio';
 import { ofertaV2 } from '@/content/lp-v2';
+import { ctaV3 } from '@/content/lp-v3';
 import { parcelamentoDaOferta, reais } from '@/lib/parcelamento';
 import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import '@/app/v2/v2.css';
@@ -24,8 +26,10 @@ import '@/app/v2/v2.css';
  *
  * Da V.3 (29/10/2026) entraram o topo, a faixa laranja, as perguntas novas
  * do FAQ e o fechamento (responsáveis e carrossel com contador saíram
- * em 30/10). Não entram a barra fixa nem o botão com preço no topo, e as
- * urgências ("por tempo limitado", "válido até hoje") ficam.
+ * em 30/10). Não entra a barra fixa; o botão do topo voltou em 04/11/2026
+ * (sem preço, sem selos), com mais dois pelo caminho: fim do "como funciona"
+ * e fim dos casos. As urgências ("por tempo limitado", "válido até hoje")
+ * ficam.
  */
 export async function LpV2() {
   const slug = produtoPorId(ID_FRONT)?.oferta;
@@ -35,7 +39,13 @@ export async function LpV2() {
   return (
     <div className="v2">
       <ViewContentWatcher moeda={oferta.precoMoeda} />
-      <HeroV3 />
+      <HeroV3>
+        <div className="v2-botao-secao">
+          <CtaButton className="v2-cta" origem="v2-hero">
+            {ctaV3}
+          </CtaButton>
+        </div>
+      </HeroV3>
       <ProblemaV2 />
       <FuncaoV2 />
       <SolucaoV2 />
