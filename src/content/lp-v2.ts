@@ -341,7 +341,7 @@ export const garantiaV2 = {
     '**Eu vou te dar 15 dias para pedir o seu dinheiro de volta…**',
   ],
   emailAntes: 'E o processo é muito simples: basta enviar um e-mail para ',
-  email: 'administrativo@gruposhapeinsano.com.br',
+  email: 'contatoshapeinsano@gmail.com',
   emailDepois: ' e solicitar o seu direito de arrependimento.',
   paragrafosFinais: [
     'Agora, **o risco é totalmente meu** e não existe nenhum problema nisso…',
