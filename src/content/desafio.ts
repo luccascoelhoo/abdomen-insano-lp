@@ -539,14 +539,14 @@ export const upsell: PaginaFunil = {
 };
 
 export const downsell: PaginaFunil = {
-  metaTitulo: 'Aumentei o seu desconto em 70%',
+  metaTitulo: 'Aumentei o seu desconto em 60%',
   produtoId: 'si360-downsell',
   tituloAntes: 'Aumentei o seu desconto',
   descontoSobre: 'si360-upsell',
   /* Valor cheio de marketing, informado pelo dono em 22/10/2026. */
   precoCheioCentavos: 29900,
   /* Percentual anunciado pelo dono em 04/11/2026. Ver o aviso no tipo. */
-  descontoDeclarado: 70,
+  descontoDeclarado: 60,
   /* Copy enviada pelo dono em 04/11/2026. */
   alerta: 'Não feche nem atualize essa página!',
   paragrafos: ['Você liberou o **Melhor Plano** do Projeto Shape Insano 360. Assista o vídeo abaixo.'],
