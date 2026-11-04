@@ -5,6 +5,8 @@ import type { Vsl } from '@/content/desafio';
 
 type SmartPlayer = HTMLElement & {
   displayHiddenElements?: (segundos: number, seletores: string[], opcoes?: { persist?: boolean }) => void;
+  /** Dispara quando o vídeo passa de `segundos` (tempo do vídeo, já na velocidade do player). */
+  onTime?: (segundos: number, fn: () => void, opcoes?: { once?: boolean }) => void;
 };
 
 declare module 'react' {
@@ -26,9 +28,22 @@ export const SELETOR_ESCONDIDO = '.esconder';
  */
 const ESPERA_PELO_PLAYER_MS = 12000;
 
+/** Elementos que esperam o fim do vídeo (o "não quero" do upsell). */
+const CLASSE_FIM = 'esconder-fim';
+
+/** Quanto o "não quero" espera depois de o vídeo chegar ao fim. */
+const RECUSA_ESPERA_MS = 4000;
+
 function revelarEscondidos() {
   document.querySelectorAll<HTMLElement>(SELETOR_ESCONDIDO).forEach((el) => {
     el.classList.remove('esconder');
+  });
+  revelarFim();
+}
+
+function revelarFim() {
+  document.querySelectorAll<HTMLElement>(`.${CLASSE_FIM}`).forEach((el) => {
+    el.classList.remove(CLASSE_FIM);
   });
 }
 
@@ -65,7 +80,32 @@ export function VslPlayer({ vsl }: { vsl: Vsl }) {
         if (vsl.delaySegundos > 0) {
           player?.displayHiddenElements?.(vsl.delaySegundos, [SELETOR_ESCONDIDO], { persist: true });
         }
+        if (vsl.recusaSegundos) agendarRecusa(player);
       };
+      /*
+       * O "não quero" entra uns segundos depois do fim do vídeo. Quem já
+       * chegou ao fim numa visita anterior não espera de novo — sem isso,
+       * recarregar a página deixaria o comprador sem saída até o fim do vídeo.
+       */
+      const chaveFim = `ai_vsl_fim_${vsl.playerId}`;
+      function agendarRecusa(alvo: SmartPlayer | null) {
+        try {
+          if (localStorage.getItem(chaveFim)) return revelarFim();
+        } catch {}
+        alvo?.onTime?.(
+          vsl.recusaSegundos ?? 0,
+          () => {
+            const t = window.setTimeout(() => {
+              revelarFim();
+              try {
+                localStorage.setItem(chaveFim, '1');
+              } catch {}
+            }, RECUSA_ESPERA_MS);
+            limpar.push(() => window.clearTimeout(t));
+          },
+          { once: true },
+        );
+      }
       player?.addEventListener('player:ready', aoFicarPronto);
       limpar.push(() => player?.removeEventListener('player:ready', aoFicarPronto));
 
@@ -126,7 +166,7 @@ export function VslPlayer({ vsl }: { vsl: Vsl }) {
     }
 
     return () => limpar.forEach((fn) => fn());
-  }, [configurado, v4, vsl.playerId, vsl.scriptUrl, vsl.delaySegundos]);
+  }, [configurado, v4, vsl.playerId, vsl.scriptUrl, vsl.delaySegundos, vsl.recusaSegundos]);
 
   if (!configurado) {
     return (

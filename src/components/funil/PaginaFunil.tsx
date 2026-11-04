@@ -30,6 +30,7 @@ export function PaginaFunil({
   destinoRecusa: string;
 }) {
   const esconderBotoes = Boolean(pagina.vsl.playerId && pagina.vsl.delaySegundos > 0);
+  const esconderRecusa = esconderBotoes && Boolean(pagina.vsl.recusaSegundos);
 
   return (
     <div className="funil">
@@ -98,6 +99,7 @@ export function PaginaFunil({
           aceiteHref={destinoAceite}
           recusarHref={destinoRecusa}
           esconder={esconderBotoes}
+          esconderRecusa={esconderRecusa}
         />
       </main>
     </div>

@@ -425,6 +425,12 @@ export type Vsl = {
   scriptUrl: string;
   /** Segundos de vídeo até os botões aparecerem. 0 = aparecem já. */
   delaySegundos: number;
+  /**
+   * Segundos de vídeo (na linha do tempo do player, que já corre a 1,2x) em
+   * que o "não quero" passa a valer: a página espera o vídeo chegar aqui e
+   * mais `RECUSA_ESPERA_SEGUNDOS`. Omitido = o "não" aparece junto com o "sim".
+   */
+  recusaSegundos?: number;
 };
 
 /**
@@ -504,7 +510,7 @@ export type PaginaFunil = {
 };
 
 export const upsell: PaginaFunil = {
-  metaTitulo: 'Oferta exclusiva — Shape Insano 360',
+  metaTitulo: 'Compra em andamento',
   produtoId: 'si360-upsell',
   /* Copy enviada pelo dono em 03/11/2026. */
   progresso: 67,
@@ -512,8 +518,8 @@ export const upsell: PaginaFunil = {
   tituloDestaque: 'ANDAMENTO!',
   alerta: 'Atenção, não feche essa página!',
   paragrafos: [
-    'A sua compra do **Desafio Abdômen Insano** ainda está em andamento.',
-    'Assista esse vídeo até o final e siga os passos para confirmar a sua compra.',
+    'A sua compra do Desafio Abdômen Insano ainda está em andamento.',
+    'Assista esse vídeo até o final e **siga os passos para confirmar a sua compra.**',
   ],
   vsl: {
     playerId: '6ada62344e1a50542a6594ac',
@@ -521,6 +527,8 @@ export const upsell: PaginaFunil = {
       'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ada62344e1a50542a6594ac/v4/player.js',
     /* 10:11 — minuto do pitch informado pelo time em 22/10/2026. */
     delaySegundos: 611,
+    /* O vídeo termina em 11:22 (682 s); o "não quero" entra uns segundos depois. */
+    recusaSegundos: 681,
   },
   aceitar: {
     texto: 'Quero o Shape Insano 360',
