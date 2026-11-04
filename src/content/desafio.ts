@@ -539,28 +539,32 @@ export const upsell: PaginaFunil = {
 };
 
 export const downsell: PaginaFunil = {
-  metaTitulo: 'Seu desconto aumentou — Projeto Shape Insano 360',
+  metaTitulo: 'Aumentei o seu desconto em 70%',
   produtoId: 'si360-downsell',
   tituloAntes: 'Aumentei o seu desconto',
   descontoSobre: 'si360-upsell',
   /* Valor cheio de marketing, informado pelo dono em 22/10/2026. */
   precoCheioCentavos: 29900,
-  /* O que a VSL fala. Ver o aviso no tipo: a conta contra 299/147 dá 50,8%. */
-  descontoDeclarado: 60,
-  paragrafos: [
-    'Sua compra do **Desafio Abdômen Insano** segue confirmada. Isto aqui é só a última chance do **Shape Insano 360**, agora com desconto.',
-    'Assista o vídeo e decida — esta página não volta.',
-  ],
+  /* Percentual anunciado pelo dono em 04/11/2026. Ver o aviso no tipo. */
+  descontoDeclarado: 70,
+  /* Copy enviada pelo dono em 04/11/2026. */
+  alerta: 'Não feche nem atualize essa página!',
+  paragrafos: ['Você liberou o **Melhor Plano** do Projeto Shape Insano 360. Assista o vídeo abaixo.'],
   vsl: {
     playerId: '6ad909948b6fe1ef3d42e9dd',
     scriptUrl:
       'https://scripts.converteai.net/e8915658-b4e1-47a4-92d6-57532a2ba6da/players/6ad909948b6fe1ef3d42e9dd/v4/player.js',
-    /* 1:00 — minuto do pitch informado pelo time em 22/10/2026. */
+    /* 1:00 — logo depois do preço (0:54–0:59 no vídeo). */
     delaySegundos: 60,
+    /* O vídeo termina em 1:48 (108 s); o "não" entra uns segundos depois. */
+    recusaSegundos: 107,
   },
   aceitar: {
-    texto: 'Quero com o desconto',
+    texto: 'Quero o Shape Insano 360',
     url: 'https://pay.cakto.com.br/vx548za',
+    // `tipo` conforme o código de incorporação do downsell no painel da Cakto
+    // (o do upsell é 'upsell'). Não confirmado: conferir na primeira venda.
+    cakto: { id: 'vx548za', tipo: 'downsell' },
   },
   recusarTexto: 'Não, obrigado',
 };
