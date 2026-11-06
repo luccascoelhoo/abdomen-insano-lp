@@ -1149,6 +1149,67 @@ body:has(.v2) {
   margin: -0.4em 0.35em -0.4em -0.3em;
   background: url('/img/logo-branca.svg') center / contain no-repeat;
 }
+/* ---------- efeitos (ver EfeitosV2) ---------- */
+/* Só `opacity` e `transform`: nada disto mexe no layout. A classe `.v2-rv` só é
+   posta pelo script, depois da hidratação — sem ele o conteúdo nunca some. */
+.v2-rv {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v2-rv.v2-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Botão de compra: no toque ele afunda um pouco, resposta imediata ao dedo.
+   (No computador quem move o botão é o efeito magnético.) */
+.v2-cta {
+  position: relative;
+}
+@media (hover: none) {
+  .v2-cta {
+    transition:
+      filter 0.2s,
+      box-shadow 0.2s,
+      transform 0.12s ease;
+  }
+  .v2-cta:active {
+    transform: scale(0.97);
+  }
+}
+
+/* Botão do card de preço: um anel que sai do botão e some, devagar — chama o
+   olho para o clique sem animar sombra (só `transform` e `opacity`). */
+.v2-card-oferta .v2-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--v2-verde);
+  opacity: 0;
+  pointer-events: none;
+  animation: v2-anel 2.6s ease-out 1.2s infinite;
+}
+@keyframes v2-anel {
+  0% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.07, 1.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-card-oferta .v2-cta::after {
+    animation: none;
+  }
+}
+
 /* Botão avulso no meio da página (topo, fim do método, fim dos casos). */
 .v2-botao-secao {
   width: 100%;
