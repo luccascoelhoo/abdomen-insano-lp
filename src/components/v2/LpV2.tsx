@@ -10,6 +10,7 @@ import { ProblemaV2 } from '@/components/v2/ProblemaV2';
 import { SolucaoV2 } from '@/components/v2/SolucaoV2';
 import { ViewContentWatcher } from '@/components/ui/ViewContentWatcher';
 import { BotaoRolagem } from '@/components/v2/BotaoRolagem';
+import { EfeitosV2 } from '@/components/v2/EfeitosV2';
 import { FaixaV3, FechamentoV3 } from '@/components/v3/Blocos';
 import { HeroV3 } from '@/components/v3/HeroV3';
 import { oferta } from '@/content/desafio';
@@ -39,6 +40,7 @@ export async function LpV2() {
   return (
     <div className="v2">
       <ViewContentWatcher moeda={oferta.precoMoeda} />
+      <EfeitosV2 />
       <HeroV3>
         <div className="v2-botao-secao">
           <BotaoRolagem alvo="como-funciona">{ctaV3}</BotaoRolagem>
