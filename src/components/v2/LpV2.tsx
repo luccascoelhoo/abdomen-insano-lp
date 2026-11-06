@@ -9,7 +9,7 @@ import { OfertaV2 } from '@/components/v2/OfertaV2';
 import { ProblemaV2 } from '@/components/v2/ProblemaV2';
 import { SolucaoV2 } from '@/components/v2/SolucaoV2';
 import { ViewContentWatcher } from '@/components/ui/ViewContentWatcher';
-import { CtaButton } from '@/components/ui/CtaButton';
+import { BotaoRolagem } from '@/components/v2/BotaoRolagem';
 import { FaixaV3, FechamentoV3 } from '@/components/v3/Blocos';
 import { HeroV3 } from '@/components/v3/HeroV3';
 import { oferta } from '@/content/desafio';
@@ -41,9 +41,7 @@ export async function LpV2() {
       <ViewContentWatcher moeda={oferta.precoMoeda} />
       <HeroV3>
         <div className="v2-botao-secao">
-          <CtaButton className="v2-cta" origem="v2-hero">
-            {ctaV3}
-          </CtaButton>
+          <BotaoRolagem alvo="como-funciona">{ctaV3}</BotaoRolagem>
         </div>
       </HeroV3>
       <ProblemaV2 />

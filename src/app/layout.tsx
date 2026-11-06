@@ -131,10 +131,21 @@ fbq('init','${PIXEL_ID}');`;
  */
 const GTM_ID = 'GTM-KV4MKTXG';
 
+/*
+ * O container só sobe depois da primeira interação (rolar, tocar, clicar) ou
+ * 4 s depois de a página carregar, o que vier primeiro. Ele só dispara o GA4 e
+ * pesa ~310 KB e ~0,8 s de processamento no celular, que antes competiam com a
+ * primeira tela. O `dataLayer` e o `gtm.start` são criados já, então nenhum
+ * evento se perde: o que for empurrado antes é processado quando o container
+ * chega. O Meta Pixel NÃO foi adiado.
+ */
 const gtmBase = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+new Date().getTime(),event:'gtm.js'});var go=false;function load(){if(go)return;go=true;
+var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);}
+['scroll','pointerdown','keydown','touchstart'].forEach(function(e){w.addEventListener(e,load,{once:true,passive:true});});
+function late(){setTimeout(load,4000);}
+d.readyState==='complete'?late():w.addEventListener('load',late);
 })(window,document,'script','dataLayer','${GTM_ID}');`;
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

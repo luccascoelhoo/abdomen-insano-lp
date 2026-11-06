@@ -11,7 +11,7 @@ import { Rico } from './Rico';
  */
 export function EntregaveisV2() {
   return (
-    <section className="v2-sec v2-sec--preto">
+    <section id="como-funciona" className="v2-sec v2-sec--preto">
       <div className="v2-col v2-col--largo">
         <h2 className="v2-h2">
           {entregaveisV2.titulo} <span className="v2-acento">{entregaveisV2.tituloDestaque}</span>

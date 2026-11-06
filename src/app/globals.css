@@ -204,12 +204,10 @@ p:last-child {
   inset: 0;
   z-index: 60;
   pointer-events: none;
-  opacity: 0.16;
-  mix-blend-mode: multiply;
-}
-.grain svg {
-  width: 100%;
-  height: 100%;
+  /* Ladrilho de ruído pronto (128 px): o filtro SVG que havia aqui era refeito
+     a cada rolagem e custava mais de 1 s de processamento no celular. */
+  background: url('/img/granulado.png') 0 0 / 128px 128px repeat;
+  opacity: 0.14;
 }
 
 /* ---------- topo ---------- */

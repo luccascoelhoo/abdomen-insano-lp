@@ -1,4 +1,4 @@
-import { CtaButton } from '@/components/ui/CtaButton';
+import { BotaoRolagem } from './BotaoRolagem';
 import { depoimentosV2 } from '@/content/lp-v2';
 import { CarrosselCasos } from './CarrosselCasos';
 import { Rico } from './Rico';
@@ -17,9 +17,7 @@ export function DepoimentosV2() {
         <p className="v2-sub v2-centro">{depoimentosV2.sub}</p>
         <CarrosselCasos casos={depoimentosV2.casos} />
         <div className="v2-botao-secao">
-          <CtaButton className="v2-cta" origem="v2-casos">
-            {depoimentosV2.cta}
-          </CtaButton>
+          <BotaoRolagem alvo="como-funciona">{depoimentosV2.cta}</BotaoRolagem>
         </div>
       </div>
     </section>

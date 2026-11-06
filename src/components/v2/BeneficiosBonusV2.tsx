@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { beneficiosV2, bonusV2 } from '@/content/lp-v2';
 import { IconeCheck } from './Icones';
 import { Rico } from './Rico';
+import { TransformacaoVideo } from './TransformacaoVideo';
 import { ValidoAte } from './ValidoAte';
 
 /**
@@ -13,19 +14,7 @@ export function BeneficiosBonusV2() {
     <section className="v2-sec v2-sec--branco">
       <div className="v2-col">
         {/* O GIF virou vídeo mudo em loop: 44 MB → ~1 MB, mesma imagem. */}
-        <video
-          className="v2-transformacao"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          poster="/video/transformacao-poster.webp"
-          aria-label="Dia 01, dia 42 e 1 ano: a transformação de quem faz o desafio"
-        >
-          <source src="/video/transformacao.mp4" type="video/mp4" />
-          <source src="/video/transformacao.webm" type="video/webm" />
-        </video>
+        <TransformacaoVideo />
         <h2 className="v2-h2">
           {beneficiosV2.titulo}{' '}
           <span className="v2-acento">

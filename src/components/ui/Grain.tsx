@@ -2,19 +2,11 @@
  * Granulado fixo sobre a página inteira.
  *
  * É o detalhe que mais tira a cara de "vetor gerado": cor chapada de tela é
- * limpa demais para uma marca de academia. O ruído vem de um filtro SVG
- * embutido — nenhum arquivo de imagem, custo praticamente zero.
+ * limpa demais para uma marca de academia. O ruído é um ladrilho PNG de 128 px
+ * (`/img/granulado.png`) repetido — antes era um filtro SVG (feTurbulence) em
+ * tela cheia, que o navegador recalculava na rolagem (medido em 06/11/2026:
+ * ~1,2 s de processamento no carregamento, no celular).
  */
 export function Grain() {
-  return (
-    <div className="grain" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-        <filter id="ruido">
-          <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="3" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#ruido)" />
-      </svg>
-    </div>
-  );
+  return <div className="grain" aria-hidden="true" />;
 }
