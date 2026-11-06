@@ -207,7 +207,7 @@ p:last-child {
   /* Ladrilho de ruído pronto (128 px): o filtro SVG que havia aqui era refeito
      a cada rolagem e custava mais de 1 s de processamento no celular. */
   background: url('/img/granulado.png') 0 0 / 128px 128px repeat;
-  opacity: 0.14;
+  opacity: 0.045;
 }
 
 /* ---------- topo ---------- */
