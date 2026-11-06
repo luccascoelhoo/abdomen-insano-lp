@@ -525,6 +525,14 @@ body:has(.v2) {
 }
 .v2-passo__card p {
   margin: 0 !important;
+  /* Texto ao lado do celular: era cinza (#bdbdbd) e sumia no fundo escuro. */
+  color: #f4f4f4;
+  font-weight: 500;
+  line-height: 1.55;
+}
+.v2-sec--preto .v2-sub,
+.v2-sec--preto .v2-sub p {
+  color: #e8e8e8;
 }
 .v2-passo__img {
   margin-top: 16px;
