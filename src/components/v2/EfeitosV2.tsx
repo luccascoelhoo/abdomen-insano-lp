@@ -37,15 +37,30 @@ export function EfeitosV2() {
       { rootMargin: '0px 0px -8% 0px', threshold: 0.04 },
     );
 
-    const limite = window.innerHeight * 0.95;
-    document.querySelectorAll<HTMLElement>(ALVOS).forEach((el) => {
-      // O que já está na primeira tela fica como está.
-      if (el.getBoundingClientRect().top < limite) return;
-      el.classList.add('v2-rv');
-      io.observe(el);
-    });
+    /*
+     * Depois da primeira tela pintada (ocioso), e em duas passadas: primeiro
+     * LÊ a posição de todos, depois ESCREVE as classes. Misturar leitura e
+     * escrita a cada elemento força o navegador a refazer o layout 60 vezes —
+     * foi o que custou ~0,25 s de travamento na primeira versão.
+     */
+    const marcar = () => {
+      const limite = window.innerHeight * 0.95;
+      const todos = Array.from(document.querySelectorAll<HTMLElement>(ALVOS));
+      const abaixo = todos.filter((el) => el.getBoundingClientRect().top >= limite);
+      abaixo.forEach((el) => {
+        el.classList.add('v2-rv');
+        io.observe(el);
+      });
+    };
+    const ocioso = window.requestIdleCallback
+      ? window.requestIdleCallback(marcar, { timeout: 1500 })
+      : window.setTimeout(marcar, 600);
 
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      if (window.cancelIdleCallback) window.cancelIdleCallback(ocioso as number);
+      else window.clearTimeout(ocioso as number);
+    };
   }, []);
 
   return null;
