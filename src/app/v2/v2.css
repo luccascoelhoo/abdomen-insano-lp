@@ -1210,6 +1210,43 @@ body:has(.v2) {
   }
 }
 
+/* ---------- glow ao passar o mouse (só computador) ----------
+   Botão de compra: o halo verde cresce e o botão sobe um pouco. Cartões escuros:
+   a borda acende em laranja com uma luz suave por fora. Só `box-shadow`, `border`
+   e `transform`, e só no hover — nada roda parado. */
+@media (hover: hover) {
+  .v2-cta {
+    transition:
+      filter 0.2s,
+      box-shadow 0.3s ease;
+  }
+  .v2-cta:hover {
+    filter: brightness(1.08);
+    box-shadow:
+      0 5px 0 var(--v2-verde-sombra),
+      0 0 0 4px rgba(34, 197, 94, 0.18),
+      0 0 38px 6px rgba(34, 197, 94, 0.55),
+      0 22px 44px -12px rgba(22, 163, 74, 0.85);
+  }
+  .v2-frente,
+  .v2-passo__card,
+  .v2-bonus,
+  .v2-carrossel__item {
+    transition:
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .v2-frente:hover,
+  .v2-passo__card:hover,
+  .v2-bonus:hover,
+  .v2-carrossel__item:hover {
+    border-color: rgba(255, 107, 0, 0.6);
+    box-shadow:
+      0 0 0 1px rgba(255, 107, 0, 0.25),
+      0 0 30px -4px rgba(255, 107, 0, 0.35);
+  }
+}
+
 /* Botão avulso no meio da página (topo, fim do método, fim dos casos). */
 .v2-botao-secao {
   width: 100%;
