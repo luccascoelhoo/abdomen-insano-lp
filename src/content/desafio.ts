@@ -33,7 +33,7 @@ export const marca = {
   nome: 'Desafio Abdômen Insano',
   titulo: 'Desafio Abdômen Insano — 42 dias para o abdômen trincado',
   descricao:
-    'Em 42 dias você elimina a gordura chata do abdômen e conquista os gomos definidos. Treino avançado, alimentação simplificada e cardio calculado, tudo dentro do app. Por R$64, pagamento único.',
+    'Desafio de 42 dias para secar a barriga e trincar o abdômen: treino de abdômen, alimentação flexível e acompanhamento no app. Pagamento único.',
   logo: '/img/logo-desafio.svg',
 } as const;
 
