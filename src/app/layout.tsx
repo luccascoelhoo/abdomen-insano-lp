@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import { Grain } from '@/components/ui/Grain';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
@@ -24,21 +24,28 @@ import { faqV2 } from '@/content/lp-v2';
  * JetBrains Mono na camada de dado — corpo pequeno, letra técnica, com
  * kerning generoso.
  */
-const display = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['500', '600', '700'],
+/*
+ * As três famílias são variáveis e ficam no próprio projeto (`./fonts`, só o
+ * subconjunto latino, que cobre o português). Antes vinham do Google Fonts no
+ * build, e o deploy da Vercel falhou três vezes em 06/11/2026 por não
+ * conseguir baixá-las; hospedadas aqui, o build não depende de rede externa.
+ * Um arquivo por família serve todos os pesos usados.
+ */
+const display = localFont({
+  src: './fonts/space-grotesk-latin.woff2',
+  weight: '300 700',
   variable: '--font-display-src',
   display: 'swap',
 });
-const corpo = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+const corpo = localFont({
+  src: './fonts/inter-latin.woff2',
+  weight: '100 900',
   variable: '--font-body-src',
   display: 'swap',
 });
-const dado = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
+const dado = localFont({
+  src: './fonts/jetbrains-mono-latin.woff2',
+  weight: '100 800',
   variable: '--font-mono-src',
   display: 'swap',
 });
