@@ -42,12 +42,29 @@ export function CelularVideo({ video, rotulo }: { video: string; rotulo: string 
       { threshold: 0.25 },
     );
     observador.observe(v);
+
+    /*
+     * A capa (`poster`) é baixada na hora, mesmo com `preload="none"`: as seis
+     * capas (~150 KB) disputavam a banda com a foto do topo, que é o que o
+     * celular mais espera. Aqui a capa só é posta quando o aparelho chega
+     * perto da tela.
+     */
+    const capa = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        v.poster = `/video/app/${video}.webp`;
+        capa.disconnect();
+      },
+      { rootMargin: '700px 0px' },
+    );
+    capa.observe(v);
     return () => {
+      capa.disconnect();
       observador.disconnect();
       window.removeEventListener('pointerdown', tentarDeNovo);
       window.removeEventListener('keydown', tentarDeNovo);
     };
-  }, []);
+  }, [video]);
 
   const alternar = () => {
     const v = ref.current;
@@ -65,7 +82,7 @@ export function CelularVideo({ video, rotulo }: { video: string; rotulo: string 
     <div className="v2-iphone" role="img" aria-label={rotulo} onClick={alternar}>
       <div className="v2-iphone__tela">
         {/* mp4 (H.264) primeiro: toca em qualquer navegador, inclusive o Safari do Mac. */}
-        <video ref={ref} muted loop playsInline preload="none" poster={`/video/app/${video}.webp`} aria-hidden="true">
+        <video ref={ref} muted loop playsInline preload="none" aria-hidden="true">
           <source src={`/video/app/${video}.mp4`} type="video/mp4" />
           <source src={`/video/app/${video}.webm`} type="video/webm" />
         </video>

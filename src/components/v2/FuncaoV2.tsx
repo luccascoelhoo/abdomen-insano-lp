@@ -1,4 +1,4 @@
-import { CtaButton } from '@/components/ui/CtaButton';
+import { BotaoRolagem } from './BotaoRolagem';
 import { funcaoV2 } from '@/content/lp-v2';
 import { ctaV3 } from '@/content/lp-v3';
 import { IconeCheck, IconeX } from './Icones';
@@ -70,9 +70,7 @@ export function FuncaoV2() {
         </p>
 
         <div className="v2-botao-secao">
-          <CtaButton className="v2-cta" origem="v2-metodo">
-            {ctaV3}
-          </CtaButton>
+          <BotaoRolagem alvo="como-funciona">{ctaV3}</BotaoRolagem>
         </div>
       </div>
     </section>
