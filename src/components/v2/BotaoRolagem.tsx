@@ -1,6 +1,7 @@
 'use client';
 
-import type { MouseEvent, ReactNode } from 'react';
+import { useRef, type MouseEvent, type ReactNode } from 'react';
+import { useMagnetico } from '@/components/ui/useMagnetico';
 
 /**
  * Botão que rola a página até uma seção (em vez de abrir o checkout).
@@ -11,6 +12,9 @@ import type { MouseEvent, ReactNode } from 'react';
  * (`CtaButton`). Mesmo visual, mesma `.v2-cta` — só o destino muda.
  */
 export function BotaoRolagem({ alvo, children }: { alvo: string; children: ReactNode }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  useMagnetico(ref);
+
   function rolar(evento: MouseEvent<HTMLAnchorElement>) {
     const secao = document.getElementById(alvo);
     if (!secao) return;
@@ -22,7 +26,7 @@ export function BotaoRolagem({ alvo, children }: { alvo: string; children: React
   }
 
   return (
-    <a className="v2-cta" href={`#${alvo}`} onClick={rolar}>
+    <a ref={ref} className="v2-cta" href={`#${alvo}`} onClick={rolar}>
       {children}
     </a>
   );
