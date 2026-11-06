@@ -19,7 +19,11 @@ export function TransformacaoVideo() {
     v.muted = true;
     const observador = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) v.play().catch(() => {});
+        if (e.isIntersecting) {
+          // A capa também espera: 60 KB que a primeira tela não precisa.
+          if (!v.poster) v.poster = '/video/transformacao-poster.webp';
+          v.play().catch(() => {});
+        }
         else v.pause();
       },
       // Começa a baixar um pouco antes de entrar na tela.
@@ -37,7 +41,6 @@ export function TransformacaoVideo() {
       muted
       playsInline
       preload="none"
-      poster="/video/transformacao-poster.webp"
       aria-label="Dia 01, dia 42 e 1 ano: a transformação de quem faz o desafio"
     >
       <source src="/video/transformacao.mp4" type="video/mp4" />
