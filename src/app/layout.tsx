@@ -95,6 +95,23 @@ const jsonLd = {
       })),
     },
     {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#site`,
+      url: siteUrl,
+      name: marca.nome,
+      inLanguage: 'pt-BR',
+      publisher: { '@id': `${siteUrl}/#org` },
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#org`,
+      name: marca.nome,
+      legalName: 'SI TREINAMENTOS LTDA',
+      url: siteUrl,
+      logo: `${siteUrl}${marca.logo}`,
+      email: 'contatoshapeinsano@gmail.com',
+    },
+    {
       '@type': 'Product',
       name: marca.nome,
       description: marca.descricao,
