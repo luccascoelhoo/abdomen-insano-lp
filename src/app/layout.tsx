@@ -60,6 +60,8 @@ export const metadata: Metadata = {
   title: marca.titulo,
   description: marca.descricao,
   alternates: { canonical: '/' },
+  // Verificação de propriedade no Google Search Console (06/11/2026).
+  verification: { google: 'YO9NsT8Uj4A6f6IT92JWa55vkslfD4Zs433N-jkzJIA' },
   openGraph: {
     type: 'website',
     url: '/',
