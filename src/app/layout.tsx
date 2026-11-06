@@ -114,17 +114,41 @@ const jsonLd = {
 /**
  * Snippet base do Meta Pixel, inline no `<head>`.
  *
- * Só carrega a biblioteca e chama `init`. O `PageView` sai do componente
- * `MetaPixel`, pelo helper que carimba `event_id` — o snippet oficial junta os
- * dois na mesma linha e, com isso, o primeiro evento da página seria o único
- * sem id.
+ * Só prepara a fila (`fbq`), cria os cookies e chama `init`. O `PageView` sai do
+ * componente `MetaPixel`, pelo helper que carimba `event_id` — o snippet oficial
+ * junta os dois na mesma linha e, com isso, o primeiro evento da página seria o
+ * único sem id.
+ *
+ * A BIBLIOTECA (`fbevents.js`, ~270 KB e ~1 s de processamento no celular) só é
+ * baixada na primeira interação (rolar, tocar, tecla) ou 4 s depois de a página
+ * carregar, o que vier primeiro (pedido do Igor em 06/11/2026). Nada se perde:
+ *  - todo `fbq(...)` chamado antes vai para a fila e sai quando a biblioteca
+ *    chega, com o mesmo `event_id` (a cópia do servidor continua deduplicando);
+ *  - os cookies `_fbp` e `_fbc` são criados AQUI, no mesmo formato do Meta, para
+ *    existirem desde o primeiro instante: o botão de compra e a cópia do
+ *    servidor leem esses cookies, e sem eles um clique rápido sairia sem a
+ *    origem do anúncio. Quando a biblioteca chega, ela reaproveita os cookies.
+ * O que muda: quem fecha a página antes de rolar/tocar e antes de 4 s deixa de
+ * ser contado no `PageView` do navegador.
  */
-const pixelBase = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${PIXEL_ID}');`;
+const pixelBase = `(function(w,d){
+function ck(n){var m=d.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?m[1]:null}
+function dom(){var h=d.location.hostname.split('.');if(h.length<2||/^[0-9.]+$/.test(d.location.hostname))return null;
+for(var i=2;i<=h.length;i++){var x=h.slice(-i).join('.');d.cookie='_fbck=1;domain=.'+x+';path=/;max-age=10';
+if(ck('_fbck')){d.cookie='_fbck=;domain=.'+x+';path=/;max-age=0';return{d:x,i:i-1}}}return null}
+try{var D=dom();if(D){var t=Date.now(),mx=';domain=.'+D.d+';path=/;max-age=7776000;SameSite=Lax';
+if(!ck('_fbp'))d.cookie='_fbp=fb.'+D.i+'.'+t+'.'+Math.round(2147483647*Math.random())+mx;
+var q=d.location.search.match(/[?&]fbclid=([^&#]+)/);
+if(q&&!ck('_fbc'))d.cookie='_fbc=fb.'+D.i+'.'+t+'.'+q[1]+mx}}catch(e){}
+if(!w.fbq){var n=w.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!w._fbq)w._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}
+var on=false;function go(){if(on)return;on=true;var s=d.createElement('script');s.async=true;
+s.src='https://connect.facebook.net/en_US/fbevents.js';d.head.appendChild(s)}
+['scroll','pointerdown','keydown','touchstart'].forEach(function(e){w.addEventListener(e,go,{once:true,passive:true})});
+function late(){setTimeout(go,4000)}
+d.readyState==='complete'?late():w.addEventListener('load',late);
+fbq('init','${PIXEL_ID}');
+})(window,document);`;
 
 /**
  * Container do Google Tag Manager.
