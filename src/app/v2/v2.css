@@ -1573,31 +1573,10 @@ body:has(.v2) {
   }
 }
 
-/* Comunidade (áudio 09/11/2026) */
-.v2-comunidade__pilares {
-  list-style: none;
-  margin: 2rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 1rem;
+/* Comunidade (áudio 09/11/2026): painel das engrenagens, sem imagem */
+.v2 .v2-engrenagem--texto {
+  grid-template-columns: 1fr;
 }
-@media (min-width: 768px) {
-  .v2-comunidade__pilares { grid-template-columns: repeat(3, 1fr); }
-}
-.v2-comunidade__pilar {
-  border-radius: 16px;
-  padding: 1.25rem 1.25rem 1.1rem;
-  background: rgba(0, 0, 0, 0.04);
-  border-left: 4px solid var(--v2-laranja, #ff6a00);
-}
-.v2-comunidade__pilar h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-.v2-comunidade__pilar p { margin: 0; line-height: 1.5; }
 .v2-comunidade__fecho {
-  margin: 2rem auto 0;
-  max-width: 34rem;
-  font-size: 1.15rem;
+  margin-top: 28px !important;
 }
