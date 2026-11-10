@@ -1,5 +1,6 @@
 import { BeneficiosBonusV2 } from '@/components/v2/BeneficiosBonusV2';
 import { DepoimentosV2 } from '@/components/v2/DepoimentosV2';
+import { ComunidadeV2 } from '@/components/v2/ComunidadeV2';
 import { EntregaveisV2 } from '@/components/v2/EntregaveisV2';
 import { ExpertV2 } from '@/components/v2/ExpertV2';
 import { FaqV2, RodapeV2, SuporteV2 } from '@/components/v2/FinalV2';
@@ -51,6 +52,7 @@ export async function LpV2() {
       <SolucaoV2 />
       <FaixaV3 />
       <DepoimentosV2 />
+      <ComunidadeV2 />
       <EntregaveisV2 />
       <BeneficiosBonusV2 />
       <OfertaV2 parcelamento={parcelamento} />

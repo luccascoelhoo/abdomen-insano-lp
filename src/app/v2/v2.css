@@ -1573,3 +1573,10 @@ body:has(.v2) {
   }
 }
 
+/* Comunidade (áudio 09/11/2026): painel das engrenagens, sem imagem */
+.v2 .v2-engrenagem--texto {
+  grid-template-columns: 1fr;
+}
+.v2-comunidade__fecho {
+  margin-top: 28px !important;
+}

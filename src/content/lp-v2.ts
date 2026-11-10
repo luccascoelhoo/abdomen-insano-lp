@@ -136,6 +136,34 @@ export const depoimentosV2 = {
 } as const;
 
 /**
+ * Comunidade — pedido do áudio de 09/11/2026: mostrar que o desafio não é
+ * "só um programinho", é um grupo de gente se ajudando.
+ * `prints`: prints REAIS da Comunidade Anti Falhas / grupo (com nomes e fotos
+ * borrados se o aluno não autorizou). Coloque em `public/img/comunidade/` e
+ * liste aqui; enquanto estiver vazio, o carrossel não aparece.
+ */
+export const comunidadeV2 = {
+  titulo: 'Não é só um app.',
+  tituloDestaque: 'É uma ((comunidade.))',
+  sub: 'Aqui você não começa sozinho. São **+5.500 alunos** no mesmo desafio que você: quem trava pede ajuda, quem consegue puxa o outro.',
+  /** Só o que é verdade hoje (sem equipe/WhatsApp — Igor, 09/11/2026). */
+  pilares: [
+    {
+      rotulo: 'Comunidade Anti Falhas',
+      titulo: 'Gente te puxando',
+      texto: 'Alunos trocando dúvidas, resultados e motivação todos os dias. **No dia difícil, sempre tem alguém te puxando.**',
+    },
+    {
+      rotulo: '+5.500 alunos',
+      titulo: 'Todo mundo no mesmo objetivo',
+      texto: 'Você acompanha a evolução de quem começou junto e vê que **dá certo pra gente como você.**',
+    },
+  ],
+  prints: [] as readonly { src: string; alt: string }[],
+  fecho: 'Você não vai baixar um aplicativo e se virar. **Você vai entrar para um grupo.**',
+} as const;
+
+/**
  * Telas REAIS do app Flameer, capturadas no emulador (projeto Flameer-Android,
  * pasta capturas/). Aparecem passando sozinhas dentro de um celular
  * (`components/v2/CelularApp.tsx`).
