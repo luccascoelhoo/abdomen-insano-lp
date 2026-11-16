@@ -167,7 +167,7 @@ function Projecao42({ r }: { r: Respostas }) {
 }
 
 /** Tela 'diagnostico': IMC, capa, área, idade, projeção de 42 dias e hoje → objetivo. */
-export function TelaDiagnostico({ respostas: r, avancar }: PropsTela) {
+export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela) {
   const valor = usePreco(ID_FRONT);
   const disparado = useRef(false);
 
@@ -179,6 +179,11 @@ export function TelaDiagnostico({ respostas: r, avancar }: PropsTela) {
   useEffect(() => {
     if (disparado.current) return;
     disparado.current = true;
+    // Recarregar a página no diagnóstico não conta outro ViewContent.
+    try {
+      if (sessionStorage.getItem('ai_quiz_vc')) return;
+      sessionStorage.setItem('ai_quiz_vc', '1');
+    } catch {}
     rastrear(
       'ViewContent',
       {
@@ -288,6 +293,11 @@ export function TelaDiagnostico({ respostas: r, avancar }: PropsTela) {
           <button type="button" className="qr-botao" onClick={avancar}>
             Ver o meu plano
           </button>
+          {recomecar && (
+            <button type="button" className="qr-refazer" onClick={recomecar}>
+              Refazer o quiz
+            </button>
+          )}
         </div>
       </section>
     </div>

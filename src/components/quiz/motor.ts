@@ -68,12 +68,17 @@ export function projecao(r: Respostas): Projecao | null {
   return { pesoAtual: p, pesoMeta: meta, peso42: semanas[6].peso, semanas, ritmoKg };
 }
 
+/** Idade na data de hoje em Brasília (o mesmo fuso que a API usa para validar). */
 export function idade(nascimento: string | undefined, hoje = new Date()): number | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(nascimento ?? '');
   if (!m) return null;
   const [a, me, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
-  let i = hoje.getFullYear() - a;
-  if (hoje.getMonth() + 1 < me || (hoje.getMonth() + 1 === me && hoje.getDate() < d)) i -= 1;
+  const [ha, hm, hd] = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' })
+    .format(hoje)
+    .split('-')
+    .map(Number);
+  let i = ha - a;
+  if (hm < me || (hm === me && hd < d)) i -= 1;
   return i;
 }
 
@@ -167,7 +172,14 @@ export function montarPayload(r: Respostas, utm: Record<string, string>, site = 
 
 /* ------------------------------------------------------------------ estado */
 
-const CHAVE_LOCAL = 'ai_quiz_v1';
+/**
+ * O progresso salvo guarda o índice da tela: ao mudar a ordem ou a quantidade
+ * de telas em `content/quiz.ts`, suba a versão para ninguém voltar na tela errada.
+ */
+export const VERSAO_QUIZ = 2;
+const CHAVE_LOCAL = `ai_quiz_v${VERSAO_QUIZ}`;
+/** Toques mais próximos que isso viram um só (toque duplo pulava telas). */
+const TRAVA_MS = 400;
 
 interface Salvo {
   i: number;
@@ -185,6 +197,13 @@ export function useQuiz(telas: Tela[]) {
   // Respostas mais recentes fora do ciclo de render: `responder` grava e
   // avança na mesma chamada sem efeito colateral dentro do updater do React.
   const rRef = useRef<Respostas>({});
+  const ultimaTroca = useRef(0);
+  const podeTrocar = () => {
+    const agora = Date.now();
+    if (agora - ultimaTroca.current < TRAVA_MS) return false;
+    ultimaTroca.current = agora;
+    return true;
+  };
 
   // Lê o progresso salvo só no navegador, depois da hidratação (o servidor não
   // tem localStorage; ler no useState inicial quebraria a hidratação).
@@ -222,14 +241,24 @@ export function useQuiz(telas: Tela[]) {
 
 
   const responder = useCallback((valores: Respostas, op?: { avancar?: boolean }) => {
+    const avanca = op?.avancar !== false;
+    if (avanca && !podeTrocar()) return;
     const novo = { ...rRef.current, ...valores };
     rRef.current = novo;
     setR(novo);
-    if (op?.avancar !== false) setI((idx) => proxima(idx, novo, 1));
+    if (avanca) setI((idx) => proxima(idx, novo, 1));
   }, [proxima]);
 
-  const avancar = useCallback(() => setI((idx) => proxima(idx, rRef.current, 1)), [proxima]);
-  const voltar = useCallback(() => setI((idx) => proxima(idx, rRef.current, -1)), [proxima]);
+  const avancar = useCallback(() => {
+    if (podeTrocar()) setI((idx) => proxima(idx, rRef.current, 1));
+  }, [proxima]);
+  const voltar = useCallback(() => {
+    if (podeTrocar()) setI((idx) => proxima(idx, rRef.current, -1));
+  }, [proxima]);
+  const irPara = useCallback((k: Tela['k']) => {
+    const idx = telas.findIndex((t) => t.k === k);
+    if (idx >= 0) setI(idx);
+  }, [telas]);
   const recomecar = useCallback(() => {
     rRef.current = {};
     setR({});
@@ -243,5 +272,5 @@ export function useQuiz(telas: Tela[]) {
     return vis.length > 1 ? Math.max(0, pos) / (vis.length - 1) : 0;
   }, [telas, visivel, r, i]);
 
-  return { i, tela: telas[i], respostas: r, responder, avancar, voltar, recomecar, progresso, pronto };
+  return { i, tela: telas[i], respostas: r, responder, avancar, voltar, irPara, recomecar, progresso, pronto };
 }

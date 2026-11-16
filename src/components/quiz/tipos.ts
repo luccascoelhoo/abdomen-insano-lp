@@ -162,6 +162,10 @@ export interface PropsTela<T extends Tela = Tela> {
   responder: (valores: Respostas, opcoes?: { avancar?: boolean }) => void;
   /** Avança sem gravar (telas de info, carregamento). */
   avancar: () => void;
+  /** Volta direto para a primeira tela de um tipo (ex.: corrigir o e-mail). */
+  irPara?: (k: Tela['k']) => void;
+  /** Apaga as respostas e volta ao início. */
+  recomecar?: () => void;
 }
 
 /** Níveis da "capa" de gordura (Método Capa Zero). */

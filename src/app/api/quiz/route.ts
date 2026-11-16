@@ -86,7 +86,10 @@ function daCasa(request: Request): boolean {
 const gravar = () => process.env.QUIZ_GRAVAR === '1' && supabaseConfigured();
 const emDev = process.env.NODE_ENV !== 'production';
 
-async function salvar(d: CorpoQuizValido): Promise<void> {
+/** Versão do texto do checkbox de aceite (TelaEmail). Mudou o texto, sobe aqui. */
+const TEXTO_ACEITE = 'quiz-v1';
+
+async function salvar(d: CorpoQuizValido, ua: string): Promise<void> {
   const agora = new Date().toISOString();
   // `consumido_em` e `criado_em` ficam fora: o upsert não os toca.
   const { error } = await supabaseAdmin()
@@ -96,7 +99,10 @@ async function salvar(d: CorpoQuizValido): Promise<void> {
         email: normalizarEmail(d.email),
         nome: d.nome,
         aceite_email: d.aceiteEmail,
+        // O gatilho do banco preserva o primeiro aceite; desmarcar revoga.
         aceite_email_em: d.aceiteEmail ? agora : null,
+        aceite_email_texto: d.aceiteEmail ? TEXTO_ACEITE : null,
+        aceite_email_ua: d.aceiteEmail ? ua.slice(0, 300) : null,
         app: d.app,
         extras: d.extras,
         utm: d.utm,
@@ -140,7 +146,8 @@ export async function POST(request: Request) {
   if (gravar()) {
     // Responde já; a escrita termina depois da resposta (`after`), sem segurar
     // o navegador de quem está indo para o checkout.
-    after(() => salvar(r.dados).catch((e) => console.error('[api/quiz] erro ao gravar', e)));
+    const ua = request.headers.get('user-agent') ?? '';
+    after(() => salvar(r.dados, ua).catch((e) => console.error('[api/quiz] erro ao gravar', e)));
   } else if (emDev) {
     console.info('[api/quiz] válido, não gravado (QUIZ_GRAVAR != 1 ou Supabase ausente)', {
       app: r.dados.app,

@@ -13,9 +13,15 @@ import { TELAS } from './telas';
 export function Quiz({ oferta }: { oferta: ReactNode }) {
   const q = useQuiz(telasQuiz);
 
-  // Tela nova começa do topo (no celular a anterior pode ter rolado).
+  // Tela nova começa do topo (no celular a anterior pode ter rolado) e o foco
+  // vai para o título dela: o botão tocado some, e o leitor de tela se perdia.
   useEffect(() => {
     window.scrollTo(0, 0);
+    const titulo = document.querySelector<HTMLElement>('.quiz__tela h1, .quiz__tela h2');
+    if (titulo && q.i > 0) {
+      titulo.tabIndex = -1;
+      titulo.focus({ preventScroll: true });
+    }
   }, [q.i]);
 
   if (!q.pronto) return <main className="quiz" aria-busy="true" />;
@@ -50,7 +56,15 @@ export function Quiz({ oferta }: { oferta: ReactNode }) {
         </header>
       )}
       <div className="quiz__tela" key={q.i}>
-        <Componente tela={q.tela} respostas={q.respostas} responder={q.responder} avancar={q.avancar} oferta={oferta} />
+        <Componente
+          tela={q.tela}
+          respostas={q.respostas}
+          responder={q.responder}
+          avancar={q.avancar}
+          irPara={q.irPara}
+          recomecar={q.recomecar}
+          oferta={oferta}
+        />
       </div>
     </main>
   );

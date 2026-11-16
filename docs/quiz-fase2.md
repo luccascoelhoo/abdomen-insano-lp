@@ -80,3 +80,10 @@ linha só "pertence" a quem provou ser dono do e-mail.
 - Os valores passaram pela validação da LP, mas o app deve tratá-los como
   entrada externa: o `handle_new_user` e as CHECK de `profiles` continuam
   sendo o cinto.
+
+## Consentimento de e-mail e dados de terceiros (revisão de 16/11/2026)
+
+- O checkbox do quiz grava só o **pedido** de aceite (`aceite_email`, `aceite_email_em`, versão do texto e navegador). A página é aberta: qualquer pessoa pode digitar o e-mail de outra.
+- **E-mail de marketing só para quem confirmar** (`aceite_email_confirmado_em`), clicando num link enviado para o próprio endereço (dupla confirmação). Quem comprou também pode receber os e-mails da compra, que são transacionais.
+- O gatilho `quiz_respostas_preservar_aceite` guarda a data do primeiro aceite. Desmarcar num reenvio revoga o aceite e zera as datas.
+- Como alguém pode reenviar o quiz com o e-mail de outra pessoa, **o app mostra as respostas importadas para a pessoa confirmar ou editar**. Ele nunca aplica sem mostrar.

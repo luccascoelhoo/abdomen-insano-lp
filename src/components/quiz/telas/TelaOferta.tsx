@@ -10,7 +10,7 @@ import type { PropsTela } from '../tipos';
  * plano chega ao app) e os blocos de venda da home, renderizados no servidor
  * (`BlocoOfertaQuiz`) e recebidos prontos em `oferta`.
  */
-export function TelaOferta({ respostas: r, oferta }: PropsTela & { oferta: ReactNode }) {
+export function TelaOferta({ respostas: r, oferta, irPara }: PropsTela & { oferta: ReactNode }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -35,6 +35,11 @@ export function TelaOferta({ respostas: r, oferta }: PropsTela & { oferta: React
                 <p className="qr-email__porque">
                   É com esse e-mail que você entra no app, e o seu plano já chega montado lá dentro.
                 </p>
+                {irPara && (
+                  <button type="button" className="qr-email__corrigir" onClick={() => irPara('email')}>
+                    Digitou errado? Corrigir o e-mail
+                  </button>
+                )}
               </div>
             )}
           </div>

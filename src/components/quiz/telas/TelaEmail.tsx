@@ -2,6 +2,9 @@
 
 import { useId, useState } from 'react';
 import type { FormEvent } from 'react';
+// Mesma regra da API (`validar.ts` não tem imports, roda no navegador):
+// o que passa aqui não pode ser recusado lá, senão o contato some calado.
+import { emailValido } from '@/app/api/quiz/validar';
 import { Rico } from '@/components/v2/Rico';
 import { rodape } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
@@ -11,7 +14,6 @@ import { montarPayload, texto } from '../motor';
 import type { PropsTela, TelaEmail as TelaEmailT } from '../tipos';
 import { BotaoContinuar } from './comum';
 
-const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PRIVACIDADE = rodape.navegacao.find((l) => /privacidade/i.test(l.rotulo))?.href;
 
 /** UTMs guardadas, só as que têm valor (o payload pede Record<string, string>). */
@@ -38,7 +40,8 @@ export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>)
     const m = email.trim();
     const novos: typeof erros = {};
     if (n.length < 2) novos.nome = 'Digite o seu nome.';
-    if (!EMAIL_OK.test(m)) novos.email = 'Digite um e-mail válido.';
+    else if (n.length > 80) novos.nome = 'Use até 80 letras.';
+    if (!emailValido(m.toLowerCase())) novos.email = 'Digite um e-mail válido.';
     setErros(novos);
     if (novos.nome || novos.email) {
       document.getElementById(novos.nome ? `${id}-nome` : `${id}-email`)?.focus();
@@ -74,6 +77,7 @@ export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>)
           className="q-input"
           type="text"
           name="nome"
+          maxLength={80}
           autoComplete="given-name"
           autoCapitalize="words"
           enterKeyHint="next"
