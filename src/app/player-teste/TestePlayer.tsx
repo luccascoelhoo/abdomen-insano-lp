@@ -6,12 +6,12 @@ import { marcosDoFunil } from '@/components/player/marcosDoFunil';
 import type { OpcoesPlayer, VideoInsano } from '@/components/player/tipos';
 
 const VIDEO: VideoInsano = {
-  id: 'teste',
-  hls: '/videos-teste/teste/master.m3u8',
-  mp4: '/videos-teste/teste/teste.mp4',
-  poster: '/videos-teste/teste/poster.jpg',
-  proporcao: 9 / 16,
-  duracao: 120,
+  id: 'teste-downsell',
+  hls: '/videos-teste/downsell/master.m3u8',
+  mp4: '/videos-teste/downsell/downsell.mp4',
+  poster: '/videos-teste/downsell/poster.jpg',
+  proporcao: 404 / 720,
+  duracao: 108.5,
 };
 
 const OPCOES: OpcoesPlayer = { velocidade: 1.2 };
@@ -22,7 +22,7 @@ const OPCOES: OpcoesPlayer = { velocidade: 1.2 };
  */
 export function TestePlayer() {
   const marcos = useMemo(
-    () => marcosDoFunil({ playerId: 'teste', delaySegundos: 20, recusaSegundos: 40 }),
+    () => marcosDoFunil({ playerId: 'teste-downsell', delaySegundos: 60, recusaSegundos: 107 }),
     [],
   );
 
@@ -45,10 +45,10 @@ export function TestePlayer() {
             textDecoration: 'none',
           }}
         >
-          Quero o meu agora (aparece aos 20 s)
+          Quero o meu agora (aparece aos 60 s)
         </a>
         <a href="#recusar" className="esconder-fim" style={{ color: '#aaa', fontSize: '0.9rem' }}>
-          Não quero, obrigado (aparece aos 40 s + 4 s)
+          Não quero, obrigado (aparece aos 107 s + 4 s)
         </a>
       </div>
     </main>
