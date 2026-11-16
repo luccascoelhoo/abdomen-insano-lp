@@ -1,0 +1,263 @@
+/* ============================================================
+   Player Insano — tudo escopado em `.pi`.
+   A cor da marca chega por `--pi-cor` (opcoes.cor, padrão #ff6b00).
+   ============================================================ */
+
+.pi {
+  --pi-cor: #ff6b00;
+  --pi-raio: 16px;
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: var(--pi-raio);
+  background: #0a0a0a;
+  color: #fff;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+.pi--vertical {
+  max-width: 420px;
+}
+.pi:focus-visible {
+  box-shadow: 0 0 0 3px var(--pi-cor);
+}
+
+.pi-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #0a0a0a;
+}
+
+/* ---------- tela cheia ---------- */
+.pi:fullscreen {
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  background: #000;
+}
+.pi:fullscreen .pi-video {
+  object-fit: contain;
+  background: #000;
+}
+
+/* ---------- camadas (todas são botões ou contêm botões) ---------- */
+.pi-camada {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.pi-camada:focus-visible {
+  outline: 3px solid var(--pi-cor);
+  outline-offset: -3px;
+}
+.pi-camada--escura {
+  background: rgba(0, 0, 0, 0.45);
+}
+.pi-camada--pausado {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- ícone de play ---------- */
+.pi-play {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--pi-cor);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease;
+}
+.pi-play svg {
+  width: 40px;
+  height: 40px;
+  margin-left: 5px;
+  fill: #fff;
+}
+.pi-camada:hover .pi-play {
+  transform: scale(1.06);
+}
+.pi-camada--pausado .pi-play {
+  width: 72px;
+  height: 72px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+.pi-camada--pausado .pi-play svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* ---------- aviso do autoplay mudo ---------- */
+.pi-aviso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(82%, 300px);
+  padding: 20px 18px 18px;
+  border-radius: 14px;
+  background: rgba(255, 107, 0, 0.88);
+  background: color-mix(in srgb, var(--pi-cor) 88%, transparent);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  text-align: center;
+  line-height: 1.15;
+}
+.pi-aviso-titulo {
+  font-size: clamp(1.05rem, 4.6vw, 1.3rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.pi-aviso-acao {
+  font-size: clamp(0.95rem, 4vw, 1.1rem);
+  font-weight: 700;
+}
+
+.pi-som {
+  width: 64px;
+  height: 64px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pi-som-corpo {
+  fill: #fff;
+}
+.pi-som-onda {
+  animation: pi-onda 1.4s ease-in-out infinite;
+}
+.pi-som-onda--2 {
+  animation-delay: 0.25s;
+}
+@keyframes pi-onda {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---------- "você já começou" ---------- */
+.pi-retomar {
+  cursor: default;
+  background: rgba(0, 0, 0, 0.62);
+  text-align: center;
+}
+.pi-retomar-titulo {
+  max-width: 280px;
+  margin: 0 0 6px;
+  font-size: clamp(1.05rem, 4.6vw, 1.3rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.pi-botao {
+  width: min(82%, 280px);
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 2px solid var(--pi-cor);
+  border-radius: 999px;
+  background: var(--pi-cor);
+  color: #fff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pi-botao--secundario {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+.pi-botao:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ---------- barra de progresso "falsa" ---------- */
+.pi-barra {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 3;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.pi[data-fase='som'] .pi-barra {
+  opacity: 1;
+}
+.pi-barra-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--pi-cor);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* ---------- tela cheia (botão) ---------- */
+.pi-tela-cheia {
+  position: absolute;
+  right: 10px;
+  bottom: 16px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+.pi-tela-cheia svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pi-tela-cheia:focus-visible {
+  outline: 2px solid var(--pi-cor);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pi-som-onda {
+    animation: none;
+    opacity: 1;
+  }
+  .pi-play,
+  .pi-barra {
+    transition: none;
+  }
+}
