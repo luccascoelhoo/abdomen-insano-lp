@@ -6,6 +6,7 @@ import { parcelamentoDaOferta } from '@/lib/parcelamento';
 import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import '@/app/v2/v2.css';
 import './quiz.css';
+import './resultado.css';
 
 export const metadata: Metadata = {
   title: 'Descubra o que está escondendo o seu abdômen | Desafio Abdômen Insano',
