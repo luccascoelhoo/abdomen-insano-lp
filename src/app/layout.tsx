@@ -157,17 +157,17 @@ const jsonLd = {
  * junta os dois na mesma linha e, com isso, o primeiro evento da página seria o
  * único sem id.
  *
- * A BIBLIOTECA (`fbevents.js`, ~270 KB e ~1 s de processamento no celular) só é
- * baixada na primeira interação (rolar, tocar, tecla) ou 4 s depois de a página
- * carregar, o que vier primeiro (pedido do Igor em 06/11/2026). Nada se perde:
+ * A BIBLIOTECA (`fbevents.js`) é baixada já na abertura, assíncrona, para o
+ * `PageView` sair o quanto antes. De 06/11 a 16/11/2026 ela esperava a primeira
+ * interação ou 4 s após o load, e o connect rate do Meta caiu para ~52%: quem
+ * clicava no anúncio e saía rápido não virava visualização da página de destino.
+ * O resto continua igual:
  *  - todo `fbq(...)` chamado antes vai para a fila e sai quando a biblioteca
  *    chega, com o mesmo `event_id` (a cópia do servidor continua deduplicando);
  *  - os cookies `_fbp` e `_fbc` são criados AQUI, no mesmo formato do Meta, para
  *    existirem desde o primeiro instante: o botão de compra e a cópia do
  *    servidor leem esses cookies, e sem eles um clique rápido sairia sem a
  *    origem do anúncio. Quando a biblioteca chega, ela reaproveita os cookies.
- * O que muda: quem fecha a página antes de rolar/tocar e antes de 4 s deixa de
- * ser contado no `PageView` do navegador.
  */
 const pixelBase = `(function(w,d){
 function ck(n){var m=d.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?m[1]:null}
@@ -182,9 +182,7 @@ if(!w.fbq){var n=w.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n
 if(!w._fbq)w._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}
 var on=false;function go(){if(on)return;on=true;var s=d.createElement('script');s.async=true;
 s.src='https://connect.facebook.net/en_US/fbevents.js';d.head.appendChild(s)}
-['scroll','pointerdown','keydown','touchstart'].forEach(function(e){w.addEventListener(e,go,{once:true,passive:true})});
-function late(){setTimeout(go,4000)}
-d.readyState==='complete'?late():w.addEventListener('load',late);
+go();
 fbq('init','${PIXEL_ID}');
 })(window,document);`;
 
