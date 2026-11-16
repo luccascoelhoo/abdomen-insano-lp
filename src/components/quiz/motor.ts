@@ -54,7 +54,8 @@ export function projecao(r: Respostas): Projecao | null {
   if (!p || !meta) return null;
   const taxa = { fina: 0.005, media: 0.006, grossa: 0.007, 'muito-grossa': 0.008 }[nivelDaCapa(r)];
   const perde = meta < p;
-  const ritmoKg = perde ? Math.round(p * taxa * 10) / 10 : 0;
+  // Teto de 0,5 kg/semana: o mesmo que o app prescreve (weekly_pace_kg).
+  const ritmoKg = perde ? Math.min(0.5, Math.round(p * taxa * 10) / 10) : 0;
   const semanas = Array.from({ length: 7 }, (_, s) => ({
     semana: s,
     peso: perde ? Math.max(meta, Math.round((p - ritmoKg * s) * 10) / 10) : p,

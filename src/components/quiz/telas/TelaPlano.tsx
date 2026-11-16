@@ -25,8 +25,6 @@ const TEMPO: Record<string, string> = {
   '90_plus': '1h30 ou mais',
 };
 
-const lista = (v: unknown): string[] => (Array.isArray(v) ? v : []);
-
 /** Corte: refeições, bebida e hábitos. No máximo 2 linhas. */
 function linhasCorte(r: Respostas): string[] {
   const linhas: string[] = [];
@@ -37,7 +35,6 @@ function linhasCorte(r: Respostas): string[] {
       : 'Calculado a partir do seu peso, da sua rotina e **do que você gosta de comer**',
   );
   if (r.alcool === 'fds') linhas.push('**Cabe a cerveja do fim de semana**, com o Guia Fim de Semana Sem Culpa');
-  else if (lista(r.habitos).includes('belisca')) linhas.push('**Estratégia pro beliscar da noite**');
   else if (r.alcool === 'semana') linhas.push('**Guia Fim de Semana Sem Culpa** pra beber com os amigos sem jogar a semana fora');
   return linhas;
 }
