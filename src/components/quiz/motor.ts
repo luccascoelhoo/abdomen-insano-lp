@@ -31,6 +31,11 @@ export function imc(r: Respostas): number | null {
  * Nível da capa de gordura. Antes dos números (tela 7) só existe a foto do
  * físico; depois, o IMC ajusta um degrau quando discorda muito da foto.
  */
+/** Nível só pela foto do físico (o que a tela "capa" mostra, antes dos números). */
+export function nivelPelaFoto(r: Respostas): NivelCapa {
+  return nivelDaCapa({ fisico: r.fisico });
+}
+
 export function nivelDaCapa(r: Respostas): NivelCapa {
   const niveis: NivelCapa[] = ['fina', 'media', 'grossa', 'muito-grossa'];
   let i = Math.max(0, niveis.indexOf(String(r.fisico ?? 'media') as NivelCapa));

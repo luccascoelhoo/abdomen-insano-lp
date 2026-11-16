@@ -8,7 +8,7 @@ import { textosCapa, textosResultado, telasQuiz } from '@/content/quiz';
 import { oferta } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
-import { idade, imc, nivelDaCapa, projecao, texto } from '../motor';
+import { idade, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
 import type { Projecao, PropsTela, Respostas } from '../tipos';
 
 /** "85,5" — número com vírgula e no máximo uma casa. */
@@ -194,6 +194,9 @@ export function TelaDiagnostico({ respostas: r, avancar }: PropsTela) {
 
   const b = imc(r);
   const capa = textosCapa.niveis[nivelDaCapa(r)];
+  // A tela "capa" usou só a foto; com altura e peso o nível pode mudar.
+  const capaFoto = textosCapa.niveis[nivelPelaFoto(r)];
+  const ajustada = capaFoto.rotulo !== capa.rotulo;
   const anos = idade(typeof r.nascimento === 'string' ? r.nascimento : undefined);
   const area = AREA[String(r.gorduraLocal)];
   const iAtual = IMG_ATUAL[String(r.fisico)] ?? 1;
@@ -220,6 +223,7 @@ export function TelaDiagnostico({ respostas: r, avancar }: PropsTela) {
             <li className="qr-card qr-card--destaque">
               <span className="qr-card__rotulo">Capa de gordura</span>
               <span className="qr-card__valor">{capa.rotulo}</span>
+              {ajustada && <span className="qr-card__extra">ajustada pelo seu peso e altura</span>}
             </li>
             {area && (
               <li className="qr-card">

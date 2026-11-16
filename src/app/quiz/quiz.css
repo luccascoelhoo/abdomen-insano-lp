@@ -39,7 +39,8 @@ body:has(.quiz) {
   -webkit-tap-highlight-color: transparent;
 }
 
-.quiz b {
+/* Fora dos blocos da home (.v2), que têm o negrito branco no fundo escuro. */
+.quiz b:not(.v2 b) {
   color: #111;
   font-weight: 800;
 }
