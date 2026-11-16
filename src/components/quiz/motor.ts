@@ -110,11 +110,16 @@ export function cadastroDoApp(r: Respostas, utm: Record<string, string>): Payloa
   if (n('peso')) app.weight = n('peso')!;
   if (n('pesoDesejado')) app.desired_weight = n('pesoDesejado')!;
   if (n('peso') && n('pesoDesejado')) {
+    // Mesma conta do app (`ReguasCaloricas.objetivoPelaMeta`): |d| < 0,5 mantém.
     const d = n('pesoDesejado')! - n('peso')!;
-    app.goal = d < -0.5 ? 'lose' : d > 0.5 ? 'gain' : 'maintain';
+    app.goal = Math.abs(d) < 0.5 ? 'maintain' : d < 0 ? 'lose' : 'gain';
   }
+  // Ritmo só para quem vai perder, e nunca acima do teto seguro de perda do app
+  // (`RitmoEfetivo.TETO_DE_PERDA` = 0,5): o `weekly_pace_kg` alimenta a dieta.
   const pr = projecao(r);
-  if (pr && pr.ritmoKg > 0) app.weekly_pace_kg = Math.min(1, Math.max(0.05, pr.ritmoKg));
+  if (app.goal === 'lose' && pr && pr.ritmoKg > 0) {
+    app.weekly_pace_kg = Math.min(0.5, Math.max(0.05, pr.ritmoKg));
+  }
 
   const diretos: [string, string][] = [
     ['experiencia', 'training_experience'],
