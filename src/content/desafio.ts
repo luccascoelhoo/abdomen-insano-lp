@@ -431,6 +431,24 @@ export type Vsl = {
    * mais `RECUSA_ESPERA_SEGUNDOS`. Omitido = o "não" aparece junto com o "sim".
    */
   recusaSegundos?: number;
+  /**
+   * Vídeo no NOSSO player (Player Insano, R2) em vez do VTurb. Com isto
+   * preenchido, `playerId`/`scriptUrl` do VTurb são ignorados (o `playerId`
+   * continua sendo a chave do "já viu o pitch"). Os segundos de
+   * `delaySegundos`/`recusaSegundos` valem igual: tempo de conteúdo.
+   */
+  proprio?: {
+    /** Pasta do vídeo no Worker, ex.: 'https://videos-insano.x.workers.dev/downsell/v1'. */
+    base: string;
+    /** Nome do MP4 de reserva dentro da pasta (gerado pelo video-hls.mjs). */
+    mp4?: string;
+    /** Largura / altura do vídeo (404/720 nos atuais). */
+    proporcao: number;
+    /** Duração em segundos. */
+    duracao?: number;
+    /** Velocidade (o VTurb tocava a 1,2x). */
+    velocidade?: number;
+  };
 };
 
 /**

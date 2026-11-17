@@ -46,3 +46,5 @@ tmp-*.mjs
 
 # Player Insano: vídeos de teste gerados localmente (scripts/video-hls.mjs)
 /public/videos-teste/
+/infra/video-worker/node_modules/
+/infra/video-worker/.wrangler/

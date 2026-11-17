@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { PlayerInsano } from '@/components/player/PlayerInsano';
+import { marcosDoFunil } from '@/components/player/marcosDoFunil';
 import type { Vsl } from '@/content/desafio';
 
 type SmartPlayer = HTMLElement & {
@@ -60,7 +62,7 @@ function revelarFim() {
  * Sem `playerId`, mostra o espaço reservado no mesmo formato 9:16 — a página
  * continua com o desenho certo enquanto o vídeo não chega.
  */
-export function VslPlayer({ vsl }: { vsl: Vsl }) {
+function VslVturb({ vsl }: { vsl: Vsl }) {
   const caixa = useRef<HTMLDivElement>(null);
   const configurado = Boolean(vsl.playerId && vsl.scriptUrl);
   const v4 = vsl.scriptUrl.includes('/v4/');
@@ -188,6 +190,40 @@ export function VslPlayer({ vsl }: { vsl: Vsl }) {
       ) : (
         <div id={`vid_${vsl.playerId}`} style={{ position: 'relative', width: '100%', padding: '177.78% 0 0' }} />
       )}
+    </div>
+  );
+}
+
+/**
+ * VSL do funil: nosso player quando `vsl.proprio` está preenchido, VTurb
+ * caso contrário (troca por página, em content/desafio.ts).
+ */
+export function VslPlayer({ vsl }: { vsl: Vsl }) {
+  return vsl.proprio ? <VslProprio vsl={vsl} proprio={vsl.proprio} /> : <VslVturb vsl={vsl} />;
+}
+
+function VslProprio({ vsl, proprio }: { vsl: Vsl; proprio: NonNullable<Vsl['proprio']> }) {
+  const { playerId, delaySegundos, recusaSegundos } = vsl;
+  const marcos = useMemo(
+    () => marcosDoFunil({ playerId, delaySegundos, recusaSegundos }),
+    [playerId, delaySegundos, recusaSegundos],
+  );
+  const base = proprio.base.replace(/\/+$/, '');
+  return (
+    <div className="funil__vsl">
+      <PlayerInsano
+        titulo="Vídeo da oferta"
+        video={{
+          id: playerId,
+          hls: `${base}/master.m3u8`,
+          mp4: proprio.mp4 ? `${base}/${proprio.mp4}` : undefined,
+          poster: `${base}/poster.jpg`,
+          proporcao: proprio.proporcao,
+          duracao: proprio.duracao,
+        }}
+        opcoes={{ velocidade: proprio.velocidade ?? 1.2 }}
+        marcos={marcos}
+      />
     </div>
   );
 }
