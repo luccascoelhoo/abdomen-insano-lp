@@ -1,0 +1,154 @@
+/* ============================================================
+   Comparador antes/depois ("arraste para revelar").
+
+   Sem cor de seção: serve em fundo claro e escuro. O texto da
+   legenda herda a cor do pai; a dica é a mesma cor, mais apagada.
+
+   Ajustes por CSS no pai ou no próprio .comparador:
+   --comparador-proporcao  largura / altura do card (padrão 2 / 3).
+     Cada metade da montagem é um retrato 1:2, então qualquer
+     proporção mais larga que 1 / 2 recorta em cima e embaixo.
+   --comparador-foco-y     qual faixa vertical fica (0% topo, 100% pé).
+   ============================================================ */
+
+.comparador {
+  --comparador-laranja: #ff6b00;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 420px;
+}
+
+.comparador__caixa {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--comparador-proporcao, 2 / 3);
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(128, 128, 128, 0.28);
+  background: #1b1b1b;
+  isolation: isolate;
+  cursor: ew-resize;
+  /* Rolagem vertical continua com o navegador; o horizontal é nosso. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.comparador__camada {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.comparador__camada--depois {
+  clip-path: inset(0 0 0 var(--comparador-pos, 50%));
+}
+
+/* A imagem tem o dobro da largura do card: cada camada mostra uma metade. */
+.comparador .comparador__img {
+  position: absolute;
+  top: 0;
+  width: 200%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.comparador__img--antes {
+  left: 0;
+  object-position: 0 var(--comparador-foco-y, 45%);
+}
+.comparador__img--depois {
+  right: 0;
+  object-position: 100% var(--comparador-foco-y, 45%);
+}
+
+.comparador__rotulo {
+  position: absolute;
+  top: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+.comparador__rotulo--antes {
+  left: 10px;
+}
+.comparador__rotulo--depois {
+  right: 10px;
+}
+
+/* Divisória: linha laranja + botão redondo com as setas. */
+.comparador__alca {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--comparador-pos, 50%);
+  width: 3px;
+  transform: translateX(-50%);
+  background: var(--comparador-laranja);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+  outline: none;
+  z-index: 1;
+}
+.comparador__botao {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--comparador-laranja);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+.comparador__botao svg {
+  width: 24px;
+  height: 24px;
+}
+/* Anel duplo (branco + escuro): visível sobre qualquer foto ou fundo. */
+.comparador__alca:focus-visible .comparador__botao {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px #111,
+    0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.comparador__legenda {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  line-height: 1.35;
+}
+.comparador__titulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.comparador__dica {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  opacity: 0.68;
+}
+.comparador__dica svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}

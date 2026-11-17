@@ -128,11 +128,25 @@ export const depoimentosV2 = {
   tituloDestaque: '((o abdômen insano!))',
   sub: 'Você é o próximo!',
   cta: 'Quero ser o próximo',
-  /** Antes e depois reais dos alunos, já usados na página atual. */
+  /**
+   * Antes e depois reais dos alunos, já usados na página atual. Cada imagem é
+   * uma montagem 1000x1000: ANTES na metade esquerda, DEPOIS na direita.
+   * Não temos nome, data nem resultado desses alunos: nada de inventar.
+   */
   casos: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
+    id: n,
     src: `/img/caso-${String(n).padStart(2, '0')}.webp`,
     alt: `Antes e depois de aluno do desafio (${n})`,
   })),
+  /**
+   * Casos em destaque no comparador "arraste" (ids de `casos`, na ordem de
+   * exibição): os de mudança mais visível. Os demais vão para o carrossel.
+   */
+  destaques: [4, 1, 7],
+  /** Recorte vertical por caso no comparador (padrão 45%): onde fica o abdômen. */
+  focoY: { 7: '22%' } as Record<number, string>,
+  legendaDestaque: 'Aluno do Desafio Abdômen Insano',
+  maisResultados: 'Mais resultados de alunos',
 } as const;
 
 /**

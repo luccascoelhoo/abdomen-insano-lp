@@ -505,3 +505,72 @@
   font-size: 0.85rem;
   color: #bdbdbd;
 }
+
+/* "O que está segurando o seu abdômen" (travas pelas respostas). */
+.v2 .qr-travas {
+  margin-top: 22px;
+}
+.v2 .qr-travas__titulo {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #111;
+}
+.v2 .qr-travas__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  counter-reset: trava;
+}
+.v2 .qr-trava {
+  position: relative;
+  padding: 14px 14px 14px 52px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #ececec;
+  counter-increment: trava;
+}
+.v2 .qr-trava::before {
+  content: counter(trava);
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b00, #ff3b30);
+}
+.v2 .qr-trava__titulo {
+  display: block;
+  font-size: 0.98rem;
+  color: #111;
+}
+.v2 .qr-trava__texto {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #555;
+}
+.v2 .qr-travas__fecho {
+  margin: 12px 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #c2410c;
+}
+
+/* Aluno real (comparador arraste) depois das imagens ilustrativas. */
+.v2 .qr-real {
+  margin-top: 16px;
+}
+.v2 .qr-real__card {
+  max-width: 340px;
+  margin: 0 auto;
+}

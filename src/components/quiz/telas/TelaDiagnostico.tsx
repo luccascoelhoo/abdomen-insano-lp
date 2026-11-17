@@ -3,12 +3,14 @@
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { Rico } from '@/components/v2/Rico';
+import { ComparadorAntesDepois } from '@/components/ui/ComparadorAntesDepois';
+import { depoimentosV2 } from '@/content/lp-v2';
 import { usePreco } from '@/components/ui/Precos';
 import { NOME_EVENTO, textosCapa, textosResultado, telasQuiz } from '@/content/quiz';
 import { oferta } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
-import { ateOEvento, chegadaNaMeta, idade, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
+import { ateOEvento, chegadaNaMeta, idade, travas, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
 import type { Projecao, PropsTela, Respostas } from '../tipos';
 
 /** "85,5" — número com vírgula e no máximo uma casa. */
@@ -226,6 +228,8 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
   const iAtual = IMG_ATUAL[String(r.fisico)] ?? 1;
   const iObjetivo = IMG_OBJETIVO[String(r.objetivo)] ?? 1;
   const evento = textoEvento(r);
+  const casoReal = depoimentosV2.casos.find((c) => c.id === depoimentosV2.destaques[0]);
+  const minhasTravas = travas(r);
 
   return (
     <div className="v2 qr">
@@ -269,6 +273,21 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
           </p>
           <p className="qr-nota">{textosCapa.nota}</p>
 
+          {minhasTravas.length > 0 && (
+            <div className="qr-travas">
+              <h2 className="qr-travas__titulo">O que está segurando o seu abdômen</h2>
+              <ol className="qr-travas__lista">
+                {minhasTravas.map((tr) => (
+                  <li key={tr.titulo} className="qr-trava">
+                    <b className="qr-trava__titulo">{tr.titulo}</b>
+                    <span className="qr-trava__texto">{tr.texto}</span>
+                  </li>
+                ))}
+              </ol>
+              <p className="qr-travas__fecho">O seu plano foi montado pra atacar exatamente isso.</p>
+            </div>
+          )}
+
           <Projecao42 r={r} />
 
           <div className="qr-painel">
@@ -306,6 +325,15 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
             </div>
             <p className="qr-nota">Imagens ilustrativas. O resultado de cada pessoa depende do corpo, da constância e da rotina.</p>
           </div>
+
+          {casoReal && (
+            <div className="qr-painel qr-real">
+              <h2 className="qr-painel__titulo">E esse é um aluno de verdade</h2>
+              <div className="qr-real__card">
+                <ComparadorAntesDepois src={casoReal.src} alt={casoReal.alt} legenda={depoimentosV2.legendaDestaque} />
+              </div>
+            </div>
+          )}
 
           {evento && (
             <p className="qr-evento">
