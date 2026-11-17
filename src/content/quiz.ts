@@ -22,7 +22,7 @@ const bebe = (r: Respostas) => r.alcool === 'fds' || r.alcool === 'semana';
 /** Nome do evento como a pessoa falaria ("o seu casamento"). */
 export const NOME_EVENTO: Record<string, string> = {
   praia: 'o verão',
-  festa: 'o seu casamento ou festa',
+  festa: 'o grande dia',
   viagem: 'a sua viagem',
 };
 

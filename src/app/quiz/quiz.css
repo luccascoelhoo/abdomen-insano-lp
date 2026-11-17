@@ -1177,3 +1177,8 @@ button.quiz__voltar:active {
     opacity: 0;
   }
 }
+
+/* O foco vai para o título a cada tela (leitor de tela); sem contorno visível. */
+.quiz__tela :is(h1, h2)[tabindex='-1']:focus {
+  outline: none;
+}
