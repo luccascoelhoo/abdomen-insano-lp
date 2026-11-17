@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { Rico } from '@/components/v2/Rico';
+import { ComparadorAntesDepois } from '@/components/ui/ComparadorAntesDepois';
+import { depoimentosV2 } from '@/content/lp-v2';
 import { usePreco } from '@/components/ui/Precos';
 import { NOME_EVENTO, textosCapa, textosResultado, telasQuiz } from '@/content/quiz';
 import { oferta } from '@/content/desafio';
@@ -226,6 +228,7 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
   const iAtual = IMG_ATUAL[String(r.fisico)] ?? 1;
   const iObjetivo = IMG_OBJETIVO[String(r.objetivo)] ?? 1;
   const evento = textoEvento(r);
+  const casoReal = depoimentosV2.casos.find((c) => c.id === depoimentosV2.destaques[0]);
   const minhasTravas = travas(r);
 
   return (
@@ -322,6 +325,15 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
             </div>
             <p className="qr-nota">Imagens ilustrativas. O resultado de cada pessoa depende do corpo, da constância e da rotina.</p>
           </div>
+
+          {casoReal && (
+            <div className="qr-painel qr-real">
+              <h2 className="qr-painel__titulo">E esse é um aluno de verdade</h2>
+              <div className="qr-real__card">
+                <ComparadorAntesDepois src={casoReal.src} alt={casoReal.alt} legenda={depoimentosV2.legendaDestaque} />
+              </div>
+            </div>
+          )}
 
           {evento && (
             <p className="qr-evento">

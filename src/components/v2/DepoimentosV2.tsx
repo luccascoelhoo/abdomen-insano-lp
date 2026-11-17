@@ -31,6 +31,7 @@ export function DepoimentosV2() {
               key={c.src}
               src={c.src}
               alt={c.alt}
+              focoY={depoimentosV2.focoY[c.id]}
               legenda={depoimentosV2.legendaDestaque}
               atrasoDica={300 + i * 250}
               sizes="(max-width: 460px) 200vw, (max-width: 900px) 840px, 680px"

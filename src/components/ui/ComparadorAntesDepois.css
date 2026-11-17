@@ -5,7 +5,7 @@
    legenda herda a cor do pai; a dica é a mesma cor, mais apagada.
 
    Ajustes por CSS no pai ou no próprio .comparador:
-   --comparador-proporcao  largura / altura do card (padrão 4 / 5).
+   --comparador-proporcao  largura / altura do card (padrão 2 / 3).
      Cada metade da montagem é um retrato 1:2, então qualquer
      proporção mais larga que 1 / 2 recorta em cima e embaixo.
    --comparador-foco-y     qual faixa vertical fica (0% topo, 100% pé).
@@ -21,7 +21,7 @@
 .comparador__caixa {
   position: relative;
   width: 100%;
-  aspect-ratio: var(--comparador-proporcao, 4 / 5);
+  aspect-ratio: var(--comparador-proporcao, 2 / 3);
   overflow: hidden;
   border-radius: 14px;
   border: 1px solid rgba(128, 128, 128, 0.28);
@@ -58,11 +58,11 @@
 }
 .comparador__img--antes {
   left: 0;
-  object-position: 0 var(--comparador-foco-y, 22%);
+  object-position: 0 var(--comparador-foco-y, 45%);
 }
 .comparador__img--depois {
   right: 0;
-  object-position: 100% var(--comparador-foco-y, 22%);
+  object-position: 100% var(--comparador-foco-y, 45%);
 }
 
 .comparador__rotulo {

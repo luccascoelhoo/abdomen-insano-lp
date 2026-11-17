@@ -45,6 +45,8 @@ type Props = {
   atrasoDica?: number;
   /** Largura em que a imagem é desenhada (é o dobro da largura do card). */
   sizes?: string;
+  /** Faixa vertical mostrada (0% topo, 100% pé). Padrão 45%: tronco e abdômen. */
+  focoY?: string;
 };
 
 /**
@@ -65,6 +67,7 @@ export function ComparadorAntesDepois({
   rotuloAntes = 'ANTES',
   rotuloDepois = 'DEPOIS',
   prioridade = false,
+  focoY,
   legenda,
   dica = 'Arraste para comparar',
   atrasoDica = 300,
@@ -196,7 +199,10 @@ export function ComparadorAntesDepois({
   const valor = Math.round(pos);
 
   return (
-    <figure className="comparador" style={{ '--comparador-pos': `${pos}%` } as CSSProperties}>
+    <figure
+      className="comparador"
+      style={{ '--comparador-pos': `${pos}%`, ...(focoY ? { '--comparador-foco-y': focoY } : {}) } as CSSProperties}
+    >
       <div
         ref={caixa}
         className="comparador__caixa"
