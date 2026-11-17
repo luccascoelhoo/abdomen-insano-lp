@@ -69,6 +69,24 @@ export function projecao(r: Respostas): Projecao | null {
 }
 
 /** Idade na data de hoje em Brasília (o mesmo fuso que a API usa para validar). */
+/**
+ * Quando a pessoa chega na meta no ritmo da projeção (como a tela "Você chega
+ * lá" do app). Null se não há perda de peso a fazer.
+ */
+export function chegadaNaMeta(r: Respostas, hoje = new Date()): { semanas: number; texto: string; quando: string } | null {
+  const p = projecao(r);
+  if (!p || p.ritmoKg <= 0 || p.pesoMeta >= p.pesoAtual) return null;
+  const semanas = Math.max(1, Math.ceil((p.pesoAtual - p.pesoMeta) / p.ritmoKg));
+  const meses = Math.floor(semanas / 4.345);
+  const resto = Math.round(semanas - meses * 4.345);
+  const s = (n: number) => (n === 1 ? '1 semana' : `${n} semanas`);
+  const m = (n: number) => (n === 1 ? '1 mês' : `${n} meses`);
+  const texto = semanas < 8 ? s(semanas) : resto > 0 ? `${m(meses)} e ${s(resto)}` : m(meses);
+  const data = new Date(hoje.getTime() + semanas * 7 * 86_400_000);
+  const quando = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric', timeZone: 'America/Sao_Paulo' }).format(data);
+  return { semanas, texto, quando };
+}
+
 /** Dias inteiros de hoje (Brasília) até 'AAAA-MM-DD'. Null se inválida. */
 export function diasAte(data: string | undefined, hoje = new Date()): number | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(data ?? '');

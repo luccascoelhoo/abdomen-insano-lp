@@ -8,7 +8,7 @@ import { NOME_EVENTO, textosCapa, textosResultado, telasQuiz } from '@/content/q
 import { oferta } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
-import { ateOEvento, idade, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
+import { ateOEvento, chegadaNaMeta, idade, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
 import type { Projecao, PropsTela, Respostas } from '../tipos';
 
 /** "85,5" — número com vírgula e no máximo uma casa. */
@@ -145,6 +145,7 @@ function GraficoProjecao({ p }: { p: Projecao }) {
 function Projecao42({ r }: { r: Respostas }) {
   const p = projecao(r);
   if (!p) return null;
+  const chegada = chegadaNaMeta(r);
   const perde = p.ritmoKg > 0 && p.peso42 < p.pesoAtual;
   return (
     <div className="qr-painel">
@@ -163,6 +164,15 @@ function Projecao42({ r }: { r: Respostas }) {
             de ~{kg(p.ritmoKg)} kg por semana.
           </p>
           <GraficoProjecao p={p} />
+          {chegada && (
+            <div className="qr-chegada">
+              <p className="qr-chegada__rotulo">Você chega nos {kg(p.pesoMeta)} kg em</p>
+              <p className="qr-chegada__valor">{chegada.texto}</p>
+              <p className="qr-chegada__quando">
+                Por volta de {chegada.quando}, no mesmo ritmo, seguindo o plano depois dos 42 dias.
+              </p>
+            </div>
+          )}
         </>
       ) : (
         <p className="qr-projecao__sub">
