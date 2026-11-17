@@ -5,7 +5,7 @@ import { Rico } from '@/components/v2/Rico';
 import { texto } from '../motor';
 import type { PropsTela, Respostas, Texto } from '../tipos';
 
-/** Título + subtítulo de toda tela de pergunta (com a marcação **negrito** da copy). */
+/** Título (32/900) + subtítulo (15/500) de toda tela de pergunta: o StepHeader do app, com a marcação **negrito** da copy. */
 export function Cabecalho({ titulo, sub, respostas }: { titulo: Texto; sub?: Texto; respostas: Respostas }) {
   const s = texto(sub, respostas);
   return (
@@ -54,23 +54,34 @@ export function IconeCheck({ className }: { className?: string }) {
   );
 }
 
-/** Botão principal (laranja) das telas que avançam por botão. */
-export function BotaoContinuar({
-  children = 'Continuar',
-  disabled,
-  onClick,
-  type = 'button',
-}: {
+type PropsBotao = {
   children?: React.ReactNode;
   disabled?: boolean;
   onClick?: () => void;
   type?: 'button' | 'submit';
-}) {
+  className?: string;
+};
+
+/**
+ * Botão 3D do app (BotaoTresD em Componentes3D.kt): cápsula no degradê da
+ * marca, camada mais escura 4 px abaixo e brilho em cima. Ao apertar, a face
+ * afunda até a camada de baixo. Rótulo preto, como no app (passa o AA).
+ * Sozinho, sem rodapé: para usar dentro de outros layouts.
+ */
+export function BotaoTresD({ children = 'Continuar', disabled, onClick, type = 'button', className }: PropsBotao) {
+  return (
+    <button type={type} className={className ? `q-botao ${className}` : 'q-botao'} disabled={disabled} onClick={onClick}>
+      <span className="q-botao__base" aria-hidden="true" />
+      <span className="q-botao__face">{children}</span>
+    </button>
+  );
+}
+
+/** Botão principal das telas que avançam por botão: o BotaoTresD fixo no rodapé. */
+export function BotaoContinuar(props: PropsBotao) {
   return (
     <div className="q-rodape">
-      <button type={type} className="q-botao" disabled={disabled} onClick={onClick}>
-        {children}
-      </button>
+      <BotaoTresD {...props} />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import type { PropsTela, TelaCards as TelaCardsT } from '../tipos';
-import { Cabecalho, IconeCheck, useEscolhaUnica } from './comum';
+import { Cabecalho, useEscolhaUnica } from './comum';
 
 /** Escolha única com foto: grade 2x2, avança ao tocar. */
 export function TelaCards({ tela, respostas, responder }: PropsTela<TelaCardsT>) {
@@ -21,9 +21,7 @@ export function TelaCards({ tela, respostas, responder }: PropsTela<TelaCardsT>)
           >
             <span className="q-card__foto">
               {o.img && <Image src={o.img} alt="" width={420} height={449} sizes="(max-width: 560px) 45vw, 250px" />}
-              <span className="q-card__marca" aria-hidden="true">
-                <IconeCheck />
-              </span>
+              <span className="q-card__marca" aria-hidden="true" />
             </span>
             <span className="q-card__rotulo">{o.rotulo}</span>
           </button>
