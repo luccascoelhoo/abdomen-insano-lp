@@ -21,11 +21,14 @@ export function TelaInfo({ tela, respostas, avancar }: PropsTela<TelaInfoT>) {
         </div>
       )}
       <div className="q-info__texto">
-        {tela.linhas.map((l, i) => (
-          <p key={i}>
-            <Rico texto={texto(l, respostas)} />
-          </p>
-        ))}
+        {tela.linhas
+          .map((l) => texto(l, respostas))
+          .filter(Boolean)
+          .map((l, i) => (
+            <p key={i}>
+              <Rico texto={l} />
+            </p>
+          ))}
       </div>
       <BotaoContinuar onClick={avancar}>{tela.botao ?? 'Continuar'}</BotaoContinuar>
     </section>

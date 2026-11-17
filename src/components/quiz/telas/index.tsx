@@ -6,6 +6,7 @@ import { TelaLista } from './TelaLista';
 import { TelaMulti } from './TelaMulti';
 import { TelaNumero } from './TelaNumero';
 import { TelaNascimento } from './TelaNascimento';
+import { TelaDataEvento } from './TelaDataEvento';
 import { TelaInfo } from './TelaInfo';
 import { TelaCapa } from './TelaCapa';
 import { TelaCarregando } from './TelaCarregando';
@@ -23,6 +24,7 @@ export const TELAS: Record<Tela['k'], ComponentType<any>> = {
   multi: TelaMulti,
   numero: TelaNumero,
   nascimento: TelaNascimento,
+  dataEvento: TelaDataEvento,
   info: TelaInfo,
   capa: TelaCapa,
   carregando: TelaCarregando,

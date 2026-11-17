@@ -14,6 +14,18 @@ import { primeiroNome } from '@/components/quiz/motor';
 const img = (n: string) => `/img/quiz/${n}.webp`;
 const opcoes = (pares: [string, string][]) => pares.map(([v, rotulo]) => ({ v, rotulo }));
 
+const lista = (v: unknown): string[] => (Array.isArray(v) ? v : []);
+const nuncaTentou = (r: Respostas) => r.tentou === 'nunca';
+const treina = (r: Respostas) => typeof r.experiencia === 'string' && r.experiencia !== 'none';
+const bebe = (r: Respostas) => r.alcool === 'fds' || r.alcool === 'semana';
+
+/** Nome do evento como a pessoa falaria ("o seu casamento"). */
+export const NOME_EVENTO: Record<string, string> = {
+  praia: 'o verão',
+  festa: 'o seu casamento ou festa',
+  viagem: 'a sua viagem',
+};
+
 const textoObstaculo: Record<string, string> = {
   consistency:
     'O app é gamificado e a **Comunidade Anti Falhas** te puxa nos dias difíceis. Você não depende só da força de vontade.',
@@ -110,6 +122,7 @@ export const telasQuiz: Tela[] = [
     k: 'multi',
     bloco: 2,
     chave: 'jaTentou',
+    quando: (r) => !nuncaTentou(r),
     titulo: 'O que você já tentou?',
     sub: 'Marque tudo que se aplica',
     opcoes: [
@@ -125,6 +138,7 @@ export const telasQuiz: Tela[] = [
     k: 'lista',
     bloco: 2,
     chave: 'dietaAntes',
+    quando: (r) => !nuncaTentou(r),
     titulo: 'Quando você fez dieta, o que aconteceu?',
     opcoes: opcoes([
       ['barriga-ficou', 'Afinei rosto e braço, mas a barriga ficou'],
@@ -138,7 +152,14 @@ export const telasQuiz: Tela[] = [
     bloco: 2,
     titulo: 'Por que a barriga é a última a sair',
     linhas: [
-      'O corpo não escolhe de onde tira a gordura, e o abdômen costuma ser **um dos últimos lugares a secar**. Por isso o rosto e o braço afinam primeiro e a barriga fica.',
+      (r) =>
+        r.dietaAntes === 'barriga-ficou'
+          ? 'Foi exatamente o que aconteceu com você: o corpo não escolhe de onde tira a gordura, e o abdômen costuma ser **um dos últimos lugares a secar**. Por isso o rosto e o braço afinaram primeiro e a barriga ficou.'
+          : 'O corpo não escolhe de onde tira a gordura, e o abdômen costuma ser **um dos últimos lugares a secar**. Por isso, quando se emagrece, o rosto e o braço afinam primeiro e a barriga fica por último.',
+      (r) =>
+        lista(r.jaTentou).includes('abdominal')
+          ? 'E abdominal todo dia, sozinho, não queima a gordura que cobre o abdômen.'
+          : '',
       'Só dieta não fecha a conta. Só abdominal também não. É preciso atacar **2 frentes ao mesmo tempo**: tirar a capa de gordura e construir o abdômen por baixo dela.',
     ],
   },
@@ -169,10 +190,18 @@ export const telasQuiz: Tela[] = [
   {
     k: 'info',
     bloco: 3,
-    titulo: 'Dá resultado com 2x na semana',
+    titulo: (r) => (r.frequencia === '0-2' ? 'Dá resultado com 2x na semana' : 'O que importa é a constância'),
     linhas: [
-      'O desafio foi feito pra funcionar **mesmo com rotina corrida**. O que importa é a constância, não a quantidade de dias.',
-      'Já treina? **Não muda nada no seu treino**: você só encaixa a parte do abdômen depois da musculação.',
+      (r) =>
+        r.frequencia === '0-2'
+          ? 'O desafio foi feito pra funcionar **mesmo com rotina corrida**. O que importa é a constância, não a quantidade de dias.'
+          : 'Com a sua disponibilidade dá pra seguir o plano com folga. E mesmo nas semanas corridas, **2 treinos já mantêm o resultado andando**.',
+      (r) =>
+        !treina(r)
+          ? 'Nunca treinou? Sem problema: **o treino começa no seu nível** e carga, séries e intensidade sobem semana a semana.'
+          : r.local === 'home'
+            ? 'O treino de abdômen é montado **pra fazer em casa**, encaixado na rotina que você já tem.'
+            : 'Já treina? **Não muda nada no seu treino**: você só encaixa a parte do abdômen depois da musculação.',
     ],
   },
   {
@@ -242,10 +271,15 @@ export const telasQuiz: Tela[] = [
   {
     k: 'info',
     bloco: 4,
-    titulo: 'Cabe o churras de domingo e a breja de qualidade',
+    titulo: (r) => (bebe(r) ? 'Cabe o churras de domingo e a breja de qualidade' : 'Sem dieta de sofrimento'),
     linhas: [
       'O seu plano alimentar é calculado a partir do seu peso, da sua rotina e **do que você gosta de comer**.',
-      'E o **Guia Fim de Semana Sem Culpa** te dá o script pra sair com os amigos sem jogar a semana fora.',
+      (r) =>
+        bebe(r)
+          ? 'E o **Guia Fim de Semana Sem Culpa** te dá o script pra sair com os amigos e tomar a sua cerveja sem jogar a semana fora.'
+          : lista(r.habitos).includes('delivery')
+            ? 'E o **Guia Fim de Semana Sem Culpa** te mostra como encaixar o churrasco, o rodízio e o delivery sem jogar a semana fora.'
+            : 'E o **Guia Fim de Semana Sem Culpa** te mostra como encaixar o churrasco e o rodízio sem jogar a semana fora.',
     ],
   },
   {
@@ -318,6 +352,15 @@ export const telasQuiz: Tela[] = [
     chave: 'evento',
     titulo: 'Tem alguma data importante pela frente?',
     opcoes: opcoes([['praia', 'Praia ou verão'], ['festa', 'Casamento ou festa'], ['viagem', 'Viagem'], ['nenhum', 'Não, só quero mudar']]),
+  },
+  {
+    k: 'dataEvento',
+    bloco: 5,
+    chave: 'dataEvento',
+    quando: (r) => typeof r.evento === 'string' && r.evento !== 'nenhum',
+    titulo: (r) => `Quando é ${NOME_EVENTO[String(r.evento)] ?? 'a data'}?`,
+    sub: 'Vamos calcular até onde dá pra chegar até lá',
+    maxDias: 730,
   },
   {
     k: 'lista', // → app: aspiration

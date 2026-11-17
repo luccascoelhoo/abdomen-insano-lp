@@ -69,6 +69,28 @@ export function projecao(r: Respostas): Projecao | null {
 }
 
 /** Idade na data de hoje em Brasília (o mesmo fuso que a API usa para validar). */
+/** Dias inteiros de hoje (Brasília) até 'AAAA-MM-DD'. Null se inválida. */
+export function diasAte(data: string | undefined, hoje = new Date()): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(data ?? '');
+  if (!m) return null;
+  const hojeSP = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(hoje);
+  const ms = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])) - Date.parse(`${hojeSP}T00:00:00Z`);
+  return Math.round(ms / 86_400_000);
+}
+
+/**
+ * Estimativa até a data do evento, no mesmo ritmo conservador da projeção
+ * (≤ 0,5 kg/semana) e sem passar da meta. Null sem data ou sem números.
+ */
+export function ateOEvento(r: Respostas): { dias: number; semanas: number; peso: number } | null {
+  const dias = diasAte(typeof r.dataEvento === 'string' ? r.dataEvento : undefined);
+  const p = projecao(r);
+  if (dias === null || dias < 1 || !p) return null;
+  const semanas = dias / 7;
+  const peso = Math.max(p.pesoMeta, Math.round((p.pesoAtual - p.ritmoKg * semanas) * 10) / 10);
+  return { dias, semanas: Math.floor(semanas), peso };
+}
+
 export function idade(nascimento: string | undefined, hoje = new Date()): number | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(nascimento ?? '');
   if (!m) return null;
@@ -176,7 +198,7 @@ export function montarPayload(r: Respostas, utm: Record<string, string>, site = 
  * O progresso salvo guarda o índice da tela: ao mudar a ordem ou a quantidade
  * de telas em `content/quiz.ts`, suba a versão para ninguém voltar na tela errada.
  */
-export const VERSAO_QUIZ = 2;
+export const VERSAO_QUIZ = 3;
 const CHAVE_LOCAL = `ai_quiz_v${VERSAO_QUIZ}`;
 /** Toques mais próximos que isso viram um só (toque duplo pulava telas). */
 const TRAVA_MS = 400;

@@ -43,3 +43,6 @@ next-env.d.ts
 # scripts locais de screenshot / dev
 tmp-shots/
 tmp-*.mjs
+
+# Player Insano: vídeos de teste gerados localmente (scripts/video-hls.mjs)
+/public/videos-teste/

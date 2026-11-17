@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { Rico } from '@/components/v2/Rico';
 import { usePreco } from '@/components/ui/Precos';
-import { textosCapa, textosResultado, telasQuiz } from '@/content/quiz';
+import { NOME_EVENTO, textosCapa, textosResultado, telasQuiz } from '@/content/quiz';
 import { oferta } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
-import { idade, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
+import { ateOEvento, idade, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
 import type { Projecao, PropsTela, Respostas } from '../tipos';
 
 /** "85,5" — número com vírgula e no máximo uma casa. */
@@ -44,12 +44,21 @@ const AREA: Record<string, string> = {
 const IMG_ATUAL: Record<string, number> = { fina: 0, media: 1, grossa: 2, 'muito-grossa': 3 };
 const IMG_OBJETIVO: Record<string, number> = { seco: 0, trincado: 1, atletico: 2, forte: 3 };
 
-/** Liga o plano à data da pessoa sem prometer resultado até ela. */
-const EVENTO: Record<string, string> = {
-  praia: 'Tem praia ou verão pela frente? Quanto antes você começar, mais semanas de plano você leva até lá.',
-  festa: 'Tem casamento ou festa pela frente? Quanto antes você começar, mais semanas de plano você leva até lá.',
-  viagem: 'Tem viagem marcada? Quanto antes você começar, mais semanas de plano você leva até lá.',
-};
+/**
+ * Liga o plano à data da pessoa: estimativa até lá, no mesmo ritmo
+ * conservador do gráfico, sempre dita como estimativa.
+ */
+function textoEvento(r: Respostas): string | null {
+  const nome = NOME_EVENTO[String(r.evento)];
+  if (!nome) return null;
+  const ate = ateOEvento(r);
+  const data = typeof r.dataEvento === 'string' ? r.dataEvento.split('-').reverse().slice(0, 2).join('/') : '';
+  const nomeCap = nome[0].toUpperCase() + nome.slice(1);
+  if (!ate) return `${nomeCap} está chegando. Quanto antes você começar, mais semanas de plano você leva até lá.`;
+  if (ate.semanas < 1) return `${nomeCap} é em poucos dias. Dá pra chegar mais seco e desinchado, e o resultado maior vem nas semanas seguintes.`;
+  const s = ate.semanas === 1 ? '1 semana' : `${ate.semanas} semanas`;
+  return `Até ${nome} (${data}) são **${s}**. No ritmo do plano, a estimativa é você chegar lá com **cerca de ${kg(ate.peso)} kg**.`;
+}
 
 /** Gráfico de linha da projeção (SVG puro, sem biblioteca). */
 function GraficoProjecao({ p }: { p: Projecao }) {
@@ -206,7 +215,7 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
   const area = AREA[String(r.gorduraLocal)];
   const iAtual = IMG_ATUAL[String(r.fisico)] ?? 1;
   const iObjetivo = IMG_OBJETIVO[String(r.objetivo)] ?? 1;
-  const evento = EVENTO[String(r.evento)];
+  const evento = textoEvento(r);
 
   return (
     <div className="v2 qr">
@@ -288,7 +297,11 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
             <p className="qr-nota">Imagens ilustrativas. O resultado de cada pessoa depende do corpo, da constância e da rotina.</p>
           </div>
 
-          {evento && <p className="qr-evento">{evento}</p>}
+          {evento && (
+            <p className="qr-evento">
+              <Rico texto={evento} />
+            </p>
+          )}
 
           <button type="button" className="qr-botao" onClick={avancar}>
             Ver o meu plano

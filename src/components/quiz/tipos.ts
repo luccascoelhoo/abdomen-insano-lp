@@ -93,6 +93,16 @@ export interface TelaNascimento extends Base {
   idadeMinima: number;
 }
 
+/** Data futura (ex.: o casamento). Grava 'AAAA-MM-DD' em `chave`. */
+export interface TelaDataEvento extends Base {
+  k: 'dataEvento';
+  chave: string;
+  titulo: Texto;
+  sub?: Texto;
+  /** Até quantos dias à frente aceita. */
+  maxDias: number;
+}
+
 /** Tela de conteúdo entre perguntas. Avança no botão. */
 export interface TelaInfo extends Base {
   k: 'info';
@@ -146,6 +156,7 @@ export type Tela =
   | TelaMulti
   | TelaNumero
   | TelaNascimento
+  | TelaDataEvento
   | TelaInfo
   | TelaCapa
   | TelaCarregando
