@@ -1,0 +1,295 @@
+/* ============================================================
+   Controles do quiz copiados do onboarding do app (Flameer):
+   a régua (altura, peso, meta) e a roda de datas (nascimento,
+   data do evento). Estrutura e medidas do app
+   (`RulerPicker`, `PassoBirthDate`, `AvisoOnboarding`), em cores
+   claras para o fundo do quiz.
+   ============================================================ */
+
+.qc-tela {
+  --qc-texto: #111;
+  --qc-laranja: var(--q-laranja, #ff6b00);
+  /* Laranja escuro para TEXTO: contraste AA no claro (≈ 5:1). */
+  --qc-laranja-texto: var(--q-laranja-texto, #c2410c);
+  --qc-mudo: var(--q-mudo, #6b6b6b);
+  --qc-suave: var(--q-suave, #4a4a4a);
+  --qc-cartao: var(--q-cartao, #fff);
+  --qc-erro: var(--q-erro, #b91c1c);
+}
+
+/* ---------- régua ---------- */
+.qc-regua {
+  margin-top: 32px;
+}
+.qc-regua__leitura {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+}
+.qc-regua__valor {
+  font-size: 60px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--qc-texto);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+.qc-regua__unidade {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--qc-laranja-texto);
+}
+.qc-regua__trilho {
+  position: relative;
+  height: 88px;
+  margin-top: 18px;
+  border-radius: 12px;
+  outline: none;
+}
+.qc-regua__trilho:focus-visible {
+  outline: 3px solid var(--qc-laranja);
+  outline-offset: 4px;
+}
+.qc-regua__rolo {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+  outline: none;
+  /* As pontas somem no fundo, qualquer que seja ele. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+}
+.qc-regua__rolo::-webkit-scrollbar {
+  display: none;
+}
+.qc-regua__rolo.qc-arrastando {
+  cursor: grabbing;
+}
+/* Folga das pontas: o primeiro e o último traço chegam ao meio. */
+.qc-regua__borda {
+  flex: none;
+  width: calc(50% - 7px);
+}
+.qc-regua__traco {
+  position: relative;
+  flex: none;
+  width: 14px;
+  height: 100%;
+  scroll-snap-align: center;
+}
+.qc-regua__traco::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 1px;
+  height: 18%;
+  transform: translateX(-50%);
+  background: rgba(17, 17, 17, 0.3);
+}
+.qc-regua__traco--5::before {
+  height: 30%;
+}
+.qc-regua__traco--10::before {
+  width: 2px;
+  height: 42%;
+  background: rgba(17, 17, 17, 0.55);
+}
+.qc-regua__num {
+  position: absolute;
+  left: 50%;
+  top: calc(4px + 42% + 12px);
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--qc-mudo);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.qc-regua__agulha {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 3px;
+  height: 44px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--qc-laranja);
+  pointer-events: none;
+}
+
+/* ---------- linha de apoio (diferença de peso, quanto falta) ---------- */
+.qc-ajuda {
+  margin: 22px 0 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--qc-suave);
+}
+
+/* ---------- roda de datas ---------- */
+.qc-roda {
+  margin-top: 24px;
+  padding: 8px;
+  border: 1px solid #e3e3e3;
+  border-radius: 20px;
+  background: var(--qc-cartao);
+}
+.qc-roda__janela {
+  position: relative;
+  display: grid;
+  grid-template-columns: 0.8fr 1.7fr 1.1fr;
+  height: 200px;
+}
+/* A faixa da linha escolhida (a do meio das 5). */
+.qc-roda__faixa {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  border-radius: 12px;
+  background: #f0f0f0;
+  pointer-events: none;
+}
+.qc-roda__coluna {
+  position: relative;
+  min-width: 0;
+  border-radius: 12px;
+  outline: none;
+}
+.qc-roda__coluna:focus-visible {
+  outline: 2px solid var(--qc-laranja);
+  outline-offset: -2px;
+}
+.qc-roda__rolo {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+  outline: none;
+  /* Linhas somem para cima e para baixo, como na roda do iOS. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.35) 16%, #000 40%, #000 60%, rgba(0, 0, 0, 0.35) 84%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.35) 16%, #000 40%, #000 60%, rgba(0, 0, 0, 0.35) 84%, transparent 100%);
+}
+.qc-roda__rolo::-webkit-scrollbar {
+  display: none;
+}
+.qc-roda__rolo.qc-arrastando {
+  cursor: grabbing;
+}
+.qc-roda__borda {
+  height: 80px;
+}
+.qc-roda__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 4px;
+  scroll-snap-align: center;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--qc-suave);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.qc-roda__item--atual {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--qc-texto);
+}
+
+/* ---------- confirmar a data (o botão do app) ---------- */
+.qc-confirmar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--qc-laranja);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--qc-laranja-texto);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.qc-confirmar:active {
+  background: var(--q-laranja-fundo, #fff3ea);
+}
+.qc-confirmar:focus-visible {
+  outline: 3px solid var(--qc-laranja);
+  outline-offset: 2px;
+}
+
+/* ---------- aviso (o `AvisoOnboarding` do app) ---------- */
+.qc-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255, 107, 0, 0.4);
+  border-radius: 14px;
+  background: var(--qc-cartao);
+  color: var(--qc-texto);
+  text-align: left;
+}
+.qc-aviso p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.qc-aviso__icone {
+  flex: none;
+  margin-top: 1px;
+  color: var(--qc-laranja-texto);
+}
+.qc-aviso--bloqueio {
+  border-color: rgba(185, 28, 28, 0.4);
+}
+.qc-aviso--bloqueio .qc-aviso__icone {
+  color: var(--qc-erro);
+}
+
+@media (min-width: 600px) {
+  .qc-roda__item {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qc-regua__rolo,
+  .qc-roda__rolo {
+    scroll-behavior: auto;
+  }
+  .qc-confirmar {
+    transition: none;
+  }
+}
