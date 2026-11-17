@@ -57,6 +57,13 @@ export type EventoCapi = {
   moeda?: string;
   /** URL de onde a jornada partiu; ajuda o Meta a casar com o evento do browser. */
   urlOrigem?: string;
+  /**
+   * IP e navegador de quem gerou o evento (só quando o evento nasce de uma
+   * visita, via /api/evento). Vão sem hash, como o Meta pede: são os sinais
+   * que mais sobem a qualidade de correspondência dos eventos de site.
+   */
+  ip?: string;
+  userAgent?: string;
   conteudo?: { id: string; nome: string };
 };
 
@@ -86,6 +93,8 @@ export async function enviarEventoCapi(e: EventoCapi): Promise<ResultadoCapi> {
   if (fn) userData.fn = [fn];
   if (e.fbp) userData.fbp = e.fbp;
   if (e.fbc) userData.fbc = e.fbc;
+  if (e.ip) userData.client_ip_address = e.ip;
+  if (e.userAgent) userData.client_user_agent = e.userAgent;
 
   if (Object.keys(userData).length === 0) {
     return { ok: false, motivo: 'sem_identificador' };
