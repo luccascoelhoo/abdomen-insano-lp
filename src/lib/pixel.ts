@@ -99,12 +99,12 @@ function espelharNoServidor(
 /**
  * Quais eventos ganham a segunda perna.
  *
- * `PageView` fica de fora de propósito: é o evento que menos pesa na
- * otimização e o mais frequente de todos, então espelhá-lo dobraria a
- * invocação de função por visita em troca de quase nada. Quem decide verba é
- * `ViewContent` e `InitiateCheckout`, e o `Purchase` já nasce no servidor.
+ * Desde 17/11/2026 o `PageView` e o `Lead` também vão: com o connect rate
+ * baixo, quem bloqueia o pixel (bloqueador, modo restrito do iPhone) não
+ * gerava visita nenhuma. Custa uma chamada de função a mais por visita. O
+ * `Purchase` continua nascendo no servidor (webhook).
  */
-const ESPELHADOS = new Set(['ViewContent', 'InitiateCheckout']);
+const ESPELHADOS = new Set(['PageView', 'ViewContent', 'InitiateCheckout', 'Lead']);
 
 /**
  * Dispara um evento padrão e devolve o `event_id` usado.

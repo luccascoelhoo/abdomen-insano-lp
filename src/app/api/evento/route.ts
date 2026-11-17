@@ -35,11 +35,20 @@ import { supabaseConfigured } from '@/lib/supabase';
 export const runtime = 'nodejs';
 
 /**
- * `PageView` não entra: é o mais frequente e o que menos pesa na otimização,
- * então espelhá-lo dobraria a invocação de função por visita em troca de quase
- * nada. A lista do cliente, em `lib/pixel.ts`, é a mesma.
+ * Desde 17/11/2026 `PageView` e `Lead` também têm a perna do servidor: o
+ * connect rate caiu e quem usa bloqueador ou o modo restrito do iPhone não
+ * gerava visita nenhuma no Meta. A lista do cliente, em `lib/pixel.ts`, é a mesma.
  */
-const EVENTOS_PERMITIDOS = new Set(['ViewContent', 'InitiateCheckout']);
+const EVENTOS_PERMITIDOS = new Set(['PageView', 'ViewContent', 'InitiateCheckout', 'Lead']);
+/** Só estes levam valor e produto; PageView e Lead vão sem. */
+const EVENTOS_COM_VALOR = new Set(['ViewContent', 'InitiateCheckout']);
+
+/** IP de quem chamou (Vercel põe o do visitante primeiro no x-forwarded-for). */
+function ipDe(request: Request): string | undefined {
+  const xff = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  const ip = xff || request.headers.get('x-real-ip')?.trim();
+  return ip && ip.length <= 45 ? ip : undefined;
+}
 
 type Corpo = {
   evento?: string;
@@ -120,18 +129,23 @@ export async function POST(request: Request) {
   const caminho = (corpo.caminho ?? '/').startsWith('/') ? corpo.caminho! : '/';
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.abdomeninsano.com.br';
 
+  const comValor = EVENTOS_COM_VALOR.has(evento);
   const r = await enviarEventoCapi({
     evento,
     eventId,
     fbp,
     fbc,
+    ip: ipDe(request),
+    userAgent: request.headers.get('user-agent')?.slice(0, 500) || undefined,
     // Mesmo preço vivo que o navegador mandou na perna dele (lib/precos).
-    valor: precoDe(produto ?? produtoPorId(ID_FRONT)!, await precosAtuais()) / 100,
+    valor: comValor ? precoDe(produto ?? produtoPorId(ID_FRONT)!, await precosAtuais()) / 100 : undefined,
     moeda: oferta.precoMoeda,
     urlOrigem: `${base}${caminho}`,
-    conteudo: produto
-      ? { id: produto.id, nome: produto.nome }
-      : { id: 'dai-front', nome: 'Desafio Abdômen Insano' },
+    conteudo: !comValor
+      ? undefined
+      : produto
+        ? { id: produto.id, nome: produto.nome }
+        : { id: 'dai-front', nome: 'Desafio Abdômen Insano' },
   });
 
   const medicao = r.ok ? `enviado:${r.eventos}` : `falhou:${r.motivo}`;
@@ -146,7 +160,8 @@ export async function POST(request: Request) {
 
   // Uma linha por envio, para a dedup ser conferível fora do painel do Meta.
   // Tolerante: sem banco, ou sem a tabela, fica no log e a resposta é a mesma.
-  if (supabaseConfigured()) {
+  // PageView fica fora do registro: seria uma linha por visita no banco.
+  if (supabaseConfigured() && evento !== 'PageView') {
     await registrarEnvioCapi({ evento, event_id: eventId, resultado: medicao, caminho });
   }
 
