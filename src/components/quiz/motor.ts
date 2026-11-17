@@ -122,6 +122,42 @@ export function idade(nascimento: string | undefined, hoje = new Date()): number
   return i;
 }
 
+/* ------------------------------------------------------------------ travas */
+
+export interface Trava {
+  titulo: string;
+  texto: string;
+}
+
+/**
+ * "O que está segurando o seu abdômen": até 3 travas tiradas das respostas.
+ * Só comportamento (sono, beliscar, bebida, dieta radical…), nada de
+ * explicação hormonal duvidosa. A ordem é a de impacto no déficit.
+ */
+export function travas(r: Respostas): Trava[] {
+  const lista = (v: unknown): string[] => (Array.isArray(v) ? (v as string[]) : []);
+  const habitos = lista(r.habitos);
+  const t: Trava[] = [];
+  if (r.alcool === 'semana' || r.alcool === 'fds')
+    t.push({
+      titulo: 'Bebida e petisco no fim de semana',
+      texto: 'As calorias de 2 dias podem apagar o déficit dos outros 5. Dá pra beber, com estratégia.',
+    });
+  if (habitos.includes('belisca'))
+    t.push({ titulo: 'Beliscar à noite', texto: 'O que escapa depois do jantar é o que mais segura o déficit sem você perceber.' });
+  if (habitos.includes('delivery') || habitos.includes('refri') || habitos.includes('doce'))
+    t.push({ titulo: 'Calorias que não matam a fome', texto: 'Refrigerante, doce e delivery somam muito e deixam você com fome do mesmo jeito.' });
+  if (r.dietaAntes === 'voltou' || r.dietaAntes === 'fome')
+    t.push({ titulo: 'Efeito sanfona', texto: 'Dieta radical que não dá pra manter faz o peso voltar. O plano precisa caber na sua vida.' });
+  if (r.sono === 'lt5' || r.sono === '5-6')
+    t.push({ titulo: 'Sono curto', texto: 'Dormir pouco aumenta a fome no dia seguinte e atrapalha a recuperação do treino.' });
+  if (lista(r.jaTentou).includes('abdominal'))
+    t.push({ titulo: 'Só abdominal', texto: 'Fortalece o músculo, mas não tira a capa de gordura que cobre ele.' });
+  if (r.rotina === 'sedentary')
+    t.push({ titulo: 'Dia inteiro sentado', texto: 'Gasta pouca energia fora do treino, então a alimentação pesa ainda mais.' });
+  return t.slice(0, 3);
+}
+
 /* ------------------------------------------------- ponte para o cadastro do app */
 
 /** Origem do anúncio → `discovery_source` do app. */
@@ -216,7 +252,7 @@ export function montarPayload(r: Respostas, utm: Record<string, string>, site = 
  * O progresso salvo guarda o índice da tela: ao mudar a ordem ou a quantidade
  * de telas em `content/quiz.ts`, suba a versão para ninguém voltar na tela errada.
  */
-export const VERSAO_QUIZ = 3;
+export const VERSAO_QUIZ = 4;
 const CHAVE_LOCAL = `ai_quiz_v${VERSAO_QUIZ}`;
 /** Toques mais próximos que isso viram um só (toque duplo pulava telas). */
 const TRAVA_MS = 400;

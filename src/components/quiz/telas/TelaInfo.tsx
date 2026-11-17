@@ -17,7 +17,13 @@ export function TelaInfo({ tela, respostas, avancar }: PropsTela<TelaInfoT>) {
       </h1>
       {tela.img && (
         <div className="q-info__img">
-          <Image src={tela.img} alt="" fill sizes="(max-width: 560px) 100vw, 520px" />
+          <Image
+            src={tela.img}
+            alt=""
+            fill
+            sizes="(max-width: 560px) 100vw, 520px"
+            style={tela.imgPosicao ? { objectPosition: tela.imgPosicao } : undefined}
+          />
         </div>
       )}
       <div className="q-info__texto">

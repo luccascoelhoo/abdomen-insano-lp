@@ -300,6 +300,19 @@ export const telasQuiz: Tela[] = [
     titulo: 'Dessa vez vai ser diferente',
     linhas: [(r: Respostas) => textoObstaculo[String(r.obstaculo)] ?? textoObstaculo.consistency],
   },
+  {
+    // Autoridade (ideia do quiz do Cariani): quem conduz o desafio. Só fatos
+    // que já estão na página de vendas (expertV2 em lp-v2.ts).
+    k: 'info',
+    bloco: 4,
+    titulo: 'Quem vai conduzir os seus 42 dias',
+    img: '/img/igor-hoje.webp',
+    imgPosicao: '50% 22%',
+    linhas: [
+      'Eu sou o **Igor Correa**. Passei a vida sendo zoado por ser magro demais, até levar a sério a academia e os estudos de **nutrição e educação física**.',
+      'Hoje eu impacto **mais de 1 milhão de pessoas por mês** nas redes, e criei o Desafio Abdômen Insano pra você dar o primeiro passo com um plano de verdade.',
+    ],
+  },
 
   /* ============================ BLOCO 5 — SEUS NÚMEROS ============================ */
   {

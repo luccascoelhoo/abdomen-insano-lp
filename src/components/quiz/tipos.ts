@@ -109,6 +109,8 @@ export interface TelaInfo extends Base {
   titulo: Texto;
   linhas: Texto[];
   img?: string;
+  /** object-position da foto (ex.: '50% 20%' para mostrar o rosto). */
+  imgPosicao?: string;
   /** Destaque numérico grande (ex.: "+5.500"). */
   destaque?: Texto;
   botao?: string;
