@@ -1,105 +1,64 @@
 'use client';
 
-import { useId, useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState } from 'react';
 import { idade } from '../motor';
-import type { PropsTela, TelaNascimento as TelaNascimentoT } from '../tipos';
+import type { PropsTela, Respostas, TelaNascimento as TelaNascimentoT } from '../tipos';
+import { Aviso } from './Aviso';
 import { BotaoContinuar, Cabecalho } from './comum';
+import { ISO, RodaDeDatas, diasNoMes, hojeSP, isoDe, partes, porExtenso } from './RodaDeDatas';
 
-const MESES = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
-];
-const ANO_ATUAL = new Date().getFullYear();
-const dois = (n: number) => String(n).padStart(2, '0');
+/** Idade do meio de cada faixa da primeira tela: a roda já abre perto. */
+const IDADE_DA_FAIXA: Record<string, number> = { '18-24': 21, '25-34': 30, '35-44': 40, '45+': 50 };
+
+function dataInicial(r: Respostas, anoAtual: number, anoMin: number, anoMax: number): string {
+  const salvo = typeof r.nascimento === 'string' && ISO.test(r.nascimento) ? r.nascimento : null;
+  if (salvo) {
+    const [a, m, d] = partes(salvo);
+    const ano = Math.min(anoMax, Math.max(anoMin, a));
+    return isoDe(ano, m, Math.min(d, diasNoMes(ano, m)));
+  }
+  const alvo = IDADE_DA_FAIXA[String(r.faixaIdade)];
+  return alvo ? isoDe(anoAtual - alvo, 6, 15) : '2000-06-15';
+}
 
 /**
- * Data de nascimento em três seletores nativos (no celular abrem a roleta do
- * sistema, o jeito mais rápido de escolher). Grava `nascimento` = 'AAAA-MM-DD'.
+ * Data de nascimento na roda do app. Como no app, a data que a roda abre não
+ * vale sozinha: ou a pessoa gira, ou toca em "Toque para confirmar". Grava
+ * `nascimento` = 'AAAA-MM-DD'.
  */
 export function TelaNascimento({ tela, respostas, responder }: PropsTela<TelaNascimentoT>) {
-  const salvo = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(respostas.nascimento ?? ''));
-  const [dia, setDia] = useState(salvo ? String(Number(salvo[3])) : '');
-  const [mes, setMes] = useState(salvo ? String(Number(salvo[2])) : '');
-  const [ano, setAno] = useState(salvo ? salvo[1] : '');
-  const [erro, setErro] = useState<string | null>(null);
-  const id = useId();
+  const [hoje] = useState(hojeSP);
+  const anoAtual = Number(hoje.slice(0, 4));
+  const anoMin = anoAtual - 100;
+  const anoMax = anoAtual - tela.idadeMinima;
+  const [valor, setValor] = useState(() => dataInicial(respostas, anoAtual, anoMin, anoMax));
+  const [confirmado, setConfirmado] = useState(() => typeof respostas.nascimento === 'string');
 
-  const anos = Array.from({ length: 83 }, (_, i) => ANO_ATUAL - tela.idadeMinima - i);
-
-  const enviar = (e: FormEvent) => {
-    e.preventDefault();
-    if (!dia || !mes || !ano) return setErro('Escolha o dia, o mês e o ano.');
-    const [d, m, a] = [Number(dia), Number(mes), Number(ano)];
-    const data = new Date(Date.UTC(a, m - 1, d));
-    if (data.getUTCDate() !== d || data.getUTCMonth() !== m - 1) return setErro('Essa data não existe. Confira o dia e o mês.');
-    const iso = `${a}-${dois(m)}-${dois(d)}`;
-    const anosDeIdade = idade(iso);
-    if (anosDeIdade === null || anosDeIdade < tela.idadeMinima) {
-      return setErro(`O desafio é para maiores de ${tela.idadeMinima} anos.`);
-    }
-    responder({ nascimento: iso });
-  };
-
-  const props = (set: (v: string) => void) => ({
-    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
-      set(e.target.value);
-      setErro(null);
-    },
-    'aria-invalid': !!erro,
-    'aria-describedby': erro ? `${id}-erro` : undefined,
-  });
+  const anos = idade(valor);
+  const menor = confirmado && (anos === null || anos < tela.idadeMinima);
 
   return (
-    <form onSubmit={enviar} noValidate>
+    <div className="qc-tela">
       <Cabecalho titulo={tela.titulo} sub={tela.sub} respostas={respostas} />
-      <div className="q-data">
-        <div className="q-data__campo">
-          <label htmlFor={`${id}-dia`}>Dia</label>
-          <select id={`${id}-dia`} className="q-select" value={dia} {...props(setDia)}>
-            <option value="" disabled>
-              Dia
-            </option>
-            {Array.from({ length: 31 }, (_, i) => (
-              <option key={i + 1} value={i + 1}>
-                {i + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="q-data__campo q-data__campo--mes">
-          <label htmlFor={`${id}-mes`}>Mês</label>
-          <select id={`${id}-mes`} className="q-select" value={mes} {...props(setMes)}>
-            <option value="" disabled>
-              Mês
-            </option>
-            {MESES.map((nome, i) => (
-              <option key={nome} value={i + 1}>
-                {nome}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="q-data__campo">
-          <label htmlFor={`${id}-ano`}>Ano</label>
-          <select id={`${id}-ano`} className="q-select" value={ano} {...props(setAno)}>
-            <option value="" disabled>
-              Ano
-            </option>
-            {anos.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      {erro && (
-        <p className="q-erro" id={`${id}-erro`} role="alert">
-          {erro}
-        </p>
+      <RodaDeDatas
+        valor={valor}
+        aoMudar={(v) => {
+          setValor(v);
+          setConfirmado(true);
+        }}
+        anoMin={anoMin}
+        anoMax={anoMax}
+        rotulo="Data de nascimento"
+      />
+      {!confirmado && (
+        <button type="button" className="qc-confirmar" onClick={() => setConfirmado(true)}>
+          Toque para confirmar: {porExtenso(valor)}
+        </button>
       )}
-      <BotaoContinuar type="submit" />
-    </form>
+      <div aria-live="polite">
+        {menor && <Aviso bloqueante texto={`O desafio é para maiores de ${tela.idadeMinima} anos.`} />}
+      </div>
+      <BotaoContinuar disabled={!confirmado || menor} onClick={() => responder({ nascimento: valor })} />
+    </div>
   );
 }
