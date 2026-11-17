@@ -1,9 +1,9 @@
 'use client';
 
 import type { PropsTela, TelaLista as TelaListaT } from '../tipos';
-import { Cabecalho, IconeCheck, useEscolhaUnica } from './comum';
+import { Cabecalho, useEscolhaUnica } from './comum';
 
-/** Escolha única em lista: avança ao tocar. */
+/** Escolha única em lista (cartões da PremiumOptionsList do app): avança ao tocar. */
 export function TelaLista({ tela, respostas, responder }: PropsTela<TelaListaT>) {
   const { atual, escolher } = useEscolhaUnica(tela.chave, respostas, responder);
   return (
@@ -19,9 +19,7 @@ export function TelaLista({ tela, respostas, responder }: PropsTela<TelaListaT>)
             onClick={() => escolher(o.v)}
           >
             <span className="q-opcao__texto">{o.rotulo}</span>
-            <span className="q-opcao__radio" aria-hidden="true">
-              <IconeCheck />
-            </span>
+            <span className="q-opcao__radio" aria-hidden="true" />
           </button>
         ))}
       </div>

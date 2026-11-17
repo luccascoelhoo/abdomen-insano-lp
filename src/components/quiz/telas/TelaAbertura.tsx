@@ -31,11 +31,12 @@ export function TelaAbertura({ tela, respostas, responder }: PropsTela<TelaAbert
           <button
             key={o.v}
             type="button"
-            className="q-opcao q-opcao--centro"
+            className="q-opcao q-opcao--compacta"
             aria-pressed={atual === o.v}
             onClick={() => escolher(o.v)}
           >
-            {o.rotulo}
+            <span className="q-opcao__texto">{o.rotulo}</span>
+            <span className="q-opcao__radio" aria-hidden="true" />
           </button>
         ))}
       </div>
