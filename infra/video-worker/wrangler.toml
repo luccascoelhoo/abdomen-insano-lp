@@ -1,0 +1,17 @@
+# Worker que entrega os vídeos do Player Insano a partir do R2.
+# O DNS do domínio fica na Hostinger, então o vídeo sai pelo endereço
+# *.workers.dev (sem domínio próprio). Ver docs/player-insano.md.
+name = "videos-insano"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+[[r2_buckets]]
+binding = "VIDEOS"
+# Nome do bucket criado no painel da Cloudflare (preencher antes do deploy).
+bucket_name = "PREENCHER_NOME_DO_BUCKET"
+
+[vars]
+# Sites que podem tocar os vídeos (hls.js precisa de CORS).
+ORIGENS = "https://www.abdomeninsano.com.br,https://abdomeninsano.com.br,http://localhost:3155"
+# Previews da Vercel deste projeto (sufixo).
+SUFIXO_PREVIEW = "-italogusta242-makers-projects.vercel.app"

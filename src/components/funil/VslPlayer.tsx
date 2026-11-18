@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useEffect, useRef } from 'react';
 import type { Vsl } from '@/content/desafio';
 
@@ -60,7 +61,7 @@ function revelarFim() {
  * Sem `playerId`, mostra o espaço reservado no mesmo formato 9:16 — a página
  * continua com o desenho certo enquanto o vídeo não chega.
  */
-export function VslPlayer({ vsl }: { vsl: Vsl }) {
+function VslVturb({ vsl }: { vsl: Vsl }) {
   const caixa = useRef<HTMLDivElement>(null);
   const configurado = Boolean(vsl.playerId && vsl.scriptUrl);
   const v4 = vsl.scriptUrl.includes('/v4/');
@@ -190,4 +191,18 @@ export function VslPlayer({ vsl }: { vsl: Vsl }) {
       )}
     </div>
   );
+}
+
+/**
+ * VSL do funil: nosso player quando `vsl.proprio` está preenchido, VTurb
+ * caso contrário (troca por página, em content/desafio.ts).
+ */
+/**
+ * O player próprio (hls.js, marcos, métricas) só é baixado nas páginas que usam
+ * `vsl.proprio`; quem segue no VTurb não paga nada por ele.
+ */
+const VslProprio = dynamic(() => import('./VslProprio').then((m) => m.VslProprio));
+
+export function VslPlayer({ vsl }: { vsl: Vsl }) {
+  return vsl.proprio ? <VslProprio vsl={vsl} proprio={vsl.proprio} /> : <VslVturb vsl={vsl} />;
 }

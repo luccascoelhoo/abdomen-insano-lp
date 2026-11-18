@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Worker da Cloudflare (vídeos do Player Insano): projeto à parte.
+    "infra/**",
   ]),
 ]);
 
