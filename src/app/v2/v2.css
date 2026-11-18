@@ -414,13 +414,16 @@ body:has(.v2) {
 }
 
 /* ---------- [5] depoimentos ---------- */
-/* Casos em destaque: comparadores empilhados (3 colunas no desktop). */
+/* Casos em destaque: antes e depois fixos, empilhados (3 colunas no desktop). */
 .v2-comparadores {
   display: grid;
-  gap: 36px;
+  gap: 28px;
+  max-width: 520px;
+  margin-inline: auto;
 }
 @media (min-width: 900px) {
   .v2-comparadores {
+    max-width: none;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
   }

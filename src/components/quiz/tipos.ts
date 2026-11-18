@@ -118,10 +118,10 @@ export interface TelaInfo extends Base {
     rotuloAntes?: string;
     rotuloDepois?: string;
     legenda?: string;
-    /** Proporção de cada metade, ex.: '3 / 4'. */
+    /** Largura / altura da montagem inteira, ex.: '3 / 2'. */
     proporcao?: string;
-    /** Montagem sem a medalha no meio: libera o arraste inteiro. */
-    semMedalha?: boolean;
+    /** Desenha divisória e seta no meio (montagem sem a divisória gravada). */
+    divisoria?: boolean;
   };
   /** Destaque numérico grande (ex.: "+5.500"). */
   destaque?: Texto;

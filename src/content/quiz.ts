@@ -312,8 +312,8 @@ export const telasQuiz: Tela[] = [
       rotuloAntes: 'ANTES',
       rotuloDepois: 'HOJE',
       legenda: 'Eu mesmo, antes e hoje',
-      proporcao: '3 / 4',
-      semMedalha: true,
+      proporcao: '3 / 2',
+      divisoria: true,
     },
     linhas: [
       'Eu sou o **Igor Correa**. Passei a vida sendo zoado por ser magro demais, até levar a sério a academia e os estudos de **nutrição e educação física**.',

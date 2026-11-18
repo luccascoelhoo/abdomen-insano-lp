@@ -1,13 +1,13 @@
 import { BotaoRolagem } from './BotaoRolagem';
 import { depoimentosV2 } from '@/content/lp-v2';
-import { ComparadorAntesDepois } from '@/components/ui/ComparadorAntesDepois';
+import { AntesDepois } from '@/components/ui/AntesDepois';
 import { CarrosselCasos } from './CarrosselCasos';
 import { Rico } from './Rico';
 
 /**
- * [5] Depoimentos — antes e depois reais. Os casos em destaque viram
- * comparadores "arraste"; o resto segue no trilho. Sem nome, número ou prazo:
- * não temos esses dados dos alunos.
+ * [5] Depoimentos — antes e depois reais. Os casos em destaque viram cartões
+ * fixos (sem arraste, pensados para o celular); o resto segue no trilho. Sem
+ * nome, número ou prazo: não temos esses dados dos alunos.
  */
 export function DepoimentosV2() {
   const { casos, destaques } = depoimentosV2;
@@ -26,15 +26,13 @@ export function DepoimentosV2() {
         </h2>
         <p className="v2-sub v2-centro">{depoimentosV2.sub}</p>
         <div className="v2-comparadores">
-          {emDestaque.map((c, i) => (
-            <ComparadorAntesDepois
+          {emDestaque.map((c) => (
+            <AntesDepois
               key={c.src}
               src={c.src}
               alt={c.alt}
-              focoY={depoimentosV2.focoY[c.id]}
               legenda={depoimentosV2.legendaDestaque}
-              atrasoDica={300 + i * 250}
-              sizes="(max-width: 460px) 200vw, (max-width: 900px) 840px, 680px"
+              sizes="(max-width: 560px) 100vw, (max-width: 900px) 520px, 360px"
             />
           ))}
         </div>
