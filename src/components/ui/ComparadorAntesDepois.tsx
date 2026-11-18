@@ -27,7 +27,9 @@ const LIMIAR = 6;
 const DICA_QUADROS = [50, 64, 36, 50] as const;
 const DICA_DURACAO = 1600;
 
-const limitar = (v: number) => Math.min(MAX, Math.max(MIN, v));
+/** Sem medalha na montagem (ex.: antes e depois do Igor), o arraste vai de 4% a 96%. */
+const MIN_LIVRE = 4;
+const MAX_LIVRE = 96;
 const suave = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 type Props = {
@@ -47,6 +49,13 @@ type Props = {
   sizes?: string;
   /** Faixa vertical mostrada (0% topo, 100% pé). Padrão 45%: tronco e abdômen. */
   focoY?: string;
+  /**
+   * Largura / altura de CADA metade do card (ex.: '3 / 4'). Padrão 2 / 3. Use a
+   * mesma proporção das metades da montagem para não cortar nada.
+   */
+  proporcao?: string;
+  /** Montagem SEM a medalha no meio: libera o arraste (4% a 96%). */
+  semMedalha?: boolean;
 };
 
 /**
@@ -68,6 +77,8 @@ export function ComparadorAntesDepois({
   rotuloDepois = 'DEPOIS',
   prioridade = false,
   focoY,
+  proporcao,
+  semMedalha = false,
   legenda,
   dica = 'Arraste para comparar',
   atrasoDica = 300,
@@ -123,6 +134,10 @@ export function ComparadorAntesDepois({
     mexeu.current = true;
     cancelAnimationFrame(quadro.current);
   }
+
+  const min = semMedalha ? MIN_LIVRE : MIN;
+  const max = semMedalha ? MAX_LIVRE : MAX;
+  const limitar = (v: number) => Math.min(max, Math.max(min, v));
 
   function irPara(clientX: number) {
     const r = caixa.current?.getBoundingClientRect();
@@ -183,10 +198,10 @@ export function ComparadorAntesDepois({
         proximo = (atual) => atual + PASSO;
         break;
       case 'Home':
-        proximo = () => MIN;
+        proximo = () => min;
         break;
       case 'End':
-        proximo = () => MAX;
+        proximo = () => max;
         break;
       default:
         return;
@@ -201,7 +216,13 @@ export function ComparadorAntesDepois({
   return (
     <figure
       className="comparador"
-      style={{ '--comparador-pos': `${pos}%`, ...(focoY ? { '--comparador-foco-y': focoY } : {}) } as CSSProperties}
+      style={
+        {
+          '--comparador-pos': `${pos}%`,
+          ...(focoY ? { '--comparador-foco-y': focoY } : {}),
+          ...(proporcao ? { '--comparador-proporcao': proporcao } : {}),
+        } as CSSProperties
+      }
     >
       <div
         ref={caixa}
@@ -247,8 +268,8 @@ export function ComparadorAntesDepois({
           tabIndex={0}
           aria-label="Comparar antes e depois: arraste"
           aria-orientation="horizontal"
-          aria-valuemin={MIN}
-          aria-valuemax={MAX}
+          aria-valuemin={min}
+          aria-valuemax={max}
           aria-valuenow={valor}
           aria-valuetext={`${valor}% ${rotuloAntes.toLowerCase()}, ${100 - valor}% ${rotuloDepois.toLowerCase()}`}
           onKeyDown={aoTeclar}

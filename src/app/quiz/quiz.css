@@ -1183,3 +1183,8 @@ button.quiz__voltar:active {
 .quiz__tela :is(h1, h2)[tabindex='-1']:focus {
   outline: none;
 }
+
+/* Antes e depois do Igor na tela de autoridade (sem recorte de 16:10). */
+.q-info__comparador {
+  margin-top: 22px;
+}

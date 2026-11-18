@@ -111,6 +111,18 @@ export interface TelaInfo extends Base {
   img?: string;
   /** object-position da foto (ex.: '50% 20%' para mostrar o rosto). */
   imgPosicao?: string;
+  /** Antes e depois de arrastar (montagem com as duas metades), no lugar da foto. */
+  comparador?: {
+    src: string;
+    alt: string;
+    rotuloAntes?: string;
+    rotuloDepois?: string;
+    legenda?: string;
+    /** Proporção de cada metade, ex.: '3 / 4'. */
+    proporcao?: string;
+    /** Montagem sem a medalha no meio: libera o arraste inteiro. */
+    semMedalha?: boolean;
+  };
   /** Destaque numérico grande (ex.: "+5.500"). */
   destaque?: Texto;
   botao?: string;
