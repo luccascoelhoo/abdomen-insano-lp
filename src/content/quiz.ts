@@ -22,9 +22,11 @@ const bebe = (r: Respostas) => r.alcool === 'fds' || r.alcool === 'semana';
 
 /** Nome do evento como a pessoa falaria ("o seu casamento"). */
 export const NOME_EVENTO: Record<string, string> = {
-  praia: 'o verão',
-  festa: 'o grande dia',
-  viagem: 'a sua viagem',
+  praia: 'a praia ou a viagem',
+  casamento: 'o casamento',
+  aniversario: 'o aniversário',
+  reencontro: 'o reencontro com os amigos',
+  trabalho: 'o ensaio ou o evento de trabalho',
 };
 
 const textoObstaculo: Record<string, string> = {
@@ -149,6 +151,22 @@ export const telasQuiz: Tela[] = [
     ]),
   },
   {
+    k: 'multi',
+    bloco: 2,
+    chave: 'impediu',
+    quando: (r) => !nuncaTentou(r),
+    titulo: 'O que te impediu de definir o abdômen antes?',
+    sub: 'Escolha todas que se aplicam',
+    opcoes: [
+      { v: 'motivacao', rotulo: 'Falta de motivação' },
+      { v: 'plano', rotulo: 'Não tinha um plano claro' },
+      { v: 'tempo', rotulo: 'Falta de tempo' },
+      { v: 'fome', rotulo: 'Fome e ansiedade' },
+      { v: 'desisti', rotulo: 'Comecei e desisti no meio' },
+      { v: 'genetica', rotulo: 'Achei que era genética' },
+    ],
+  },
+  {
     k: 'info',
     bloco: 2,
     titulo: 'Por que a barriga é a última a sair',
@@ -160,6 +178,10 @@ export const telasQuiz: Tela[] = [
       (r) =>
         lista(r.jaTentou).includes('abdominal')
           ? 'E abdominal todo dia, sozinho, não queima a gordura que cobre o abdômen.'
+          : '',
+      (r) =>
+        lista(r.impediu).includes('genetica')
+          ? 'Achou que era genética? Ela ajuda ou atrapalha, mas **não decide sozinha**: o que faz o abdômen aparecer é tirar a capa com o déficit certo e construir o músculo ao mesmo tempo.'
           : '',
       'Só dieta não fecha a conta. Só abdominal também não. É preciso atacar **2 frentes ao mesmo tempo**: tirar a capa de gordura e construir o abdômen por baixo dela.',
     ],
@@ -371,8 +393,16 @@ export const telasQuiz: Tela[] = [
     k: 'lista',
     bloco: 5,
     chave: 'evento',
-    titulo: 'Tem alguma data importante pela frente?',
-    opcoes: opcoes([['praia', 'Praia ou verão'], ['festa', 'Casamento ou festa'], ['viagem', 'Viagem'], ['nenhum', 'Não, só quero mudar']]),
+    titulo: 'Você tem algum compromisso importante pela frente?',
+    sub: 'Ter uma data marcada ajuda a manter o foco até o fim',
+    opcoes: opcoes([
+      ['praia', 'Praia ou viagem'],
+      ['casamento', 'Casamento'],
+      ['aniversario', 'Aniversário'],
+      ['reencontro', 'Reencontro com amigos'],
+      ['trabalho', 'Ensaio ou evento de trabalho'],
+      ['nenhum', 'Nada marcado'],
+    ]),
   },
   {
     k: 'dataEvento',
@@ -394,6 +424,36 @@ export const telasQuiz: Tela[] = [
       ['energy', 'Mais energia no dia a dia'],
       ['motivation', 'Virar um cara mais disciplinado'],
     ]),
+  },
+
+  {
+    k: 'lista',
+    bloco: 5,
+    chave: 'confianca',
+    titulo: 'Quão confiante você está em terminar os 42 dias do desafio?',
+    opcoes: opcoes([
+      ['sim', 'Acredito que consigo!'],
+      ['incerto', 'Estou incerto, mas vou tentar'],
+      ['inseguro', 'Ainda estou inseguro'],
+    ]),
+  },
+  {
+    k: 'info',
+    bloco: 5,
+    quando: (r) => r.confianca === 'incerto' || r.confianca === 'inseguro',
+    titulo: 'É normal ter dúvida',
+    linhas: [
+      'Você não precisa ter certeza agora. O app é gamificado, a **Comunidade Anti Falhas** te puxa nos dias difíceis e você vê a sua evolução **semana a semana**.',
+      'E se mesmo assim você não ficar satisfeito, são **15 dias de garantia**.',
+    ],
+    botao: 'Vamos nessa',
+  },
+  {
+    k: 'nome',
+    bloco: 5,
+    chave: 'nome',
+    titulo: 'Pra personalizar o seu plano, como você se chama?',
+    sub: 'Só o primeiro nome',
   },
 
   /* ============================== BLOCO 6 — SEU PLANO ============================== */
@@ -418,7 +478,9 @@ export const telasQuiz: Tela[] = [
       'Use este mesmo e-mail na compra: é com ele que você entra no app e o seu plano já chega montado.',
   },
   { k: 'diagnostico', bloco: 6 },
+  { k: 'projecao', bloco: 6 },
   { k: 'plano', bloco: 6 },
+  { k: 'desconto', bloco: 6 },
   { k: 'oferta', bloco: 6 },
 ];
 

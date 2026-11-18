@@ -9,13 +9,17 @@
 /* As telas finais ocupam a largura toda: as seções da home têm fundo
    de ponta a ponta e coluna própria. */
 .quiz.quiz--diagnostico,
+.quiz.quiz--projecao,
 .quiz.quiz--plano,
+.quiz.quiz--desconto,
 .quiz.quiz--oferta {
   max-width: none;
   padding: 0;
 }
 .quiz--diagnostico .quiz__tela,
+.quiz--projecao .quiz__tela,
 .quiz--plano .quiz__tela,
+.quiz--desconto .quiz__tela,
 .quiz--oferta .quiz__tela {
   width: 100%;
   max-width: none;
@@ -593,4 +597,157 @@
 }
 .v2 .qr-trava__plano b {
   color: #c2410c;
+}
+
+/* Diagnóstico: uma trava em foco (kicker, título, explicação, sinais, plano). */
+.v2 .qr-principal {
+  margin: 6px 0 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #111;
+  color: #ff8a3d;
+  font-size: 1.45rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+.v2 .qr-sinais {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #131313;
+  color: #fff;
+}
+.v2 .qr-sinais__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #bdbdbd;
+}
+.v2 .qr-sinais__topo b {
+  flex: none;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #ff5a4f;
+}
+.v2 .qr-sinais__barra {
+  height: 8px;
+  margin: 10px 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.v2 .qr-sinais__barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff6b00, #ff3b30);
+}
+.v2 .qr-sinais__lista,
+.v2 .qr-sinais__solucao ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.v2 .qr-sinais__lista li,
+.v2 .qr-sinais__solucao li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #e6e6e6;
+}
+.v2 .qr-sinais__lista b {
+  color: #fff;
+}
+.v2 .qr-sinais__alerta,
+.v2 .qr-sinais__check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+.v2 .qr-sinais__alerta {
+  border: 1.5px solid #ff5a4f;
+  color: #ff5a4f;
+}
+.v2 .qr-sinais__check {
+  background: #2fbf6c;
+  color: #06220f;
+}
+.v2 .qr-sinais__solucao {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(47, 191, 108, 0.1);
+  border: 1px solid rgba(47, 191, 108, 0.35);
+}
+.v2 .qr-sinais__solucao-titulo {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6be39a;
+}
+
+/* "Desconto liberado!" */
+.v2 .qr-desconto {
+  text-align: center;
+}
+.v2 .qr-desconto__sub {
+  margin: -4px 0 18px;
+  color: #666;
+  font-size: 0.95rem;
+}
+.v2 .qr-desconto__cartao {
+  padding: 28px 18px 22px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, #3ad17b, #22a95c);
+  color: #06220f;
+  box-shadow: 0 22px 40px -26px rgba(34, 169, 92, 0.9);
+}
+.v2 .qr-desconto__numero {
+  margin: 0;
+  font-size: clamp(64px, 22vw, 96px);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.v2 .qr-desconto__numero span {
+  font-size: 0.5em;
+  vertical-align: top;
+}
+.v2 .qr-desconto__de {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+.v2 .qr-desconto__produto {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.v2 .qr-desconto__precos {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 2px dashed rgba(6, 34, 15, 0.35);
+  font-size: 1rem;
+}
+.v2 .qr-desconto__precos b {
+  font-size: 1.25rem;
+}
+.v2 .qr-desconto__nota {
+  margin: 18px 0 20px;
+  color: #666;
+  font-size: 0.9rem;
 }

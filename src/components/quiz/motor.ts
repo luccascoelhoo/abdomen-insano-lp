@@ -11,12 +11,23 @@ export * from './calculos';
  * O progresso salvo guarda o índice da tela: ao mudar a ordem ou a quantidade
  * de telas em `content/quiz.ts`, suba a versão para ninguém voltar na tela errada.
  */
-export const VERSAO_QUIZ = 4;
+export const VERSAO_QUIZ = 5;
 const CHAVE_LOCAL = `ai_quiz_v${VERSAO_QUIZ}`;
 /** Toques mais próximos que isso viram um só (toque duplo pulava telas). */
 const TRAVA_MS = 400;
 
+/**
+ * Retomar de onde parou vale para quem saiu NO MEIO das perguntas. Quem já viu
+ * o resultado ou a oferta e volta, volta do começo (senão o quiz abre direto na
+ * oferta e a pessoa não consegue refazer). Progresso parado há mais que isto
+ * também é descartado. `?novo=1` na URL começa do zero (útil para testar).
+ */
+const VALIDADE_MS = 6 * 3_600_000;
+const VALIDADE_RESULTADO_MS = 30 * 60_000;
+
 interface Salvo {
+  /** Última atividade (ms), para saber se o progresso ainda vale. */
+  t?: number;
   i: number;
   r: Respostas;
 }
@@ -46,20 +57,25 @@ export function useQuiz(telas: Tela[]) {
   useEffect(() => {
     try {
       const s = JSON.parse(localStorage.getItem(CHAVE_LOCAL) ?? 'null') as Salvo | null;
-      if (s && typeof s.i === 'number' && s.r) {
+      const recomecarDoZero = new URLSearchParams(window.location.search).has('novo');
+      const parado = Date.now() - (s?.t ?? 0);
+      const primeiraDoResultado = telas.findIndex((t) => t.k === 'diagnostico');
+      const jaViuResultado = !!s && primeiraDoResultado >= 0 && s.i >= primeiraDoResultado;
+      const valido = !!s && !!s.t && parado <= VALIDADE_MS && !(jaViuResultado && parado > VALIDADE_RESULTADO_MS);
+      if (s && valido && !recomecarDoZero && typeof s.i === 'number' && s.r) {
         setI(Math.min(s.i, telas.length - 1));
         rRef.current = s.r;
         setR(s.r);
       }
     } catch {}
     setPronto(true);
-  }, [telas.length]);
+  }, [telas]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!pronto) return;
     try {
-      localStorage.setItem(CHAVE_LOCAL, JSON.stringify({ i, r } satisfies Salvo));
+      localStorage.setItem(CHAVE_LOCAL, JSON.stringify({ i, r, t: Date.now() } satisfies Salvo));
     } catch {}
   }, [i, r, pronto]);
 

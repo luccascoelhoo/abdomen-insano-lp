@@ -140,7 +140,15 @@ export interface TelaCarregando extends Base {
   etapas: string[];
 }
 
-/** Nome + e-mail + aceite de e-mails. Grava `nome`, `email`, `aceiteEmail`. */
+/** Só o nome, numa tela própria (uma coisa por vez). Grava `nome`. */
+export interface TelaNome extends Base {
+  k: 'nome';
+  chave: 'nome';
+  titulo: Texto;
+  sub?: Texto;
+}
+
+/** E-mail + aceite de e-mails (o nome vem da tela `nome`). Grava `email`, `aceiteEmail`. */
 export interface TelaEmail extends Base {
   k: 'email';
   titulo: Texto;
@@ -151,6 +159,16 @@ export interface TelaEmail extends Base {
 /** Diagnóstico personalizado (IMC, capa, projeção de 42 dias). */
 export interface TelaDiagnostico extends Base {
   k: 'diagnostico';
+}
+
+/** Os números: IMC, capa, projeção de 42 dias, corpo de hoje e objetivo. */
+export interface TelaProjecao extends Base {
+  k: 'projecao';
+}
+
+/** "Desconto liberado!": o percentual da página de vendas, revelado antes da oferta. */
+export interface TelaDesconto extends Base {
+  k: 'desconto';
 }
 
 /** O plano: as 3 engrenagens personalizadas. */
@@ -174,9 +192,12 @@ export type Tela =
   | TelaInfo
   | TelaCapa
   | TelaCarregando
+  | TelaNome
   | TelaEmail
   | TelaDiagnostico
+  | TelaProjecao
   | TelaPlano
+  | TelaDesconto
   | TelaOferta;
 
 /** Props comuns de todo componente de tela. */
