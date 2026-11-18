@@ -247,3 +247,17 @@ export function montarPayload(r: Respostas, utm: Record<string, string>, site = 
   };
 }
 
+/* --------------------------------------------------------------- barra de progresso */
+
+/**
+ * Barra "persuasiva", a mesma ideia da barra falsa do player de vídeo: corre
+ * rápido no começo e desacelera no fim, para a pessoa sentir que já avançou
+ * muito e que falta pouco. `p` é o progresso real (0 a 1); o resultado também
+ * vai de 0 a 1 e chega a 1 junto com o fim do quiz.
+ *
+ * mostrado = 1 - (1 - p)^alpha  (alpha 2 = o do VTurb; 1 = barra real)
+ */
+export function progressoPersuasivo(p: number, alpha = 2): number {
+  const x = Math.min(1, Math.max(0, p));
+  return 1 - Math.pow(1 - x, alpha);
+}
