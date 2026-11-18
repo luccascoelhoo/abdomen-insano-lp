@@ -126,36 +126,85 @@ export function idade(nascimento: string | undefined, hoje = new Date()): number
 /* ------------------------------------------------------------------ travas */
 
 export interface Trava {
+  /** O hábito da pessoa, dito por ela nas respostas. */
   titulo: string;
+  /** Por que isso esconde o abdômen (uma linha). */
   texto: string;
+  /** O que o plano faz sobre isso (só o que o produto realmente entrega). */
+  plano: string;
 }
 
 /**
- * "O que está segurando o seu abdômen": até 3 travas tiradas das respostas.
- * Só comportamento (sono, beliscar, bebida, dieta radical…), nada de
- * explicação hormonal duvidosa. A ordem é a de impacto no déficit.
+ * "Os hábitos que estão escondendo o seu abdômen": até 3, tirados das respostas.
+ * Cada um diz (1) o hábito, (2) por que atrapalha e (3) o que o plano faz,
+ * usando só o que a página de vendas já promete: alimentação calculada pro
+ * peso, rotina e gosto da pessoa; Guia Fim de Semana Sem Culpa; treino de
+ * abdômen com sobrecarga progressiva; cardio calculado. Nada de explicação
+ * hormonal, e nenhuma trava sem resposta do plano.
  */
 export function travas(r: Respostas): Trava[] {
   const lista = (v: unknown): string[] => (Array.isArray(v) ? (v as string[]) : []);
   const habitos = lista(r.habitos);
+  const refeicoes = typeof r.refeicoes === 'string' && r.refeicoes ? r.refeicoes : '';
   const t: Trava[] = [];
+
   if (r.alcool === 'semana' || r.alcool === 'fds')
     t.push({
-      titulo: 'Bebida e petisco no fim de semana',
-      texto: 'As calorias de 2 dias podem apagar o déficit dos outros 5. Dá pra beber, com estratégia.',
+      titulo: r.alcool === 'semana' ? 'Bebida várias vezes na semana' : 'Bebida e petisco no fim de semana',
+      texto:
+        r.alcool === 'semana'
+          ? 'Cada saída soma calorias que apagam o déficit dos outros dias.'
+          : 'As calorias de 2 dias podem apagar o déficit dos outros 5.',
+      plano: 'O Guia Fim de Semana Sem Culpa mostra como sair, beber e continuar dentro do déficit, sem cortar a cerveja.',
     });
+
   if (habitos.includes('belisca'))
-    t.push({ titulo: 'Beliscar à noite', texto: 'O que escapa depois do jantar é o que mais segura o déficit sem você perceber.' });
-  if (habitos.includes('delivery') || habitos.includes('refri') || habitos.includes('doce'))
-    t.push({ titulo: 'Calorias que não matam a fome', texto: 'Refrigerante, doce e delivery somam muito e deixam você com fome do mesmo jeito.' });
+    t.push({
+      titulo: 'Beliscar à noite',
+      texto: 'O que escapa depois do jantar soma calorias sem você contar e segura o déficit.',
+      plano: refeicoes
+        ? `O plano alimentar define o que comer em cada uma das suas ${refeicoes} refeições, então a noite deixa de ser sem regra.`
+        : 'O plano alimentar define o que comer em cada refeição, então a noite deixa de ser sem regra.',
+    });
+
+  const liquidas = [
+    habitos.includes('delivery') && 'delivery',
+    habitos.includes('refri') && 'refrigerante',
+    habitos.includes('doce') && 'doce',
+  ].filter(Boolean) as string[];
+  if (liquidas.length)
+    t.push({
+      titulo: `Calorias de ${liquidas.join(' e ')}`,
+      texto: 'Somam muito e não matam a fome, então o déficit não fecha.',
+      plano: habitos.includes('delivery')
+        ? 'O plano alimentar usa o que você gosta de comer, e o Guia Fim de Semana Sem Culpa mostra como encaixar o delivery sem perder a semana.'
+        : 'O plano alimentar é calculado com o que você gosta de comer, então não precisa cortar tudo de uma vez.',
+    });
+
   if (r.dietaAntes === 'voltou' || r.dietaAntes === 'fome')
-    t.push({ titulo: 'Efeito sanfona', texto: 'Dieta radical que não dá pra manter faz o peso voltar. O plano precisa caber na sua vida.' });
-  if (r.sono === 'lt5' || r.sono === '5-6')
-    t.push({ titulo: 'Sono curto', texto: 'Dormir pouco aumenta a fome no dia seguinte e atrapalha a recuperação do treino.' });
+    t.push({
+      titulo: r.dietaAntes === 'voltou' ? 'Peso que voltou depois da dieta' : 'Dieta com fome que você largou',
+      texto:
+        r.dietaAntes === 'voltou'
+          ? 'Dieta radical que não dá pra manter faz o peso voltar.'
+          : 'Passar fome faz largar no meio, e o peso volta.',
+      plano: 'O plano é calculado pro seu peso e a sua rotina, com o que você gosta de comer, pra você conseguir seguir os 42 dias.',
+    });
+
   if (lista(r.jaTentou).includes('abdominal'))
-    t.push({ titulo: 'Só abdominal', texto: 'Fortalece o músculo, mas não tira a capa de gordura que cobre ele.' });
+    t.push({
+      titulo: 'Abdominal sem tirar a gordura',
+      texto: 'Fortalece o músculo, mas não tira a capa de gordura que cobre ele.',
+      plano: 'O desafio ataca as 2 frentes juntas: alimentação calculada pra tirar a capa e treino de abdômen com sobrecarga progressiva.',
+    });
+
   if (r.rotina === 'sedentary')
-    t.push({ titulo: 'Dia inteiro sentado', texto: 'Gasta pouca energia fora do treino, então a alimentação pesa ainda mais.' });
+    t.push({
+      titulo: 'Dia inteiro sentado',
+      texto: 'Você gasta pouca energia fora do treino, então a alimentação pesa ainda mais.',
+      plano: 'O plano inclui cardio calculado, além do treino de abdômen.',
+    });
+
   return t.slice(0, 3);
 }
 

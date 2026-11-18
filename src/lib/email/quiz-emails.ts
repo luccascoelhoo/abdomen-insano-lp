@@ -76,8 +76,13 @@ export function emailPlano(r: Respostas, links: { confirmar: string | null; sair
       : 'O foco do seu plano é <b>tirar a capa de gordura e construir o abdômen</b>, sem mirar a balança.';
 
   const travasHtml = minhas.length
-    ? `<p style="margin:22px 0 8px;font-weight:900">O que está segurando o seu abdômen</p><ol style="margin:0;padding-left:20px">${minhas
-        .map((t) => `<li style="margin:0 0 8px"><b>${esc(t.titulo)}</b>: ${esc(t.texto)}</li>`)
+    ? `<p style="margin:22px 0 8px;font-weight:900">${
+        minhas.length === 1 ? 'O hábito que mais está escondendo o seu abdômen' : `Os ${minhas.length} hábitos que mais estão escondendo o seu abdômen`
+      }</p><ol style="margin:0;padding-left:20px">${minhas
+        .map(
+          (t) =>
+            `<li style="margin:0 0 10px"><b>${esc(t.titulo)}</b>: ${esc(t.texto)}<br><span style="color:#c2410c;font-weight:700">No plano:</span> ${esc(t.plano)}</li>`,
+        )
         .join('')}</ol>`
     : '';
 
@@ -100,7 +105,7 @@ ${confirmarHtml}`;
     `${nome ? nome + ', o' : 'O'} seu Plano Capa Zero está pronto.`,
     `Capa de gordura: ${capa.rotulo}.`,
     p && p.peso42 < p.pesoAtual ? `Estimativa em 42 dias: ${kg(p.pesoAtual)} kg -> ${kg(p.peso42)} kg.` : '',
-    ...minhas.map((t) => `- ${t.titulo}: ${t.texto}`),
+    ...minhas.map((t) => `- ${t.titulo}: ${t.texto} No plano: ${t.plano}`),
     `Começar: ${linkOferta('plano')}`,
     links.confirmar ? `Confirme seu e-mail para receber dicas: ${links.confirmar}` : '',
     links.sair ? `Sair da lista: ${links.sair}` : '',
