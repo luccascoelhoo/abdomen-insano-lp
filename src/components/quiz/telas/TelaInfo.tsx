@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { ComparadorAntesDepois } from '@/components/ui/ComparadorAntesDepois';
+import { AntesDepois } from '@/components/ui/AntesDepois';
 import { Rico } from '@/components/v2/Rico';
 import { texto } from '../motor';
 import type { PropsTela, TelaInfo as TelaInfoT } from '../tipos';
@@ -18,7 +18,7 @@ export function TelaInfo({ tela, respostas, avancar }: PropsTela<TelaInfoT>) {
       </h1>
       {tela.comparador && (
         <div className="q-info__comparador">
-          <ComparadorAntesDepois {...tela.comparador} />
+          <AntesDepois {...tela.comparador} />
         </div>
       )}
       {tela.img && !tela.comparador && (

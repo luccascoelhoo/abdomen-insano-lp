@@ -143,8 +143,6 @@ export const depoimentosV2 = {
    * exibição): os de mudança mais visível. Os demais vão para o carrossel.
    */
   destaques: [4, 1, 7],
-  /** Recorte vertical por caso no comparador (padrão 45%): onde fica o abdômen. */
-  focoY: { 7: '22%' } as Record<number, string>,
   legendaDestaque: 'Aluno do Desafio Abdômen Insano',
   maisResultados: 'Mais resultados de alunos',
 } as const;

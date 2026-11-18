@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { Rico } from '@/components/v2/Rico';
-import { ComparadorAntesDepois } from '@/components/ui/ComparadorAntesDepois';
+import { AntesDepois } from '@/components/ui/AntesDepois';
 import { depoimentosV2 } from '@/content/lp-v2';
 import { usePreco } from '@/components/ui/Precos';
 import { NOME_EVENTO, textosCapa, textosResultado, telasQuiz } from '@/content/quiz';
@@ -330,7 +330,7 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
             <div className="qr-painel qr-real">
               <h2 className="qr-painel__titulo">E esse é um aluno de verdade</h2>
               <div className="qr-real__card">
-                <ComparadorAntesDepois src={casoReal.src} alt={casoReal.alt} legenda={depoimentosV2.legendaDestaque} />
+                <AntesDepois src={casoReal.src} alt={casoReal.alt} legenda={depoimentosV2.legendaDestaque} />
               </div>
             </div>
           )}
