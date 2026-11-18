@@ -126,7 +126,7 @@ export function idade(nascimento: string | undefined, hoje = new Date()): number
 /* ------------------------------------------------------------------ travas */
 
 export interface Trava {
-  /** O hábito da pessoa, dito por ela nas respostas. */
+  /** O hábito (ou crença) da pessoa, dito por ela nas respostas. */
   titulo: string;
   /** Por que isso esconde o abdômen (uma linha). */
   texto: string;
@@ -134,17 +134,21 @@ export interface Trava {
   plano: string;
 }
 
+/** Quantos tipos de trava o quiz sabe reconhecer (o "M" de "N de M"). */
+export const TOTAL_TRAVAS = 10;
+
 /**
- * "Os hábitos que estão escondendo o seu abdômen": até 3, tirados das respostas.
- * Cada um diz (1) o hábito, (2) por que atrapalha e (3) o que o plano faz,
+ * Todas as travas que as respostas revelam, da principal para a menor. Cada
+ * uma diz (1) o hábito, (2) por que atrapalha e (3) o que o plano faz,
  * usando só o que a página de vendas já promete: alimentação calculada pro
  * peso, rotina e gosto da pessoa; Guia Fim de Semana Sem Culpa; treino de
- * abdômen com sobrecarga progressiva; cardio calculado. Nada de explicação
- * hormonal, e nenhuma trava sem resposta do plano.
+ * abdômen com sobrecarga progressiva; cardio calculado; app gamificado.
+ * Nada de explicação hormonal, e nenhuma trava sem resposta do plano.
  */
-export function travas(r: Respostas): Trava[] {
+export function todasAsTravas(r: Respostas): Trava[] {
   const lista = (v: unknown): string[] => (Array.isArray(v) ? (v as string[]) : []);
   const habitos = lista(r.habitos);
+  const impediu = lista(r.impediu);
   const refeicoes = typeof r.refeicoes === 'string' && r.refeicoes ? r.refeicoes : '';
   const t: Trava[] = [];
 
@@ -181,14 +185,38 @@ export function travas(r: Respostas): Trava[] {
         : 'O plano alimentar é calculado com o que você gosta de comer, então não precisa cortar tudo de uma vez.',
     });
 
-  if (r.dietaAntes === 'voltou' || r.dietaAntes === 'fome')
+  const planoSanfona =
+    'O plano é calculado pro seu peso e a sua rotina, com o que você gosta de comer, pra você conseguir seguir os 42 dias.';
+  if (r.dietaAntes === 'voltou')
+    t.push({ titulo: 'Peso que voltou depois da dieta', texto: 'Dieta radical que não dá pra manter faz o peso voltar.', plano: planoSanfona });
+  else if (r.dietaAntes === 'fome' || impediu.includes('fome'))
+    t.push({ titulo: 'Dieta com fome que você largou', texto: 'Passar fome faz largar no meio, e o peso volta.', plano: planoSanfona });
+  else if (impediu.includes('desisti'))
     t.push({
-      titulo: r.dietaAntes === 'voltou' ? 'Peso que voltou depois da dieta' : 'Dieta com fome que você largou',
-      texto:
-        r.dietaAntes === 'voltou'
-          ? 'Dieta radical que não dá pra manter faz o peso voltar.'
-          : 'Passar fome faz largar no meio, e o peso volta.',
-      plano: 'O plano é calculado pro seu peso e a sua rotina, com o que você gosta de comer, pra você conseguir seguir os 42 dias.',
+      titulo: 'Começar e desistir no meio',
+      texto: 'Um plano que não cabe na rotina costuma ser largado no meio do caminho.',
+      plano: planoSanfona,
+    });
+
+  if (impediu.includes('plano'))
+    t.push({
+      titulo: 'Treinar e comer sem um plano claro',
+      texto: 'Sem saber o que fazer em cada dia, é fácil improvisar e perder o rumo.',
+      plano: 'O app entrega a trilha de treinos, a alimentação simplificada e a sua evolução registrada, passo a passo.',
+    });
+
+  if (impediu.includes('tempo'))
+    t.push({
+      titulo: 'Falta de tempo',
+      texto: 'Com a rotina corrida, o treino é o primeiro a cair.',
+      plano: 'Dá resultado com treino de abdômen e cardio calculado só 2x por semana.',
+    });
+
+  if (impediu.includes('motivacao'))
+    t.push({
+      titulo: 'Falta de motivação',
+      texto: 'Sem resultado visível, a vontade some antes de o abdômen aparecer.',
+      plano: 'O app é gamificado, mostra a sua evolução semana a semana e tem a Comunidade Anti Falhas te puxando nos dias difíceis.',
     });
 
   if (lista(r.jaTentou).includes('abdominal'))
@@ -205,7 +233,19 @@ export function travas(r: Respostas): Trava[] {
       plano: 'O plano inclui cardio calculado, além do treino de abdômen.',
     });
 
-  return t.slice(0, 3);
+  if (impediu.includes('genetica'))
+    t.push({
+      titulo: 'Achar que é genética',
+      texto: 'A genética influencia o formato dos gomos, mas não decide sozinha se o abdômen aparece.',
+      plano: 'O que faz o abdômen aparecer são as 2 frentes juntas: tirar a capa com o déficit certo e construir o músculo com treino.',
+    });
+
+  return t;
+}
+
+/** As 3 principais (e-mails do plano e dos lembretes). */
+export function travas(r: Respostas): Trava[] {
+  return todasAsTravas(r).slice(0, 3);
 }
 
 /* ------------------------------------------------- ponte para o cadastro do app */

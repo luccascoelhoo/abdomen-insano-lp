@@ -1,51 +1,33 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
-import { textosResultado } from '@/content/quiz';
-import { primeiroNome } from '../motor';
+import { useEffect, useMemo, type ReactNode } from 'react';
+import { ProvedorOferta } from '../oferta/contexto';
 import type { PropsTela } from '../tipos';
 
 /**
- * Tela 'oferta': cabeçalho com o nome, o lembrete do e-mail (é por ele que o
- * plano chega ao app) e os blocos de venda da home, renderizados no servidor
- * (`BlocoOfertaQuiz`) e recebidos prontos em `oferta`.
+ * Tela 'oferta': a casca da página final. Os blocos (cartão premium com o
+ * preço, "como funciona", as 3 engrenagens, garantia, FAQ) chegam prontos do
+ * servidor em `oferta` (`BlocoOfertaQuiz`); aqui só se abre o contexto com as
+ * respostas, que o cartão premium usa pra personalizar o texto, e o atalho de
+ * corrigir o e-mail. No fim, "Refazer o quiz" (quando o quiz oferece recomecar).
  */
-export function TelaOferta({ respostas: r, oferta, irPara }: PropsTela & { oferta: ReactNode }) {
+export function TelaOferta({ respostas, oferta, irPara, recomecar }: PropsTela & { oferta: ReactNode }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const t = textosResultado.oferta;
-  const nome = primeiroNome(r);
-  const titulo = nome ? `${nome}, ${t.titulo[0].toLowerCase()}${t.titulo.slice(1)}` : t.titulo;
-  const email = typeof r.email === 'string' ? r.email.trim() : '';
+  const dados = useMemo(() => ({ respostas, irPara }), [respostas, irPara]);
 
   return (
     <div className="qr-oferta">
-      <div className="v2 qr">
-        <section className="v2-sec v2-sec--preto qr-sec qr-oferta__topo">
-          <div className="qr-col">
-            <p className="qr-olho qr-olho--escuro">O seu Plano Capa Zero está pronto</p>
-            <h1 className="v2-h2 qr-titulo">{titulo}</h1>
-            {email && (
-              <div className="qr-email" role="note">
-                <p className="qr-email__linha">
-                  {t.lembreteEmail} <b className="qr-email__endereco">{email}</b>
-                </p>
-                <p className="qr-email__porque">
-                  É com esse e-mail que você entra no app, e o seu plano já chega montado lá dentro.
-                </p>
-                {irPara && (
-                  <button type="button" className="qr-email__corrigir" onClick={() => irPara('email')}>
-                    Digitou errado? Corrigir o e-mail
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
-      {oferta}
+      <ProvedorOferta value={dados}>{oferta}</ProvedorOferta>
+      {recomecar && (
+        <div className="v2 qo-refazer-faixa">
+          <button type="button" className="qo-refazer" onClick={recomecar}>
+            Refazer o quiz
+          </button>
+        </div>
+      )}
     </div>
   );
 }

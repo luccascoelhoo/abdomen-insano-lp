@@ -37,7 +37,7 @@ export function Quiz({ oferta }: { oferta: ReactNode }) {
 
   if (!q.pronto) return <main className="quiz" aria-busy="true" />;
   const Componente = TELAS[q.tela.k];
-  const semBarra = q.tela.k === 'diagnostico' || q.tela.k === 'plano' || q.tela.k === 'oferta';
+  const semBarra = ['diagnostico', 'projecao', 'plano', 'desconto', 'oferta'].includes(q.tela.k);
   // Barra persuasiva: começa rápido e desacelera (ver `progressoPersuasivo`).
   const visual = progressoPersuasivo(q.progresso);
   const pct = Math.round(visual * 100);
