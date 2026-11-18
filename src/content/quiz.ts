@@ -306,8 +306,15 @@ export const telasQuiz: Tela[] = [
     k: 'info',
     bloco: 4,
     titulo: 'Quem vai conduzir os seus 42 dias',
-    img: '/img/igor-hoje.webp',
-    imgPosicao: '50% 22%',
+    comparador: {
+      src: '/img/igor-antes-depois.webp',
+      alt: 'Igor Correa antes, magro, e hoje, com o shape definido',
+      rotuloAntes: 'ANTES',
+      rotuloDepois: 'HOJE',
+      legenda: 'Eu mesmo, antes e hoje',
+      proporcao: '3 / 4',
+      semMedalha: true,
+    },
     linhas: [
       'Eu sou o **Igor Correa**. Passei a vida sendo zoado por ser magro demais, até levar a sério a academia e os estudos de **nutrição e educação física**.',
       'Hoje eu impacto **mais de 1 milhão de pessoas por mês** nas redes, e criei o Desafio Abdômen Insano pra você dar o primeiro passo com um plano de verdade.',
