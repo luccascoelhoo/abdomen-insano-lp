@@ -125,7 +125,7 @@ export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>)
       <label className="q-check">
         <input type="checkbox" checked={aceite} onChange={(e) => setAceite(e.target.checked)} />
         <span className="q-check__caixa" aria-hidden="true" />
-        <span>Quero receber o meu plano e dicas por e-mail</span>
+        <span>Quero receber dicas e lembretes do desafio por e-mail</span>
       </label>
 
       {/* Isca anti-robô: gente não vê nem alcança; robô preenche. */}
