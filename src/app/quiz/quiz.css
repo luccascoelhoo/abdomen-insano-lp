@@ -469,8 +469,9 @@ button.quiz__voltar:active {
   position: relative;
   flex: none;
   margin: 20px 0 22px;
-  aspect-ratio: 16 / 11;
-  max-height: 34vh;
+  /* A foto (hero-quiz.webp) já vem recortada do rosto ao abdômen. */
+  aspect-ratio: 1 / 1;
+  max-height: 42vh;
   width: 100%;
   border-radius: var(--q-raio-cartao);
   overflow: hidden;
@@ -478,7 +479,7 @@ button.quiz__voltar:active {
 }
 .q-abertura__img img {
   object-fit: cover;
-  object-position: 50% 55%;
+  object-position: 50% 8%;
 }
 .q-pergunta {
   margin: 0 0 14px;
@@ -1118,7 +1119,7 @@ button.quiz__voltar:active {
     padding-top: 36px;
   }
   .q-abertura__img {
-    max-height: 300px;
+    max-height: 440px;
   }
 }
 
