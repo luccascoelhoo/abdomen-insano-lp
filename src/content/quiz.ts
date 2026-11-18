@@ -45,7 +45,7 @@ export const telasQuiz: Tela[] = [
     titulo: 'Descubra em 2 minutos o que está **escondendo o seu abdômen**',
     sub: 'Responda e receba o seu **Plano Capa Zero de 42 dias**, feito pro seu corpo e pra sua rotina.',
     pergunta: 'Pra começar: qual a sua idade?',
-    img: '/img/hero-atleta.jpg',
+    img: '/img/hero-quiz-2.webp',
     opcoes: opcoes([['18-24', '18 a 24'], ['25-34', '25 a 34'], ['35-44', '35 a 44'], ['45+', '45 ou mais']]),
   },
   {
