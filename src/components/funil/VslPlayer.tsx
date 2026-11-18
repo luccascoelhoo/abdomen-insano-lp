@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
-import { PlayerInsano } from '@/components/player/PlayerInsano';
-import { marcosDoFunil } from '@/components/player/marcosDoFunil';
+import dynamic from 'next/dynamic';
+import { useEffect, useRef } from 'react';
 import type { Vsl } from '@/content/desafio';
 
 type SmartPlayer = HTMLElement & {
@@ -198,32 +197,12 @@ function VslVturb({ vsl }: { vsl: Vsl }) {
  * VSL do funil: nosso player quando `vsl.proprio` está preenchido, VTurb
  * caso contrário (troca por página, em content/desafio.ts).
  */
+/**
+ * O player próprio (hls.js, marcos, métricas) só é baixado nas páginas que usam
+ * `vsl.proprio`; quem segue no VTurb não paga nada por ele.
+ */
+const VslProprio = dynamic(() => import('./VslProprio').then((m) => m.VslProprio));
+
 export function VslPlayer({ vsl }: { vsl: Vsl }) {
   return vsl.proprio ? <VslProprio vsl={vsl} proprio={vsl.proprio} /> : <VslVturb vsl={vsl} />;
-}
-
-function VslProprio({ vsl, proprio }: { vsl: Vsl; proprio: NonNullable<Vsl['proprio']> }) {
-  const { playerId, delaySegundos, recusaSegundos } = vsl;
-  const marcos = useMemo(
-    () => marcosDoFunil({ playerId, delaySegundos, recusaSegundos }),
-    [playerId, delaySegundos, recusaSegundos],
-  );
-  const base = proprio.base.replace(/\/+$/, '');
-  return (
-    <div className="funil__vsl">
-      <PlayerInsano
-        titulo="Vídeo da oferta"
-        video={{
-          id: playerId,
-          hls: `${base}/master.m3u8`,
-          mp4: proprio.mp4 ? `${base}/${proprio.mp4}` : undefined,
-          poster: `${base}/poster.jpg`,
-          proporcao: proprio.proporcao,
-          duracao: proprio.duracao,
-        }}
-        opcoes={{ velocidade: proprio.velocidade ?? 1.2 }}
-        marcos={marcos}
-      />
-    </div>
-  );
 }
