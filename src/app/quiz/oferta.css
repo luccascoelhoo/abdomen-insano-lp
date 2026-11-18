@@ -1,0 +1,431 @@
+/* ============================================================
+   Quiz — tela final de oferta (cartão premium). Mobile primeiro.
+
+   Prefixo `qo-` (quiz oferta). Vive dentro de `.v2` (v2.css): usa os
+   mesmos tokens (laranja, verde do botão de compra, amarelo) sobre o
+   fundo quase preto da marca. Só `opacity`/`transform` se mexem.
+   ============================================================ */
+
+.v2.qo-blocos {
+  background: #0c0a0b;
+}
+
+/* ---------- cartão premium (o topo) ---------- */
+.v2 .qo {
+  position: relative;
+  padding: 28px 0 44px;
+  background:
+    radial-gradient(ellipse 90% 380px at 50% -40px, rgba(255, 107, 0, 0.22), transparent 70%),
+    radial-gradient(ellipse 70% 320px at 50% 100%, rgba(255, 107, 0, 0.08), transparent 70%),
+    #0c0a0b;
+}
+.qo-col {
+  width: 100%;
+  max-width: 560px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 640px) {
+  .v2 .qo {
+    padding: 52px 0 72px;
+  }
+  .qo-col {
+    max-width: 600px;
+    padding-inline: 20px;
+  }
+}
+
+/* selo verde do desconto */
+.v2 .qo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 0 auto 18px;
+  padding: 8px 16px 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  background: rgba(22, 163, 74, 0.16);
+  color: #6ee7a0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  box-shadow: 0 0 28px -6px rgba(34, 197, 94, 0.35);
+}
+.qo-banner__icone {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 3px;
+  border-radius: 50%;
+  background: var(--v2-verde);
+  color: #fff;
+}
+
+.v2 .qo-titulo {
+  margin-bottom: 12px !important;
+  text-align: center;
+  color: #fff;
+  font-size: clamp(1.7rem, 1.25rem + 2vw, 2.4rem);
+  line-height: 1.12;
+}
+.v2 .qo-sub {
+  margin: 0 0 24px;
+  text-align: center;
+  color: #c9c4c0;
+  font-size: 1.02rem;
+}
+
+/* lembrete do e-mail */
+.qo-email {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 206, 59, 0.3);
+  background: linear-gradient(180deg, rgba(255, 206, 59, 0.08), rgba(255, 206, 59, 0.03));
+}
+.qo-email__icone {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  color: var(--v2-amarelo);
+}
+.v2 .qo-email__linha {
+  margin: 0 0 4px;
+  color: #f2f2f2;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.v2 .qo-email__endereco {
+  color: var(--v2-amarelo);
+  overflow-wrap: anywhere;
+}
+.v2 .qo-email__porque {
+  margin: 0;
+  color: #b3aeaa;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.qo-email__corrigir {
+  display: inline-block;
+  margin: 6px 0 0;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  color: #f2f2f2;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.qo-email__corrigir:focus-visible {
+  outline: 2px solid var(--v2-amarelo);
+  outline-offset: 3px;
+}
+
+/* ---------- "O que você recebe" ---------- */
+.qo-stack {
+  margin-bottom: 18px;
+  padding: 22px 16px 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #1a1614 0%, #121010 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 107, 0, 0.16),
+    0 30px 70px -34px rgba(255, 107, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+@media (min-width: 640px) {
+  .qo-stack {
+    padding: 28px 28px 24px;
+  }
+}
+.v2 .qo-stack__titulo,
+.v2 .qo-stack__sub {
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--v2-laranja);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.v2 .qo-stack__titulo::after,
+.v2 .qo-stack__sub::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 107, 0, 0.45), transparent);
+}
+.v2 .qo-stack__sub {
+  margin-top: 22px;
+  color: #d9a27a;
+}
+.qo-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.qo-item {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.qo-item--bonus {
+  grid-template-columns: 26px 1fr auto;
+  gap: 10px 12px;
+  align-items: center;
+}
+.qo-item__check {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: rgba(22, 163, 74, 0.2);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  color: #4ade80;
+}
+.qo-item--bonus .qo-item__check {
+  width: 24px;
+  height: 24px;
+  margin-top: 0;
+}
+.qo-item__check svg {
+  width: 14px;
+  height: 14px;
+}
+.qo-item__texto {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.qo-item__titulo {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.38;
+}
+.qo-item--bonus .qo-item__titulo {
+  font-weight: 600;
+  font-size: 0.97rem;
+}
+.qo-item__detalhe {
+  color: #aaa4a0;
+  font-size: 0.88rem;
+  line-height: 1.42;
+}
+.qo-item__tag {
+  align-self: start;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 206, 59, 0.14);
+  color: var(--v2-amarelo);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+.qo-lista--bonus {
+  gap: 12px;
+}
+
+/* ---------- preço ---------- */
+.qo-preco {
+  padding: 26px 18px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  background:
+    radial-gradient(ellipse 80% 140px at 50% 0%, rgba(255, 107, 0, 0.14), transparent 80%),
+    #14100e;
+  text-align: center;
+  box-shadow: 0 30px 70px -36px rgba(255, 107, 0, 0.5);
+}
+.v2 .qo-preco p {
+  margin: 0;
+}
+.v2 .qo-preco__rotulo {
+  color: #b9b3af;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.v2 .qo-preco__de {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 10px;
+  color: #8f8985;
+  font-size: 1.05rem;
+}
+.qo-preco__de s {
+  color: #8f8985;
+  text-decoration-color: var(--v2-vermelho);
+  text-decoration-thickness: 2px;
+  font-weight: 600;
+}
+.qo-preco__pct {
+  color: #4ade80;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+.v2 .qo-preco__principal {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 6px;
+  color: #fff;
+  line-height: 1;
+}
+.qo-preco__vezes {
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.8rem);
+  font-weight: 800;
+  color: #d8d2ce;
+}
+.qo-preco__moeda {
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.6rem);
+  font-weight: 800;
+  color: #d8d2ce;
+}
+.qo-preco__valor {
+  font-size: clamp(3.2rem, 2.4rem + 3.4vw, 4.4rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  background: linear-gradient(180deg, #fff 30%, #ffd9bd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.v2 .qo-preco__avista {
+  margin-top: 10px;
+  color: #c9c4c0;
+  font-size: 1.02rem;
+}
+.v2 .qo-preco__avista b {
+  color: #fff;
+}
+.qo-cta {
+  margin-top: 22px;
+}
+/* O mesmo anel pulsante do card de preço da home (`v2-anel`, em v2.css). */
+.qo-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--v2-verde);
+  opacity: 0;
+  pointer-events: none;
+  animation: v2-anel 2.6s ease-out 1.2s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .qo-cta::after {
+    animation: none;
+  }
+}
+.v2 .qo-preco__seguro,
+.v2 .qo-preco__garantia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #a39d99;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+.v2 .qo-preco__seguro {
+  margin-top: 14px;
+}
+.qo-preco__icone {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  color: #8f8985;
+}
+.v2 .qo-preco__garantia {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  color: #c9c4c0;
+}
+.v2 .qo-preco__garantia b {
+  color: #fff;
+}
+.qo-preco__garantia .qo-preco__icone {
+  width: 22px;
+  height: 22px;
+  color: #4ade80;
+}
+
+/* repetição enxuta no fim */
+.qo-preco--compacto {
+  padding: 22px 16px 18px;
+}
+.qo-preco--compacto .qo-preco__valor {
+  font-size: clamp(2.8rem, 2.2rem + 2.6vw, 3.6rem);
+}
+
+/* ---------- blocos reaproveitados da home ---------- */
+/* Um fio entre o cartão e o "Como funciona", que tem o mesmo fundo escuro. */
+.qo-blocos .qo + .v2-sec--preto {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.v2 .qo-fecho {
+  padding-block: 40px 56px;
+}
+.v2 .qo-fecho__titulo {
+  margin-bottom: 18px !important;
+  color: #fff;
+  font-size: clamp(1.4rem, 1.1rem + 1.4vw, 1.9rem);
+}
+
+/* ---------- refazer o quiz (último item da tela) ---------- */
+.v2 .qo-refazer-faixa {
+  display: flex;
+  justify-content: center;
+  padding: 4px 16px 28px;
+  background: var(--v2-fim);
+}
+.qo-refazer {
+  min-height: 48px;
+  padding: 12px 20px;
+  background: none;
+  border: 0;
+  color: #8f8985;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.qo-refazer:hover {
+  color: #c9c4c0;
+}
+.qo-refazer:focus-visible {
+  outline: 2px solid var(--v2-laranja);
+  outline-offset: 2px;
+}

@@ -7,6 +7,7 @@ import { ID_FRONT, produtoPorId } from '@/lib/produtos';
 import '@/app/v2/v2.css';
 import './quiz.css';
 import './resultado.css';
+import './oferta.css';
 import './controles.css';
 
 export const metadata: Metadata = {
