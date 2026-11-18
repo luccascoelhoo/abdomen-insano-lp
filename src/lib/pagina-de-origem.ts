@@ -24,7 +24,7 @@ const SLUG_VALIDO = /^[a-z0-9-]{1,40}$/;
  * terceiro com "__" não inventa página. Página nova com botão de compra entra
  * aqui, senão as vendas dela são contadas como da home.
  */
-const PAGINAS = new Set([SLUG_HOME, 'v3', 'antiga']);
+const PAGINAS = new Set([SLUG_HOME, 'v3', 'antiga', 'quiz']);
 
 /** `/` → "home", `/v3` → "v3", `/v3/` → "v3". Fora do padrão vira "home". */
 function slugDoCaminho(caminho: string): string {
