@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { telasQuiz } from '@/content/quiz';
+import { progressoPersuasivo } from './calculos';
 import { useQuiz } from './motor';
 import { TELAS } from './telas';
 
@@ -36,8 +37,10 @@ export function Quiz({ oferta }: { oferta: ReactNode }) {
 
   if (!q.pronto) return <main className="quiz" aria-busy="true" />;
   const Componente = TELAS[q.tela.k];
-  const semBarra = q.tela.k === 'diagnostico' || q.tela.k === 'plano' || q.tela.k === 'oferta';
-  const pct = Math.round(q.progresso * 100);
+  const semBarra = ['diagnostico', 'projecao', 'plano', 'desconto', 'oferta'].includes(q.tela.k);
+  // Barra persuasiva: começa rápido e desacelera (ver `progressoPersuasivo`).
+  const visual = progressoPersuasivo(q.progresso);
+  const pct = Math.round(visual * 100);
   return (
     <main className={`quiz quiz--${q.tela.k}${semBarra ? '' : ' quiz--pergunta'}`}>
       {!semBarra && (
@@ -60,7 +63,7 @@ export function Quiz({ oferta }: { oferta: ReactNode }) {
               aria-valuemax={100}
               aria-valuenow={pct}
             >
-              {q.progresso > 0 && <span style={{ width: `${q.progresso * 100}%` }} />}
+              <span style={{ width: `${visual * 100}%` }} />
             </div>
           </div>
         </header>

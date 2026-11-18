@@ -23,12 +23,11 @@ function utmDoNavegador(): Record<string, string> {
   return utm;
 }
 
-/** Nome + e-mail + aceite. Dispara o Lead, manda o cadastro e segue sem esperar a rede. */
+/** E-mail + aceite. Dispara o Lead, manda o cadastro e segue sem esperar a rede. */
 export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>) {
-  const [nome, setNome] = useState(typeof respostas.nome === 'string' ? respostas.nome : '');
   const [email, setEmail] = useState(typeof respostas.email === 'string' ? respostas.email : '');
   const [aceite, setAceite] = useState(respostas.aceiteEmail === true);
-  const [erros, setErros] = useState<{ nome?: string; email?: string }>({});
+  const [erros, setErros] = useState<{ email?: string }>({});
   const [enviando, setEnviando] = useState(false);
   const id = useId();
   const sub = texto(tela.sub, respostas);
@@ -36,21 +35,19 @@ export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>)
   const enviar = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (enviando) return;
-    const n = nome.trim();
     const m = email.trim();
     const novos: typeof erros = {};
-    if (n.length < 2) novos.nome = 'Digite o seu nome.';
-    else if (n.length > 80) novos.nome = 'Use até 80 letras.';
     if (!emailValido(m.toLowerCase())) novos.email = 'Digite um e-mail válido.';
     setErros(novos);
-    if (novos.nome || novos.email) {
-      document.getElementById(novos.nome ? `${id}-nome` : `${id}-email`)?.focus();
+    if (novos.email) {
+      document.getElementById(`${id}-email`)?.focus();
       return;
     }
 
     setEnviando(true);
     const site = String(new FormData(e.currentTarget).get('site') ?? '');
-    const valores = { nome: n, email: m, aceiteEmail: aceite };
+    // O nome já veio da tela anterior (respostas.nome).
+    const valores = { email: m, aceiteEmail: aceite };
     rastrear('Lead');
     // Sem `await`: a pessoa segue para o diagnóstico enquanto o cadastro viaja.
     enviarQuiz(montarPayload({ ...respostas, ...valores }, utmDoNavegador(), site)).catch(() => {});
@@ -69,29 +66,6 @@ export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>)
           </p>
         )}
       </header>
-
-      <div className="q-campo">
-        <label htmlFor={`${id}-nome`}>Seu nome</label>
-        <input
-          id={`${id}-nome`}
-          className="q-input"
-          type="text"
-          name="nome"
-          maxLength={80}
-          autoComplete="given-name"
-          autoCapitalize="words"
-          enterKeyHint="next"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          aria-invalid={!!erros.nome}
-          aria-describedby={erros.nome ? `${id}-nome-erro` : undefined}
-        />
-        {erros.nome && (
-          <p className="q-erro" id={`${id}-nome-erro`}>
-            {erros.nome}
-          </p>
-        )}
-      </div>
 
       <div className="q-campo">
         <label htmlFor={`${id}-email`}>Seu melhor e-mail</label>
@@ -125,7 +99,7 @@ export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>)
       <label className="q-check">
         <input type="checkbox" checked={aceite} onChange={(e) => setAceite(e.target.checked)} />
         <span className="q-check__caixa" aria-hidden="true" />
-        <span>Quero receber o meu plano e dicas por e-mail</span>
+        <span>Quero receber dicas e lembretes do desafio por e-mail</span>
       </label>
 
       {/* Isca anti-robô: gente não vê nem alcança; robô preenche. */}

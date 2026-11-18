@@ -91,3 +91,13 @@ revoke all on table public.quiz_respostas from public;
 revoke all on table public.quiz_respostas from anon;
 revoke all on table public.quiz_respostas from authenticated;
 grant select, insert, update, delete on table public.quiz_respostas to service_role;
+
+-- E-mails do quiz (17/11/2026): plano logo depois do quiz e lembretes
+-- (só com aceite confirmado e sem compra). 9 = parou (comprou).
+alter table public.quiz_respostas
+    add column if not exists plano_enviado_em timestamptz,
+    add column if not exists lembrete_etapa   smallint not null default 0 check (lembrete_etapa between 0 and 9),
+    add column if not exists lembrete_em      timestamptz;
+create index if not exists quiz_respostas_lembretes_idx
+    on public.quiz_respostas (lembrete_etapa, criado_em)
+    where aceite_email and aceite_email_confirmado_em is not null;

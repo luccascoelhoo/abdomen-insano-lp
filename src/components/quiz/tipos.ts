@@ -109,6 +109,20 @@ export interface TelaInfo extends Base {
   titulo: Texto;
   linhas: Texto[];
   img?: string;
+  /** object-position da foto (ex.: '50% 20%' para mostrar o rosto). */
+  imgPosicao?: string;
+  /** Antes e depois de arrastar (montagem com as duas metades), no lugar da foto. */
+  comparador?: {
+    src: string;
+    alt: string;
+    rotuloAntes?: string;
+    rotuloDepois?: string;
+    legenda?: string;
+    /** Largura / altura da montagem inteira, ex.: '3 / 2'. */
+    proporcao?: string;
+    /** Desenha divisória e seta no meio (montagem sem a divisória gravada). */
+    divisoria?: boolean;
+  };
   /** Destaque numérico grande (ex.: "+5.500"). */
   destaque?: Texto;
   botao?: string;
@@ -126,7 +140,15 @@ export interface TelaCarregando extends Base {
   etapas: string[];
 }
 
-/** Nome + e-mail + aceite de e-mails. Grava `nome`, `email`, `aceiteEmail`. */
+/** Só o nome, numa tela própria (uma coisa por vez). Grava `nome`. */
+export interface TelaNome extends Base {
+  k: 'nome';
+  chave: 'nome';
+  titulo: Texto;
+  sub?: Texto;
+}
+
+/** E-mail + aceite de e-mails (o nome vem da tela `nome`). Grava `email`, `aceiteEmail`. */
 export interface TelaEmail extends Base {
   k: 'email';
   titulo: Texto;
@@ -137,6 +159,16 @@ export interface TelaEmail extends Base {
 /** Diagnóstico personalizado (IMC, capa, projeção de 42 dias). */
 export interface TelaDiagnostico extends Base {
   k: 'diagnostico';
+}
+
+/** Os números: IMC, capa, projeção de 42 dias, corpo de hoje e objetivo. */
+export interface TelaProjecao extends Base {
+  k: 'projecao';
+}
+
+/** "Desconto liberado!": o percentual da página de vendas, revelado antes da oferta. */
+export interface TelaDesconto extends Base {
+  k: 'desconto';
 }
 
 /** O plano: as 3 engrenagens personalizadas. */
@@ -160,9 +192,12 @@ export type Tela =
   | TelaInfo
   | TelaCapa
   | TelaCarregando
+  | TelaNome
   | TelaEmail
   | TelaDiagnostico
+  | TelaProjecao
   | TelaPlano
+  | TelaDesconto
   | TelaOferta;
 
 /** Props comuns de todo componente de tela. */

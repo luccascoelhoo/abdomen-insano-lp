@@ -1,21 +1,28 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useRef } from 'react';
-import { Rico } from '@/components/v2/Rico';
 import { usePreco } from '@/components/ui/Precos';
 import { NOME_EVENTO, textosCapa, textosResultado, telasQuiz } from '@/content/quiz';
 import { oferta } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
-import { ateOEvento, chegadaNaMeta, idade, imc, nivelDaCapa, nivelPelaFoto, projecao, texto } from '../motor';
+import {
+  TOTAL_TRAVAS,
+  ateOEvento,
+  chegadaNaMeta,
+  nivelDaCapa,
+  primeiroNome,
+  projecao,
+  todasAsTravas,
+  type Trava,
+} from '../motor';
 import type { Projecao, PropsTela, Respostas } from '../tipos';
 
 /** "85,5" — número com vírgula e no máximo uma casa. */
-const kg = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+export const kg = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
 
 /** Faixas de IMC da OMS. */
-function categoriaImc(v: number): string {
+export function categoriaImc(v: number): string {
   if (v < 18.5) return 'Abaixo do peso';
   if (v < 25) return 'Peso normal';
   if (v < 30) return 'Sobrepeso';
@@ -25,7 +32,7 @@ function categoriaImc(v: number): string {
 }
 
 /** Rótulo da opção escolhida, lido do próprio roteiro (`content/quiz.ts`). */
-function rotuloDe(chave: string, v: unknown): string {
+export function rotuloDe(chave: string, v: unknown): string {
   for (const t of telasQuiz) {
     if ('chave' in t && t.chave === chave && 'opcoes' in t) {
       return t.opcoes.find((o) => o.v === v)?.rotulo ?? '';
@@ -34,21 +41,21 @@ function rotuloDe(chave: string, v: unknown): string {
   return '';
 }
 
-const AREA: Record<string, string> = {
+export const AREA: Record<string, string> = {
   barriga: 'Barriga',
   flancos: 'Flancos (o pneuzinho)',
   peito: 'Peito',
   todo: 'Corpo todo',
 };
 
-const IMG_ATUAL: Record<string, number> = { fina: 0, media: 1, grossa: 2, 'muito-grossa': 3 };
-const IMG_OBJETIVO: Record<string, number> = { seco: 0, trincado: 1, atletico: 2, forte: 3 };
+export const IMG_ATUAL: Record<string, number> = { fina: 0, media: 1, grossa: 2, 'muito-grossa': 3 };
+export const IMG_OBJETIVO: Record<string, number> = { seco: 0, trincado: 1, atletico: 2 };
 
 /**
  * Liga o plano à data da pessoa: estimativa até lá, no mesmo ritmo
  * conservador do gráfico, sempre dita como estimativa.
  */
-function textoEvento(r: Respostas): string | null {
+export function textoEvento(r: Respostas): string | null {
   const nome = NOME_EVENTO[String(r.evento)];
   if (!nome) return null;
   const ate = ateOEvento(r);
@@ -142,7 +149,7 @@ function GraficoProjecao({ p }: { p: Projecao }) {
   );
 }
 
-function Projecao42({ r }: { r: Respostas }) {
+export function Projecao42({ r }: { r: Respostas }) {
   const p = projecao(r);
   if (!p) return null;
   const chegada = chegadaNaMeta(r);
@@ -185,7 +192,11 @@ function Projecao42({ r }: { r: Respostas }) {
   );
 }
 
-/** Tela 'diagnostico': IMC, capa, área, idade, projeção de 42 dias e hoje → objetivo. */
+/**
+ * Tela 'diagnostico': UMA trava em foco, como a do Cariani (kicker, título,
+ * explicação, sinais com contagem e o que o plano faz), no lugar de vários
+ * blocos misturados. Os números (IMC, capa, projeção…) ficam na tela seguinte.
+ */
 export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela) {
   const valor = usePreco(ID_FRONT);
   const disparado = useRef(false);
@@ -216,105 +227,75 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
     );
   }, [valor]);
 
-  const b = imc(r);
+  const nome = primeiroNome(r);
+  const lista = todasAsTravas(r);
   const capa = textosCapa.niveis[nivelDaCapa(r)];
-  // A tela "capa" usou só a foto; com altura e peso o nível pode mudar.
-  const capaFoto = textosCapa.niveis[nivelPelaFoto(r)];
-  const ajustada = capaFoto.rotulo !== capa.rotulo;
-  const anos = idade(typeof r.nascimento === 'string' ? r.nascimento : undefined);
-  const area = AREA[String(r.gorduraLocal)];
-  const iAtual = IMG_ATUAL[String(r.fisico)] ?? 1;
-  const iObjetivo = IMG_OBJETIVO[String(r.objetivo)] ?? 1;
-  const evento = textoEvento(r);
+  // Sem nenhuma trava de hábito, a trava é a própria capa de gordura.
+  const principal: Trava = lista[0] ?? {
+    titulo: `Capa de gordura ${capa.rotulo.toLowerCase()}`,
+    texto: capa.texto.replace(/\*\*/g, ''),
+    plano: 'O desafio ataca as 2 frentes juntas: alimentação calculada pra tirar a capa e treino de abdômen com sobrecarga progressiva.',
+  };
+  const planos = [...new Set((lista.length ? lista : [principal]).slice(0, 3).map((t) => t.plano))];
 
   return (
     <div className="v2 qr">
       <section className="v2-sec v2-sec--claro qr-sec">
         <div className="qr-col">
-          <p className="qr-olho">Diagnóstico Capa Zero</p>
+          <p className="qr-olho">Diagnóstico concluído</p>
           <h1 className="v2-h2 qr-titulo">
-            <Rico texto={texto(textosResultado.diagnostico.titulo, r)} />
+            {nome ? `${nome}, encontramos` : 'Encontramos'} a sua principal trava:
           </h1>
+          <p className="qr-principal">{principal.titulo}</p>
+          <p className="qr-capa">{principal.texto}</p>
 
-          <ul className="qr-cards">
-            {b !== null && (
-              <li className="qr-card">
-                <span className="qr-card__rotulo">O seu IMC</span>
-                <span className="qr-card__valor">{kg(b)}</span>
-                <span className="qr-card__extra">{categoriaImc(b)}</span>
-              </li>
+          <div className="qr-sinais">
+            {lista.length > 0 && (
+              <>
+                <div className="qr-sinais__topo">
+                  <span>Pontos que atrapalham o seu resultado</span>
+                  <b>
+                    {lista.length} de {TOTAL_TRAVAS}
+                  </b>
+                </div>
+                <div
+                  className="qr-sinais__barra"
+                  role="img"
+                  aria-label={`${lista.length} de ${TOTAL_TRAVAS} pontos encontrados`}
+                >
+                  <span style={{ width: `${(lista.length / TOTAL_TRAVAS) * 100}%` }} />
+                </div>
+                <ul className="qr-sinais__lista">
+                  {lista.slice(0, 4).map((t) => (
+                    <li key={t.titulo}>
+                      <span className="qr-sinais__alerta" aria-hidden="true">
+                        !
+                      </span>
+                      <span>
+                        <b>{t.titulo}.</b> {t.texto}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
-            <li className="qr-card qr-card--destaque">
-              <span className="qr-card__rotulo">Capa de gordura</span>
-              <span className="qr-card__valor">{capa.rotulo}</span>
-              {ajustada && <span className="qr-card__extra">ajustada pelo seu peso e altura</span>}
-            </li>
-            {area && (
-              <li className="qr-card">
-                <span className="qr-card__rotulo">Área que mais precisa de atenção</span>
-                <span className="qr-card__valor qr-card__valor--texto">{area}</span>
-              </li>
-            )}
-            {anos !== null && (
-              <li className="qr-card">
-                <span className="qr-card__rotulo">Idade</span>
-                <span className="qr-card__valor">{anos}</span>
-                <span className="qr-card__extra">anos</span>
-              </li>
-            )}
-          </ul>
-
-          <p className="qr-capa">
-            <Rico texto={capa.texto} />
-          </p>
-          <p className="qr-nota">{textosCapa.nota}</p>
-
-          <Projecao42 r={r} />
-
-          <div className="qr-painel">
-            <h2 className="qr-painel__titulo">Do corpo de hoje ao seu objetivo</h2>
-            <div className="qr-corpos">
-              <figure className="qr-corpo">
-                <Image
-                  src={`/img/quiz/atual-${iAtual}.webp`}
-                  alt=""
-                  width={420}
-                  height={449}
-                  sizes="(min-width: 600px) 240px, 40vw"
-                />
-                <figcaption>
-                  <b>Hoje</b>
-                  <span>{rotuloDe('fisico', r.fisico)}</span>
-                </figcaption>
-              </figure>
-              <span className="qr-corpos__seta" aria-hidden="true">
-                →
-              </span>
-              <figure className="qr-corpo qr-corpo--objetivo">
-                <Image
-                  src={`/img/quiz/objetivo-${iObjetivo}.webp`}
-                  alt=""
-                  width={420}
-                  height={449}
-                  sizes="(min-width: 600px) 240px, 40vw"
-                />
-                <figcaption>
-                  <b>Objetivo</b>
-                  <span>{rotuloDe('objetivo', r.objetivo)}</span>
-                </figcaption>
-              </figure>
+            <div className="qr-sinais__solucao">
+              <p className="qr-sinais__solucao-titulo">O que o plano faz sobre isso</p>
+              <ul>
+                {planos.map((pl) => (
+                  <li key={pl}>
+                    <span className="qr-sinais__check" aria-hidden="true">
+                      ✓
+                    </span>
+                    <span>{pl}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="qr-nota">Imagens ilustrativas. O resultado de cada pessoa depende do corpo, da constância e da rotina.</p>
           </div>
 
-          {evento && (
-            <p className="qr-evento">
-              <Rico texto={evento} />
-            </p>
-          )}
-
           <button type="button" className="qr-botao" onClick={avancar}>
-            Ver o meu plano
+            Ver os meus resultados
           </button>
           {recomecar && (
             <button type="button" className="qr-refazer" onClick={recomecar}>

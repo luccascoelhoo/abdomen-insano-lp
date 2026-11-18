@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { AntesDepois } from '@/components/ui/AntesDepois';
 import { Rico } from '@/components/v2/Rico';
 import { texto } from '../motor';
 import type { PropsTela, TelaInfo as TelaInfoT } from '../tipos';
@@ -15,9 +16,15 @@ export function TelaInfo({ tela, respostas, avancar }: PropsTela<TelaInfoT>) {
       <h1 className={`q-titulo${destaque ? ' q-titulo--apoio' : ''}`}>
         <Rico texto={texto(tela.titulo, respostas)} />
       </h1>
-      {tela.img && (
+      {tela.img && !tela.comparador && (
         <div className="q-info__img">
-          <Image src={tela.img} alt="" fill sizes="(max-width: 560px) 100vw, 520px" />
+          <Image
+            src={tela.img}
+            alt=""
+            fill
+            sizes="(max-width: 560px) 100vw, 520px"
+            style={tela.imgPosicao ? { objectPosition: tela.imgPosicao } : undefined}
+          />
         </div>
       )}
       <div className="q-info__texto">
@@ -30,6 +37,12 @@ export function TelaInfo({ tela, respostas, avancar }: PropsTela<TelaInfoT>) {
             </p>
           ))}
       </div>
+      {/* Antes e depois embaixo do texto (referência: tela de autoridade do Cariani). */}
+      {tela.comparador && (
+        <div className="q-info__comparador">
+          <AntesDepois {...tela.comparador} />
+        </div>
+      )}
       <BotaoContinuar onClick={avancar}>{tela.botao ?? 'Continuar'}</BotaoContinuar>
     </section>
   );

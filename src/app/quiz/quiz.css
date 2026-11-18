@@ -66,7 +66,8 @@ body:has(.quiz) {
 }
 
 /* Fora dos blocos da home (.v2), que têm o negrito branco no fundo escuro. */
-.quiz b:not(.v2 b) {
+/* :where() zera a prioridade: assim o laranja do título (.q-titulo b) continua valendo. */
+.quiz b:where(:not(.v2 b)) {
   color: #111;
   font-weight: 800;
 }
@@ -465,12 +466,17 @@ button.quiz__voltar:active {
 .q-abertura .q-sub {
   margin-top: 10px;
 }
+/* A copy da página de vendas é longa: título menor para a pergunta caber na 1ª tela. */
+.q-abertura .q-titulo {
+  font-size: clamp(25px, 7.6vw, 34px);
+}
 .q-abertura__img {
   position: relative;
   flex: none;
   margin: 20px 0 22px;
-  aspect-ratio: 16 / 11;
-  max-height: 34vh;
+  /* A foto (hero-quiz.webp) já vem recortada do rosto ao abdômen. */
+  aspect-ratio: 5 / 4;
+  max-height: 36vh;
   width: 100%;
   border-radius: var(--q-raio-cartao);
   overflow: hidden;
@@ -478,7 +484,7 @@ button.quiz__voltar:active {
 }
 .q-abertura__img img {
   object-fit: cover;
-  object-position: 50% 55%;
+  object-position: 50% 10%;
 }
 .q-pergunta {
   margin: 0 0 14px;
@@ -494,6 +500,13 @@ button.quiz__voltar:active {
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+/* Três cartões: o último fica sozinho na linha, centralizado, do mesmo tamanho. */
+.q-cards > .q-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 6px);
+}
+
 .q-card {
   display: flex;
   flex-direction: column;
@@ -1118,7 +1131,7 @@ button.quiz__voltar:active {
     padding-top: 36px;
   }
   .q-abertura__img {
-    max-height: 300px;
+    max-height: 440px;
   }
 }
 
@@ -1181,4 +1194,9 @@ button.quiz__voltar:active {
 /* O foco vai para o título a cada tela (leitor de tela); sem contorno visível. */
 .quiz__tela :is(h1, h2)[tabindex='-1']:focus {
   outline: none;
+}
+
+/* Antes e depois do Igor na tela de autoridade (sem recorte de 16:10). */
+.q-info__comparador {
+  margin-top: 22px;
 }

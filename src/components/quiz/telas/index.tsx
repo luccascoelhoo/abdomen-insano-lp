@@ -10,9 +10,12 @@ import { TelaDataEvento } from './TelaDataEvento';
 import { TelaInfo } from './TelaInfo';
 import { TelaCapa } from './TelaCapa';
 import { TelaCarregando } from './TelaCarregando';
+import { TelaNome } from './TelaNome';
 import { TelaEmail } from './TelaEmail';
 import { TelaDiagnostico } from './TelaDiagnostico';
+import { TelaProjecao } from './TelaProjecao';
 import { TelaPlano } from './TelaPlano';
+import { TelaDesconto } from './TelaDesconto';
 import { TelaOferta } from './TelaOferta';
 
 /** Registro: um componente por `k` de tela. */
@@ -28,8 +31,11 @@ export const TELAS: Record<Tela['k'], ComponentType<any>> = {
   info: TelaInfo,
   capa: TelaCapa,
   carregando: TelaCarregando,
+  nome: TelaNome,
   email: TelaEmail,
   diagnostico: TelaDiagnostico,
+  projecao: TelaProjecao,
   plano: TelaPlano,
+  desconto: TelaDesconto,
   oferta: TelaOferta,
 };
