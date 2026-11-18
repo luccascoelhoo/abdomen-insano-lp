@@ -1,6 +1,9 @@
 import { after, NextResponse } from 'next/server';
 import { normalizarEmail } from '@/lib/compra';
 import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
+import { emailConfigurado, enviarEmail } from '@/lib/email/brevo';
+import { BASE, emailPlano, respostasDaLinha } from '@/lib/email/quiz-emails';
+import { assinar } from '@/lib/email/token';
 import { validarCorpoQuiz, type CorpoQuizValido } from './validar';
 
 /**
@@ -87,12 +90,12 @@ const gravar = () => process.env.QUIZ_GRAVAR === '1' && supabaseConfigured();
 const emDev = process.env.NODE_ENV !== 'production';
 
 /** Versão do texto do checkbox de aceite (TelaEmail). Mudou o texto, sobe aqui. */
-const TEXTO_ACEITE = 'quiz-v1';
+const TEXTO_ACEITE = 'quiz-v2';
 
 async function salvar(d: CorpoQuizValido, ua: string): Promise<void> {
   const agora = new Date().toISOString();
   // `consumido_em` e `criado_em` ficam fora: o upsert não os toca.
-  const { error } = await supabaseAdmin()
+  const { data, error } = await supabaseAdmin()
     .from('quiz_respostas')
     .upsert(
       {
@@ -109,9 +112,56 @@ async function salvar(d: CorpoQuizValido, ua: string): Promise<void> {
         atualizado_em: agora,
       },
       { onConflict: 'email' },
-    );
+    )
+    .select('email, nome, app, extras, aceite_email, aceite_email_confirmado_em, plano_enviado_em')
+    .single();
   // Sem o e-mail no log: o código do erro basta para achar o problema.
-  if (error) console.error('[api/quiz] falha ao gravar', { code: error.code, message: error.message });
+  if (error) {
+    console.error('[api/quiz] falha ao gravar', { code: error.code, message: error.message });
+    return;
+  }
+  await enviarPlano(data as LinhaQuiz);
+}
+
+/** Uma vez a cada 7 dias por e-mail: quem refaz o quiz não leva 5 e-mails iguais. */
+const INTERVALO_PLANO_MS = 7 * 86_400_000;
+
+type LinhaQuiz = {
+  email: string;
+  nome: string | null;
+  app: Record<string, unknown> | null;
+  extras: Record<string, unknown> | null;
+  aceite_email: boolean;
+  aceite_email_confirmado_em: string | null;
+  plano_enviado_em: string | null;
+};
+
+/**
+ * O e-mail que a tela promete ("Pra onde mandamos o seu Plano Capa Zero?").
+ * É transacional: vai para todo mundo. O botão de confirmar (dupla
+ * confirmação do aceite) só entra para quem marcou o aceite e ainda não
+ * confirmou; lembrete de venda só sai depois dessa confirmação.
+ */
+async function enviarPlano(l: LinhaQuiz): Promise<void> {
+  if (!emailConfigurado()) return;
+  if (l.plano_enviado_em && Date.now() - Date.parse(l.plano_enviado_em) < INTERVALO_PLANO_MS) return;
+  const tConfirmar = l.aceite_email && !l.aceite_email_confirmado_em ? assinar(l.email, 'confirmar') : null;
+  const tSair = assinar(l.email, 'sair');
+  const link = (acao: string, t: string | null) => (t ? `${BASE}/api/quiz/email?acao=${acao}&t=${t}` : null);
+  const m = emailPlano(respostasDaLinha(l), { confirmar: link('confirmar', tConfirmar), sair: link('sair', tSair) });
+  const r = await enviarEmail({
+    para: l.email,
+    nome: l.nome ?? undefined,
+    assunto: m.assunto,
+    html: m.html,
+    texto: m.texto,
+    tags: ['quiz-plano'],
+  });
+  if (!r.ok) {
+    console.error('[api/quiz] plano não enviado', { motivo: r.motivo });
+    return;
+  }
+  await supabaseAdmin().from('quiz_respostas').update({ plano_enviado_em: new Date().toISOString() }).eq('email', l.email);
 }
 
 /* ------------------------------------------------------------------- handler */

@@ -1,5 +1,5 @@
 import type { Respostas, Tela } from '@/components/quiz/tipos';
-import { primeiroNome } from '@/components/quiz/motor';
+import { primeiroNome } from '@/components/quiz/calculos';
 
 /**
  * Quiz "Plano Capa Zero" (`/quiz`) — formato "quiz sem VSL", só homens.
