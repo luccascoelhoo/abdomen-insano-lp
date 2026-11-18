@@ -44,7 +44,7 @@ const AREA: Record<string, string> = {
 };
 
 const IMG_ATUAL: Record<string, number> = { fina: 0, media: 1, grossa: 2, 'muito-grossa': 3 };
-const IMG_OBJETIVO: Record<string, number> = { seco: 0, trincado: 1, atletico: 2, forte: 3 };
+const IMG_OBJETIVO: Record<string, number> = { seco: 0, trincado: 1, atletico: 2 };
 
 /**
  * Liga o plano à data da pessoa: estimativa até lá, no mesmo ritmo
@@ -275,16 +275,23 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
 
           {minhasTravas.length > 0 && (
             <div className="qr-travas">
-              <h2 className="qr-travas__titulo">O que está segurando o seu abdômen</h2>
+              <h2 className="qr-travas__titulo">
+                {minhasTravas.length === 1
+                  ? 'O hábito que mais está escondendo o seu abdômen'
+                  : `Os ${minhasTravas.length} hábitos que mais estão escondendo o seu abdômen`}
+              </h2>
+              <p className="qr-travas__sub">Tirei das suas respostas. Embaixo de cada um, o que o plano faz sobre isso.</p>
               <ol className="qr-travas__lista">
                 {minhasTravas.map((tr) => (
                   <li key={tr.titulo} className="qr-trava">
                     <b className="qr-trava__titulo">{tr.titulo}</b>
                     <span className="qr-trava__texto">{tr.texto}</span>
+                    <span className="qr-trava__plano">
+                      <b>No plano:</b> {tr.plano}
+                    </span>
                   </li>
                 ))}
               </ol>
-              <p className="qr-travas__fecho">O seu plano foi montado pra atacar exatamente isso.</p>
             </div>
           )}
 

@@ -16,11 +16,6 @@ export function TelaInfo({ tela, respostas, avancar }: PropsTela<TelaInfoT>) {
       <h1 className={`q-titulo${destaque ? ' q-titulo--apoio' : ''}`}>
         <Rico texto={texto(tela.titulo, respostas)} />
       </h1>
-      {tela.comparador && (
-        <div className="q-info__comparador">
-          <AntesDepois {...tela.comparador} />
-        </div>
-      )}
       {tela.img && !tela.comparador && (
         <div className="q-info__img">
           <Image
@@ -42,6 +37,12 @@ export function TelaInfo({ tela, respostas, avancar }: PropsTela<TelaInfoT>) {
             </p>
           ))}
       </div>
+      {/* Antes e depois embaixo do texto (referência: tela de autoridade do Cariani). */}
+      {tela.comparador && (
+        <div className="q-info__comparador">
+          <AntesDepois {...tela.comparador} />
+        </div>
+      )}
       <BotaoContinuar onClick={avancar}>{tela.botao ?? 'Continuar'}</BotaoContinuar>
     </section>
   );

@@ -1,5 +1,6 @@
 import type { Respostas, Tela } from '@/components/quiz/tipos';
 import { primeiroNome } from '@/components/quiz/calculos';
+import { heroV2 } from '@/content/lp-v2';
 
 /**
  * Quiz "Plano Capa Zero" (`/quiz`) — formato "quiz sem VSL", só homens.
@@ -42,8 +43,9 @@ export const telasQuiz: Tela[] = [
     k: 'abertura',
     bloco: 1,
     chave: 'faixaIdade',
-    titulo: 'Descubra em 2 minutos o que está **escondendo o seu abdômen**',
-    sub: 'Responda e receba o seu **Plano Capa Zero de 42 dias**, feito pro seu corpo e pra sua rotina.',
+    // Mesma copy do topo da página de vendas (heroV2): corrigir lá corrige aqui.
+    titulo: `**${heroV2.tituloDestaque}** ${heroV2.tituloResto}`,
+    sub: heroV2.sub,
     pergunta: 'Pra começar: qual a sua idade?',
     img: '/img/hero-quiz-2.webp',
     opcoes: opcoes([['18-24', '18 a 24'], ['25-34', '25 a 34'], ['35-44', '35 a 44'], ['45+', '45 ou mais']]),
@@ -81,7 +83,6 @@ export const telasQuiz: Tela[] = [
       { v: 'seco', rotulo: 'Seco e definido', img: img('objetivo-0') },
       { v: 'trincado', rotulo: 'Trincado', img: img('objetivo-1') },
       { v: 'atletico', rotulo: 'Atlético e trincado', img: img('objetivo-2') },
-      { v: 'forte', rotulo: 'Forte e trincado', img: img('objetivo-3') },
     ],
   },
   {
