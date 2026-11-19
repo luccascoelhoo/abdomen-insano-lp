@@ -30,7 +30,7 @@ const base = {
   peso: 98,
   pesoDesejado: 84,
   nascimento: '1990-03-21',
-  aspiracao: 'body',
+  aspiracoes: ['body'],
   nome: 'João Pedro',
   email: 'Joao.Pedro@Exemplo.com ',
   aceiteEmail: true,
@@ -65,7 +65,8 @@ caso('amostra completa passa inteira pela validação', () => {
   assert.deepEqual(app.workout_focus, ['Abdômen']);
   assert.ok(app.weekly_pace_kg >= 0.05 && app.weekly_pace_kg <= 0.5, `ritmo ${app.weekly_pace_kg}`);
   assert.equal(dados.email, 'joao.pedro@exemplo.com');
-  assert.deepEqual(Object.keys(dados.extras).sort(), ['faixaIdade', 'fisico', 'jaTentou', 'objetivo', 'sono']);
+  assert.equal(app.aspiration, 'body');
+  assert.deepEqual(Object.keys(dados.extras).sort(), ['aspiracoes', 'faixaIdade', 'fisico', 'jaTentou', 'objetivo', 'sono']);
 });
 
 caso('ritmo nunca passa do teto de perda do app (0,5)', () => {
@@ -100,16 +101,40 @@ caso('todas as opções "→ app" do roteiro são aceitas', () => {
     rotina: ['sedentary', 'active', 'heavy'],
     refeicoes: ['3', '4', '5', '6'],
     obstaculo: ['consistency', 'habits', 'time', 'motivation'],
-    aspiracao: ['body', 'healthy', 'energy', 'motivation'],
   };
   for (const [chave, valores] of Object.entries(opcoes)) {
     for (const v of valores) confereAceito({ ...base, [chave]: v }, `${chave}=${v}`);
+  }
+  for (const v of ['body', 'healthy', 'energy', 'motivation']) {
+    const { app } = confereAceito({ ...base, aspiracoes: [v] }, `aspiracoes=[${v}]`);
+    assert.equal(app.aspiration, v);
   }
   for (const s of ['tiktok', 'youtube', 'google', 'facebook', '', 'newsletter']) {
     confereAceito(base, `utm_source=${s}`);
     const app = cadastroDoApp(base, { utm_source: s });
     assert.ok(['instagram', 'tiktok', 'youtube', 'google', 'outro'].includes(app.discovery_source));
   }
+});
+
+caso('objetivo com várias marcadas: app leva a primeira na ordem da tela, extras levam todas', () => {
+  const { app, dados } = confereAceito({ ...base, aspiracoes: ['motivation', 'energy', 'healthy'] }, 'várias');
+  assert.equal(app.aspiration, 'healthy');
+  assert.deepEqual(dados.extras.aspiracoes, ['motivation', 'energy', 'healthy']);
+  const todas = confereAceito({ ...base, aspiracoes: ['energy', 'body', 'motivation', 'healthy'] }, 'todas');
+  assert.equal(todas.app.aspiration, 'body');
+});
+
+caso('progresso salvo no formato antigo (aspiracao em texto) ainda vira aspiration', () => {
+  const semLista = { ...base };
+  delete semLista.aspiracoes;
+  const { app, dados } = confereAceito({ ...semLista, aspiracao: 'energy' }, 'antigo');
+  assert.equal(app.aspiration, 'energy');
+  assert.equal(dados.extras.aspiracao, undefined);
+});
+
+caso('objetivo sem nenhuma marcada não manda aspiration', () => {
+  const { app } = confereAceito({ ...base, aspiracoes: [] }, 'vazio');
+  assert.equal(app.aspiration, undefined);
 });
 
 caso('quiz parcial (sem números nem nascimento) continua válido', () => {
