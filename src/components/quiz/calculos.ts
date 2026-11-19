@@ -267,6 +267,24 @@ const NIVEL_TREINO: Record<string, string> = {
   gt2y: 'advanced',
 };
 
+/** Ordem das opções da tela "O que você mais quer com o desafio?" (`content/quiz.ts`). */
+const ORDEM_ASPIRACAO = ['body', 'healthy', 'energy', 'motivation'];
+
+/**
+ * A pergunta do objetivo é de múltipla escolha (`aspiracoes`), mas o app guarda
+ * UMA `aspiration`: vai a primeira marcada, na ordem da tela. A lista inteira
+ * segue nos extras. `aspiracao` (texto) é o formato antigo, de escolha única,
+ * que ainda pode estar no progresso salvo de quem começou antes da mudança.
+ */
+function aspiracaoDoApp(r: Respostas): string | undefined {
+  const marcadas = Array.isArray(r.aspiracoes)
+    ? (r.aspiracoes as string[])
+    : typeof r.aspiracao === 'string'
+      ? [r.aspiracao]
+      : [];
+  return ORDEM_ASPIRACAO.find((v) => marcadas.includes(v));
+}
+
 /**
  * Converte as respostas no `user_metadata` do cadastro do app (Flammer,
  * `MotorDeCadastro.kt`): mesmos nomes e valores. Só entra o que foi respondido.
@@ -307,15 +325,20 @@ export function cadastroDoApp(r: Respostas, utm: Record<string, string>): Payloa
     ['rotina', 'daily_routine'],
     ['refeicoes', 'meals_count'],
     ['obstaculo', 'biggest_obstacle'],
-    ['aspiracao', 'aspiration'],
   ];
   for (const [quiz, campo] of diretos) if (s(quiz)) app[campo] = s(quiz)!;
+  const aspiracao = aspiracaoDoApp(r);
+  if (aspiracao) app.aspiration = aspiracao;
   if (s('experiencia')) app.training_level = NIVEL_TREINO[s('experiencia')!] ?? 'beginner';
   app.discovery_source = origemDoApp(utm.utm_source);
   return app;
 }
 
-/** Chaves que já viram campo do app (o resto vai em `extras`). */
+/**
+ * Chaves que já viram campo do app (o resto vai em `extras`). `aspiracoes`
+ * fica de fora de propósito: o app só guarda uma, então a lista inteira vai
+ * nos extras. `aspiracao` é o formato antigo (já está no `app`).
+ */
 const CHAVES_DO_APP = new Set([
   'nome', 'email', 'aceiteEmail', 'nascimento', 'altura', 'peso', 'pesoDesejado',
   'experiencia', 'frequencia', 'local', 'tempoTreino', 'cardio', 'rotina', 'refeicoes',

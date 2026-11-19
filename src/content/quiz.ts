@@ -414,16 +414,20 @@ export const telasQuiz: Tela[] = [
     maxDias: 730,
   },
   {
-    k: 'lista', // → app: aspiration
+    // Múltipla escolha (pedido do Igor). → app: aspiration recebe UMA, a primeira
+    // marcada na ordem desta lista (`ORDEM_ASPIRACAO` em calculos.ts); a lista
+    // inteira vai nos extras (`aspiracoes`). Mudou a ordem aqui, muda lá.
+    k: 'multi',
     bloco: 5,
-    chave: 'aspiracao',
+    chave: 'aspiracoes',
     titulo: 'O que você mais quer com o desafio?',
-    opcoes: opcoes([
-      ['body', 'Ter o corpo que eu quero'],
-      ['healthy', 'Mais saúde'],
-      ['energy', 'Mais energia no dia a dia'],
-      ['motivation', 'Virar um cara mais disciplinado'],
-    ]),
+    sub: 'Escolha todas que se aplicam',
+    opcoes: [
+      { v: 'body', rotulo: 'Ter o corpo que eu quero' },
+      { v: 'healthy', rotulo: 'Mais saúde' },
+      { v: 'energy', rotulo: 'Mais energia no dia a dia' },
+      { v: 'motivation', rotulo: 'Virar um cara mais disciplinado' },
+    ],
   },
 
   {

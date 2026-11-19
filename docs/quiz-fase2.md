@@ -61,6 +61,7 @@ linha só "pertence" a quem provou ser dono do e-mail.
 |---|---|
 | `name`, `birth_year/month/day`, `height`, `weight`, `desired_weight` | respondidas |
 | `training_experience`, `training_frequency`, `workout_place`, `session_time`, `cardio_preference`, `daily_routine`, `meals_count`, `biggest_obstacle`, `aspiration` | respondidas, valor do app |
+| `aspiration` (detalhe) | a pergunta "O que você mais quer com o desafio?" é de **múltipla escolha**; o app guarda um valor só, então vai a **primeira marcada na ordem da tela** (`body`, `healthy`, `energy`, `motivation`). A lista inteira vai em `extras.aspiracoes` |
 | `goal` | deduzido da meta, com a mesma conta do app (`objetivoPelaMeta`) |
 | `training_level` | deduzido da experiência (`derivedTrainingLevel`) |
 | `weekly_pace_kg` | só quando `goal = lose`, limitado a 0,5. É o ritmo **pedido** do quiz: o app deve passá-lo pelo `RitmoEfetivo` antes de gravar, como faz com o `speed` do cadastro |
