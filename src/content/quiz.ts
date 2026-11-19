@@ -525,6 +525,13 @@ export const textosResultado = {
     sub: 'As 3 engrenagens rodando juntas por 42 dias, ajustadas pra você:',
   },
   oferta: {
+    /**
+     * Preço riscado SÓ do quiz (a página de vendas continua com o R$ 299 de
+     * `ofertaV2.card.precoDe`). Contra os R$ 64 à vista dá 50%: os 79% do
+     * R$ 299 pareceram exagerados no teste do time (19/11/2026). O percentual
+     * nunca é escrito à mão, sai da conta em `lib/desconto.ts`.
+     */
+    precoDe: 'R$127',
     titulo: 'Comece o seu desafio hoje',
     lembreteEmail: 'Na compra, use o e-mail',
   },

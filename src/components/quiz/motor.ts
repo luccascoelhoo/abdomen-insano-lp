@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Respostas, Tela } from './tipos';
+import { semRespostasOcultas } from './calculos';
 
 export * from './calculos';
 
@@ -64,8 +65,9 @@ export function useQuiz(telas: Tela[]) {
       const valido = !!s && !!s.t && parado <= VALIDADE_MS && !(jaViuResultado && parado > VALIDADE_RESULTADO_MS);
       if (s && valido && !recomecarDoZero && typeof s.i === 'number' && s.r) {
         setI(Math.min(s.i, telas.length - 1));
-        rRef.current = s.r;
-        setR(s.r);
+        const salvas = semRespostasOcultas(telas, s.r);
+        rRef.current = salvas;
+        setR(salvas);
       }
     } catch {}
     setPronto(true);
@@ -94,11 +96,13 @@ export function useQuiz(telas: Tela[]) {
   const responder = useCallback((valores: Respostas, op?: { avancar?: boolean }) => {
     const avanca = op?.avancar !== false;
     if (avanca && !podeTrocar()) return;
-    const novo = { ...rRef.current, ...valores };
+    // Trocar uma resposta pode esconder telas (ex.: "nunca tentei"): as
+    // respostas delas saem junto, senão chegam ao diagnóstico e ao cadastro.
+    const novo = semRespostasOcultas(telas, { ...rRef.current, ...valores });
     rRef.current = novo;
     setR(novo);
     if (avanca) setI((idx) => proxima(idx, novo, 1));
-  }, [proxima]);
+  }, [proxima, telas]);
 
   const avancar = useCallback(() => {
     if (podeTrocar()) setI((idx) => proxima(idx, rRef.current, 1));

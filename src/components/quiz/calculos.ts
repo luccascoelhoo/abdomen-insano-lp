@@ -2,7 +2,7 @@
  * Contas do quiz sem React: rodam no navegador (telas) e no servidor
  * (e-mail do plano, lembretes). O estado (useQuiz) fica em motor.ts.
  */
-import type { NivelCapa, PayloadQuiz, Projecao, Respostas, Texto } from './tipos';
+import type { NivelCapa, PayloadQuiz, Projecao, Respostas, Tela, Texto } from './tipos';
 
 /* ------------------------------------------------------------------ texto */
 
@@ -15,6 +15,29 @@ export function texto(t: Texto | undefined, r: Respostas): string {
 export function primeiroNome(r: Respostas): string {
   const n = String(r.nome ?? '').trim().split(/\s+/)[0] ?? '';
   return n ? n[0].toUpperCase() + n.slice(1).toLowerCase() : '';
+}
+
+/* ------------------------------------------------------- respostas válidas */
+
+/**
+ * Tira as respostas de telas que ficaram ocultas (`quando` falso) com as
+ * respostas atuais. Sem isso, quem respondia "já tentei", marcava o que tentou
+ * e depois voltava e trocava para "nunca tentei" levava as respostas velhas até
+ * o diagnóstico, que afirmava coisas fora do caminho final da pessoa. Repete
+ * até estabilizar, porque esconder uma tela pode esconder outra.
+ */
+export function semRespostasOcultas(telas: readonly Tela[], r: Respostas): Respostas {
+  let atual = r;
+  for (let volta = 0; volta < telas.length; volta++) {
+    const ocultas = telas
+      .filter((t) => 'chave' in t && t.quando && !t.quando(atual) && t.chave in atual)
+      .map((t) => (t as { chave: string }).chave)
+      .filter((k) => !telas.some((t) => 'chave' in t && t.chave === k && (!t.quando || t.quando(atual))));
+    if (!ocultas.length) return atual;
+    atual = { ...atual };
+    for (const k of ocultas) delete atual[k];
+  }
+  return atual;
 }
 
 /* ---------------------------------------------------------------- cálculos */
@@ -126,6 +149,8 @@ export function idade(nascimento: string | undefined, hoje = new Date()): number
 /* ------------------------------------------------------------------ travas */
 
 export interface Trava {
+  /** Identificador interno (ordem e testes); não aparece na tela. */
+  id: string;
   /** O hábito (ou crença) da pessoa, dito por ela nas respostas. */
   titulo: string;
   /** Por que isso esconde o abdômen (uma linha). */
@@ -135,7 +160,25 @@ export interface Trava {
 }
 
 /** Quantos tipos de trava o quiz sabe reconhecer (o "M" de "N de M"). */
-export const TOTAL_TRAVAS = 10;
+export const TOTAL_TRAVAS = 11;
+
+/** "a", "a e b", "a, b e c". */
+function juntar(itens: string[]): string {
+  return itens.length < 2 ? (itens[0] ?? '') : `${itens.slice(0, -1).join(', ')} e ${itens[itens.length - 1]}`;
+}
+
+/**
+ * Qual trava vira a principal, conforme a resposta de "O que mais te travou
+ * até hoje?" (`obstaculo`): é a própria pessoa dizendo o que pesa mais, então
+ * a tela não "descobre" uma trava que ela não reconhece como dela. Vai para o
+ * topo a primeira desta lista que existir nas travas da pessoa.
+ */
+const PRINCIPAL_POR_OBSTACULO: Record<string, string[]> = {
+  habits: ['calorias', 'belisca', 'pula', 'bebida'],
+  time: ['tempo'],
+  motivation: ['motivacao'],
+  consistency: ['sanfona', 'plano'],
+};
 
 /**
  * Todas as travas que as respostas revelam, da principal para a menor. Cada
@@ -144,6 +187,11 @@ export const TOTAL_TRAVAS = 10;
  * peso, rotina e gosto da pessoa; Guia Fim de Semana Sem Culpa; treino de
  * abdômen com sobrecarga progressiva; cardio calculado; app gamificado.
  * Nada de explicação hormonal, e nenhuma trava sem resposta do plano.
+ *
+ * Regra de ouro: o título só afirma o que a pessoa MARCOU. Antes, quem só
+ * dizia que bebe no fim de semana lia "Bebida e petisco" como a sua principal
+ * trava, sem ter marcado petisco nenhum (feedback de 19/11/2026).
+ * `scripts/checar-caminhos.mjs` confere isso em milhares de combinações.
  */
 export function todasAsTravas(r: Respostas): Trava[] {
   const lista = (v: unknown): string[] => (Array.isArray(v) ? (v as string[]) : []);
@@ -152,18 +200,26 @@ export function todasAsTravas(r: Respostas): Trava[] {
   const refeicoes = typeof r.refeicoes === 'string' && r.refeicoes ? r.refeicoes : '';
   const t: Trava[] = [];
 
-  if (r.alcool === 'semana' || r.alcool === 'fds')
+  // Os hábitos marcados em "Você tem algum destes hábitos?" vêm primeiro: é a
+  // pessoa admitindo o hábito com as próprias palavras.
+  const calorias = [
+    habitos.includes('delivery') && 'delivery',
+    habitos.includes('refri') && 'refrigerante',
+    habitos.includes('doce') && 'doce',
+  ].filter(Boolean) as string[];
+  if (calorias.length)
     t.push({
-      titulo: r.alcool === 'semana' ? 'Bebida várias vezes na semana' : 'Bebida e petisco no fim de semana',
-      texto:
-        r.alcool === 'semana'
-          ? 'Cada saída soma calorias que apagam o déficit dos outros dias.'
-          : 'As calorias de 2 dias podem apagar o déficit dos outros 5.',
-      plano: 'O Guia Fim de Semana Sem Culpa mostra como sair, beber e continuar dentro do déficit, sem cortar a cerveja.',
+      id: 'calorias',
+      titulo: `Calorias de ${juntar(calorias)}`,
+      texto: 'Somam rápido e passam despercebidas, então o déficit não fecha.',
+      plano: habitos.includes('delivery')
+        ? 'O plano alimentar usa o que você gosta de comer, e o Guia Fim de Semana Sem Culpa mostra como encaixar o delivery sem perder a semana.'
+        : 'O plano alimentar é calculado com o que você gosta de comer, então não precisa cortar tudo de uma vez.',
     });
 
   if (habitos.includes('belisca'))
     t.push({
+      id: 'belisca',
       titulo: 'Beliscar à noite',
       texto: 'O que escapa depois do jantar soma calorias sem você contar e segura o déficit.',
       plano: refeicoes
@@ -171,28 +227,36 @@ export function todasAsTravas(r: Respostas): Trava[] {
         : 'O plano alimentar define o que comer em cada refeição, então a noite deixa de ser sem regra.',
     });
 
-  const liquidas = [
-    habitos.includes('delivery') && 'delivery',
-    habitos.includes('refri') && 'refrigerante',
-    habitos.includes('doce') && 'doce',
-  ].filter(Boolean) as string[];
-  if (liquidas.length)
+  if (habitos.includes('pula'))
     t.push({
-      titulo: `Calorias de ${liquidas.join(' e ')}`,
-      texto: 'Somam muito e não matam a fome, então o déficit não fecha.',
-      plano: habitos.includes('delivery')
-        ? 'O plano alimentar usa o que você gosta de comer, e o Guia Fim de Semana Sem Culpa mostra como encaixar o delivery sem perder a semana.'
-        : 'O plano alimentar é calculado com o que você gosta de comer, então não precisa cortar tudo de uma vez.',
+      id: 'pula',
+      titulo: 'Pular refeições',
+      texto: 'Ficar horas sem comer abre a fome, e você acaba compensando depois sem perceber.',
+      plano: refeicoes
+        ? `O plano alimentar distribui a comida nas suas ${refeicoes} refeições, pra você não chegar morrendo de fome na próxima.`
+        : 'O plano alimentar distribui a comida ao longo do dia, pra você não chegar morrendo de fome na próxima refeição.',
+    });
+
+  if (r.alcool === 'semana' || r.alcool === 'fds')
+    t.push({
+      id: 'bebida',
+      titulo: r.alcool === 'semana' ? 'Bebida várias vezes na semana' : 'Bebida no fim de semana',
+      texto:
+        r.alcool === 'semana'
+          ? 'Cada saída soma calorias que apagam o déficit dos outros dias.'
+          : 'O que você bebe em 2 dias pode apagar o déficit dos outros 5.',
+      plano: 'O Guia Fim de Semana Sem Culpa mostra como sair, beber e continuar dentro do déficit, sem cortar a cerveja.',
     });
 
   const planoSanfona =
     'O plano é calculado pro seu peso e a sua rotina, com o que você gosta de comer, pra você conseguir seguir os 42 dias.';
   if (r.dietaAntes === 'voltou')
-    t.push({ titulo: 'Peso que voltou depois da dieta', texto: 'Dieta radical que não dá pra manter faz o peso voltar.', plano: planoSanfona });
+    t.push({ id: 'sanfona', titulo: 'Peso que voltou depois da dieta', texto: 'Dieta radical que não dá pra manter faz o peso voltar.', plano: planoSanfona });
   else if (r.dietaAntes === 'fome' || impediu.includes('fome'))
-    t.push({ titulo: 'Dieta com fome que você largou', texto: 'Passar fome faz largar no meio, e o peso volta.', plano: planoSanfona });
+    t.push({ id: 'sanfona', titulo: 'Dieta com fome que você largou', texto: 'Passar fome faz largar no meio, e o peso volta.', plano: planoSanfona });
   else if (impediu.includes('desisti'))
     t.push({
+      id: 'sanfona',
       titulo: 'Começar e desistir no meio',
       texto: 'Um plano que não cabe na rotina costuma ser largado no meio do caminho.',
       plano: planoSanfona,
@@ -200,20 +264,25 @@ export function todasAsTravas(r: Respostas): Trava[] {
 
   if (impediu.includes('plano'))
     t.push({
+      id: 'plano',
       titulo: 'Treinar e comer sem um plano claro',
       texto: 'Sem saber o que fazer em cada dia, é fácil improvisar e perder o rumo.',
       plano: 'O app entrega a trilha de treinos, a alimentação simplificada e a sua evolução registrada, passo a passo.',
     });
 
-  if (impediu.includes('tempo'))
+  // "Falta de tempo" e "Falta de motivação" valem tanto marcadas em "O que te
+  // impediu" quanto escolhidas em "O que mais te travou até hoje?".
+  if (impediu.includes('tempo') || r.obstaculo === 'time')
     t.push({
+      id: 'tempo',
       titulo: 'Falta de tempo',
       texto: 'Com a rotina corrida, o treino é o primeiro a cair.',
       plano: 'Dá resultado com treino de abdômen e cardio calculado só 2x por semana.',
     });
 
-  if (impediu.includes('motivacao'))
+  if (impediu.includes('motivacao') || r.obstaculo === 'motivation')
     t.push({
+      id: 'motivacao',
       titulo: 'Falta de motivação',
       texto: 'Sem resultado visível, a vontade some antes de o abdômen aparecer.',
       plano: 'O app é gamificado, mostra a sua evolução semana a semana e tem a Comunidade Anti Falhas te puxando nos dias difíceis.',
@@ -221,6 +290,7 @@ export function todasAsTravas(r: Respostas): Trava[] {
 
   if (lista(r.jaTentou).includes('abdominal'))
     t.push({
+      id: 'abdominal',
       titulo: 'Abdominal sem tirar a gordura',
       texto: 'Fortalece o músculo, mas não tira a capa de gordura que cobre ele.',
       plano: 'O desafio ataca as 2 frentes juntas: alimentação calculada pra tirar a capa e treino de abdômen com sobrecarga progressiva.',
@@ -228,6 +298,7 @@ export function todasAsTravas(r: Respostas): Trava[] {
 
   if (r.rotina === 'sedentary')
     t.push({
+      id: 'sentado',
       titulo: 'Dia inteiro sentado',
       texto: 'Você gasta pouca energia fora do treino, então a alimentação pesa ainda mais.',
       plano: 'O plano inclui cardio calculado, além do treino de abdômen.',
@@ -235,11 +306,15 @@ export function todasAsTravas(r: Respostas): Trava[] {
 
   if (impediu.includes('genetica'))
     t.push({
+      id: 'genetica',
       titulo: 'Achar que é genética',
       texto: 'A genética influencia o formato dos gomos, mas não decide sozinha se o abdômen aparece.',
       plano: 'O que faz o abdômen aparecer são as 2 frentes juntas: tirar a capa com o déficit certo e construir o músculo com treino.',
     });
 
+  const preferida = (PRINCIPAL_POR_OBSTACULO[String(r.obstaculo)] ?? []).find((id) => t.some((x) => x.id === id));
+  const i = preferida ? t.findIndex((x) => x.id === preferida) : -1;
+  if (i > 0) t.unshift(...t.splice(i, 1));
   return t;
 }
 

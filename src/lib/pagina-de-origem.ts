@@ -32,6 +32,16 @@ function slugDoCaminho(caminho: string): string {
   return slug && SLUG_VALIDO.test(slug) ? slug : SLUG_HOME;
 }
 
+/**
+ * O caminho que vale para a medição, a partir do endereço do navegador. No
+ * subdomínio do quiz (`quiz.abdomeninsano.com.br`, ver `next.config.ts`) o
+ * quiz abre na raiz, então o `pathname` é "/"; sem esta troca a venda e os
+ * eventos do quiz seriam contados como da home.
+ */
+export function caminhoDaPagina(host: string, caminho: string): string {
+  return host.toLowerCase().startsWith('quiz.') && (caminho === '/' || caminho === '') ? '/quiz' : caminho;
+}
+
 /** O `sck` que o botão de compra manda ao checkout. */
 export function sckDaCompra(caminho: string, origem: string): string {
   const botao = origem.toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40);

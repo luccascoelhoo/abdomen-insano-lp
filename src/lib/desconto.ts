@@ -1,13 +1,14 @@
-import { ofertaV2 } from '@/content/lp-v2';
+import { textosResultado } from '@/content/quiz';
 
 /**
- * Desconto mostrado no quiz: a mesma conta da página de vendas, que risca o
- * preço de referência (`ofertaV2.card.precoDe`, "R$299") e vende por R$ 64.
- * Nada inventado: o percentual sai dos dois preços que a própria página mostra.
+ * Desconto mostrado no quiz: o preço riscado do próprio quiz
+ * (`textosResultado.oferta.precoDe`) contra o preço à vista vivo da Cakto.
+ * Nada inventado: o percentual sai da conta entre os dois preços que a tela
+ * mostra. A página de vendas tem o seu próprio riscado (`ofertaV2.card.precoDe`).
  */
 
-/** Preço de referência (riscado) em centavos, lido da copy da página de vendas. */
-export const PRECO_REFERENCIA_CENTAVOS = Number(ofertaV2.card.precoDe.replace(/\D/g, '')) * 100;
+/** Preço de referência (riscado) do quiz, em centavos. */
+export const PRECO_REFERENCIA_CENTAVOS = Number(textosResultado.oferta.precoDe.replace(/\D/g, '')) * 100;
 
 /** Percentual de desconto do preço à vista sobre a referência (arredondado). */
 export function descontoPercentual(avistaCentavos: number, referenciaCentavos = PRECO_REFERENCIA_CENTAVOS): number {
