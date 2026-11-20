@@ -232,6 +232,7 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
   const capa = textosCapa.niveis[nivelDaCapa(r)];
   // Sem nenhuma trava de hábito, a trava é a própria capa de gordura.
   const principal: Trava = lista[0] ?? {
+    id: 'capa',
     titulo: `Capa de gordura ${capa.rotulo.toLowerCase()}`,
     texto: capa.texto.replace(/\*\*/g, ''),
     plano: 'O desafio ataca as 2 frentes juntas: alimentação calculada pra tirar a capa e treino de abdômen com sobrecarga progressiva.',

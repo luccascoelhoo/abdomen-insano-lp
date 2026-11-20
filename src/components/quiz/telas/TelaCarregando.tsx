@@ -6,11 +6,15 @@ import { depoimentosV2 } from '@/content/lp-v2';
 import type { PropsTela, TelaCarregando as TelaCarregandoT } from '../tipos';
 import { IconeCheck } from './comum';
 
-/** Tempo de cada etapa do checklist (e o encurtado para quem pede menos movimento). */
-const ETAPA_MS = 900;
-const ETAPA_MS_REDUZIDO = 300;
+/**
+ * Tempo de cada etapa do checklist (e o encurtado para quem pede menos
+ * movimento). Eram 900 ms (~5 s no total): no teste do time de 19/11 a espera
+ * pareceu longa demais pra quem já queria ver o plano. Agora são ~2,7 s.
+ */
+const ETAPA_MS = 450;
+const ETAPA_MS_REDUZIDO = 250;
 /** Pausa no 100% antes de seguir, para a pessoa ver que terminou. */
-const PAUSA_FINAL_MS = 600;
+const PAUSA_FINAL_MS = 400;
 
 const RAIO = 52;
 const VOLTA = 2 * Math.PI * RAIO;

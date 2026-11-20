@@ -1,13 +1,14 @@
 // Confere que o mapeamento do quiz (`cadastroDoApp` / `montarPayload`, em
-// src/components/quiz/motor.ts) só produz chaves e valores que o cadastro do
+// src/components/quiz/calculos.ts) só produz chaves e valores que o cadastro do
 // app aceita (a lista de src/app/api/quiz/validar.ts, tirada do Flammer).
 //
-//   node --experimental-strip-types scripts/checar-quiz.mjs
+//   npm run checar
 //
-// (No Node 23.6+ a flag é dispensável.) Sem framework de teste: falhou, sai 1.
+// (= node --import ./scripts/resolver-ts.mjs scripts/checar-quiz.mjs; o
+// resolver acha os imports sem extensão.) Sem framework de teste: falhou, sai 1.
 
 import assert from 'node:assert/strict';
-import { cadastroDoApp, montarPayload } from '../src/components/quiz/motor.ts';
+import { cadastroDoApp, montarPayload } from '../src/components/quiz/calculos.ts';
 import { CHAVES_APP_PERMITIDAS, validarCorpoQuiz } from '../src/app/api/quiz/validar.ts';
 
 const utm = { utm_source: 'ig', utm_campaign: 'quiz-teste' };

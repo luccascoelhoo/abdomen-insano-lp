@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "checar": "node --no-warnings --import ./scripts/resolver-ts.mjs scripts/checar-quiz.mjs && node --no-warnings --import ./scripts/resolver-ts.mjs scripts/checar-caminhos.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",

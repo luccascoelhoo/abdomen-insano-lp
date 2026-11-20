@@ -259,7 +259,10 @@
   text-align: center;
   box-shadow: 0 30px 70px -36px rgba(255, 107, 0, 0.5);
 }
-.v2 .qo-preco p {
+/* `:where` deixa este zerar com peso de 2 classes: antes `.v2 .qo-preco p`
+   (2 classes + 1 tag) vencia as margens de cada linha abaixo, e o "Pagamento
+   seguro" colava no botão (0 px), como no print do teste de 19/11. */
+.v2 .qo-preco :where(p) {
   margin: 0;
 }
 .v2 .qo-preco__rotulo {
@@ -329,7 +332,9 @@
 .qo-cta {
   margin-top: 22px;
 }
-/* O mesmo anel pulsante do card de preço da home (`v2-anel`, em v2.css). */
+/* Anel pulsante, como o do card de preço da home, mas contido: o `v2-anel`
+   cresce 35% na altura e passava por cima do "Pagamento seguro" logo embaixo
+   (no celular os elementos pareciam brigar por espaço, feedback de 19/11). */
 .qo-cta::after {
   content: '';
   position: absolute;
@@ -338,7 +343,18 @@
   border: 2px solid var(--v2-verde);
   opacity: 0;
   pointer-events: none;
-  animation: v2-anel 2.6s ease-out 1.2s infinite;
+  animation: qo-anel 2.6s ease-out 1.2s infinite;
+}
+@keyframes qo-anel {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.03, 1.14);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .qo-cta::after {
@@ -355,8 +371,12 @@
   font-size: 0.86rem;
   line-height: 1.4;
 }
+/* Respiro abaixo do botão: a sombra 3D (5px) e o anel ocupam esse espaço.
+   Numa linha só no celular (a 375 px o "app" caía sozinho na linha de baixo). */
 .v2 .qo-preco__seguro {
-  margin-top: 14px;
+  margin-top: 22px;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 .qo-preco__icone {
   flex: none;
@@ -365,8 +385,8 @@
   color: #8f8985;
 }
 .v2 .qo-preco__garantia {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 18px;
+  padding-top: 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   text-align: left;
   color: #c9c4c0;

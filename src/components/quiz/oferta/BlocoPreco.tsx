@@ -7,7 +7,7 @@ import { IconeCadeado, IconeEscudo } from './icones';
 /**
  * O preço, no molde da referência: VALOR TOTAL, o preço antigo riscado, o
  * desconto, a parcela grande, o à vista e o botão. É a mesma conta da página de
- * vendas (R$ 299 riscado) e o parcelamento vivo da Cakto. O botão é o
+ * vendas, com o riscado do quiz (`lib/desconto.ts`), e o parcelamento vivo da Cakto. O botão é o
  * `CtaButton` de sempre (UTMs + InitiateCheckout); só o `origem` muda.
  *
  * `compacto` é a repetição do fim da página: sem o rótulo e sem a garantia.

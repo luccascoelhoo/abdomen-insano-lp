@@ -59,6 +59,7 @@ npm ci
 npm run dev        # http://localhost:3000
 npm run build      # build de produção
 npm run lint
+npm run checar     # quiz: cadastro do app + milhares de caminhos de resposta
 ```
 
 - Node 24 foi o usado até aqui (o `package.json` não fixa a versão).
