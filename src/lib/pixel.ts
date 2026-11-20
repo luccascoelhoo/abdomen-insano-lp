@@ -13,7 +13,6 @@
  */
 
 import type { MouseEvent } from 'react';
-import { caminhoDaPagina } from '@/lib/pagina-de-origem';
 import { lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 export const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '894388872511780';
@@ -84,7 +83,7 @@ function espelharNoServidor(
         // lê o preço do catálogo por este id, então o campo não abre porta
         // para inflar receita de fora.
         produtoId,
-        caminho: caminhoDaPagina(window.location.hostname, window.location.pathname),
+        caminho: window.location.pathname,
         fbp,
         fbc,
         fbclid,

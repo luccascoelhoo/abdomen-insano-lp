@@ -32,7 +32,7 @@ import {
 import { validarCorpoQuiz } from '../src/app/api/quiz/validar.ts';
 import { emailPlano, emailLembrete } from '../src/lib/email/quiz-emails.ts';
 import { descontoPercentual, PRECO_REFERENCIA_CENTAVOS } from '../src/lib/desconto.ts';
-import { caminhoDaPagina, sckDaCompra, urlDaPaginaDoSck } from '../src/lib/pagina-de-origem.ts';
+import { baseDaOrigem, caminhoDaPagina, origemDoFunil, sckDaCompra, urlDaPaginaDoSck } from '../src/lib/pagina-de-origem.ts';
 
 let falhas = 0;
 function caso(nome, fn) {
@@ -382,6 +382,23 @@ caso('subdomínio do quiz: venda e eventos contam como do quiz, não da home', (
   const sck = sckDaCompra(caminhoDaPagina('quiz.abdomeninsano.com.br', '/'), 'quiz-oferta');
   assert.equal(sck, 'quiz__quiz-oferta');
   assert.equal(urlDaPaginaDoSck(sck, 'https://www.abdomeninsano.com.br'), 'https://www.abdomeninsano.com.br/quiz');
+});
+
+caso('pós-compra: do subdomínio do quiz o comprador volta ao funil do site principal', () => {
+  assert.equal(origemDoFunil('https://quiz.abdomeninsano.com.br'), 'https://www.abdomeninsano.com.br');
+  assert.equal(origemDoFunil('https://www.abdomeninsano.com.br'), 'https://www.abdomeninsano.com.br');
+  assert.equal(origemDoFunil('http://localhost:3000'), 'http://localhost:3000');
+});
+
+caso('API de Conversões: a URL de origem do servidor é a mesma do navegador', () => {
+  const padrao = 'https://www.abdomeninsano.com.br';
+  assert.equal(baseDaOrigem('https://quiz.abdomeninsano.com.br', padrao), 'https://quiz.abdomeninsano.com.br');
+  assert.equal(baseDaOrigem('https://www.abdomeninsano.com.br', padrao), padrao);
+  assert.equal(baseDaOrigem('https://xabdomeninsano.com.br', padrao), padrao);
+  assert.equal(baseDaOrigem('https://abdomeninsano.com.br.evil.com', padrao), padrao);
+  assert.equal(baseDaOrigem('http://quiz.abdomeninsano.com.br', padrao), padrao);
+  assert.equal(baseDaOrigem(null, padrao), padrao);
+  assert.equal(baseDaOrigem('lixo', padrao), padrao);
 });
 
 if (falhas) {

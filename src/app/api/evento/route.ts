@@ -4,6 +4,7 @@ import { oferta } from '@/content/desafio';
 import { registrarEnvioCapi } from '@/lib/compra';
 import { ID_FRONT, precoDe, produtoPorId } from '@/lib/produtos';
 import { precosAtuais } from '@/lib/precos';
+import { baseDaOrigem } from '@/lib/pagina-de-origem';
 import { supabaseConfigured } from '@/lib/supabase';
 
 /**
@@ -127,7 +128,13 @@ export async function POST(request: Request) {
   }
 
   const caminho = (corpo.caminho ?? '/').startsWith('/') ? corpo.caminho! : '/';
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.abdomeninsano.com.br';
+  // A URL que o Meta recebe do servidor tem que ser a mesma que o navegador
+  // mandou (`quiz.abdomeninsano.com.br/`, não `www…/quiz`): conversões
+  // personalizadas e a dedup olham a URL de origem.
+  const base = baseDaOrigem(
+    request.headers.get('origin'),
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.abdomeninsano.com.br',
+  );
 
   const comValor = EVENTOS_COM_VALOR.has(evento);
   const r = await enviarEventoCapi({

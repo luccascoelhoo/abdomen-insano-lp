@@ -7,7 +7,7 @@ import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
 import { useMagnetico } from '@/components/ui/useMagnetico';
 import { usePreco } from '@/components/ui/Precos';
-import { caminhoDaPagina, sckDaCompra } from '@/lib/pagina-de-origem';
+import { caminhoDaPagina, origemDoFunil, sckDaCompra } from '@/lib/pagina-de-origem';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
@@ -45,7 +45,13 @@ export function CtaButton({
   const montarLink = useCallback(() => {
     const utm = lerUtm();
     // Primeira parada depois do pagamento: upsell, se estiver pronto (lib/funil).
-    const returnUrl = `${window.location.origin}${destinoPosCompra()}`;
+    // Do subdomínio do quiz o comprador volta ao funil do site principal, e como
+    // o `localStorage` não atravessa os dois endereços, os UTMs vão na volta.
+    const origemFunil = origemDoFunil(window.location.origin);
+    const returnUrl = anexarParametros(
+      `${origemFunil}${destinoPosCompra()}`,
+      origemFunil === window.location.origin ? {} : (utm as Record<string, string>),
+    );
     return anexarParametros(oferta.checkoutUrl, {
       ...utm,
       ...lerCookiesDoPixel(),
