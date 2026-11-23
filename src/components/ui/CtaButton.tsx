@@ -7,7 +7,7 @@ import { jaEstaSaindo, rastrear, seguirAposMedir } from '@/lib/pixel';
 import { ID_FRONT } from '@/lib/produtos';
 import { useMagnetico } from '@/components/ui/useMagnetico';
 import { usePreco } from '@/components/ui/Precos';
-import { caminhoDaPagina, sckDaCompra } from '@/lib/pagina-de-origem';
+import { caminhoDaPagina, origemPosCompra, sckDaCompra } from '@/lib/pagina-de-origem';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
 
 type Props = {
@@ -45,7 +45,7 @@ export function CtaButton({
   const montarLink = useCallback(() => {
     const utm = lerUtm();
     // Primeira parada depois do pagamento: upsell, se estiver pronto (lib/funil).
-    const returnUrl = `${window.location.origin}${destinoPosCompra()}`;
+    const returnUrl = `${origemPosCompra(window.location.origin, window.location.hostname)}${destinoPosCompra()}`;
     return anexarParametros(oferta.checkoutUrl, {
       ...utm,
       ...lerCookiesDoPixel(),

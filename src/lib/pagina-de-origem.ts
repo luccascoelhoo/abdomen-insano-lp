@@ -37,6 +37,19 @@ export function caminhoDaPagina(pathname: string, hostname: string): string {
   return pathname === '/' && hostname.toLowerCase().startsWith('quiz.') ? '/quiz' : pathname;
 }
 
+/**
+ * Onde a pessoa volta depois de pagar. O upsell e o downsell (botão de um clique
+ * da Cakto) só rodam no domínio principal; quem compra num subdomínio nosso (ex.:
+ * quiz.abdomeninsano.com.br) volta para o www. Domínio principal, previews da
+ * Vercel e localhost ficam como estão.
+ */
+export function origemPosCompra(origin: string, hostname: string): string {
+  const h = hostname.toLowerCase();
+  return h.endsWith('.abdomeninsano.com.br') && h !== 'www.abdomeninsano.com.br'
+    ? 'https://www.abdomeninsano.com.br'
+    : origin;
+}
+
 function slugDoCaminho(caminho: string): string {
   const slug = caminho.replace(/^\/+|\/+$/g, '').toLowerCase();
   return slug && SLUG_VALIDO.test(slug) ? slug : SLUG_HOME;
