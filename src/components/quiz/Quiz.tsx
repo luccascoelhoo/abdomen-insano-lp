@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { telasQuiz } from '@/content/quiz';
 import { progressoPersuasivo } from './calculos';
 import { useQuiz } from './motor';
 import { TELAS } from './telas';
+import { enviarEventoQuiz } from '@/lib/quiz-evento';
 
 /**
  * Casca do quiz: voltar redondo + barra de progresso em cápsula (como o
@@ -14,6 +15,26 @@ import { TELAS } from './telas';
  */
 export function Quiz({ oferta }: { oferta: ReactNode }) {
   const q = useQuiz(telasQuiz);
+
+  // Funil: uma tela vista = um evento anônimo, com o tempo gasto na anterior.
+  const ultima = useRef<{ i: number; t: number } | null>(null);
+  useEffect(() => {
+    if (!q.pronto) return;
+    const agora = Date.now();
+    const ant = ultima.current;
+    if (ant && ant.i === q.i) return;
+    const t = telasQuiz[q.i];
+    const id = 'chave' in t && t.chave ? String(t.chave) : t.k;
+    enviarEventoQuiz({
+      evento: ant && q.i < ant.i ? 'voltar' : 'view',
+      indice: q.i,
+      tela: id,
+      indiceAnterior: ant?.i,
+      msAnterior: ant ? agora - ant.t : undefined,
+      origem: window.location.hostname.startsWith('quiz.') ? 'quiz-subdominio' : 'www',
+    });
+    ultima.current = { i: q.i, t: agora };
+  }, [q.i, q.pronto]);
 
   // Tela nova começa do topo (no celular a anterior pode ter rolado) e o foco
   // vai para o título dela: o botão tocado some, e o leitor de tela se perdia.
