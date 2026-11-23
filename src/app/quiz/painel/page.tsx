@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { timingSafeEqual } from 'node:crypto';
 import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
+import { chaveOk } from '@/lib/quiz-painel';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -9,14 +9,6 @@ export const metadata: Metadata = {
 };
 
 type Linha = { indice: number; tela: string; sessoes: number; pct_inicio: number | null; pct_anterior: number | null; mediana_s: number | null };
-
-function chaveOk(recebida: string | undefined): boolean {
-  const esperada = process.env.QUIZ_PAINEL_CHAVE;
-  if (!esperada || !recebida) return false;
-  const a = Buffer.from(recebida);
-  const b = Buffer.from(esperada);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 
 export default async function Painel({ searchParams }: { searchParams: Promise<{ k?: string; dias?: string }> }) {
   const { k, dias: d } = await searchParams;
@@ -41,6 +33,7 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   return (
     <main style={{ padding: 24, fontFamily: 'system-ui', maxWidth: 900, margin: '0 auto', color: '#111' }}>
       <h1 style={{ fontSize: 22 }}>Funil do quiz</h1>
+      <p><a href={`/quiz/leads?k=${encodeURIComponent(k!)}`}>Ver os leads e as respostas →</a></p>
       <p style={{ color: '#555' }}>
         Período:{' '}
         {[1, 7, 30].map((n) => (
