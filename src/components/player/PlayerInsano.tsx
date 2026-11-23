@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type HlsType from 'hls.js';
+import { caminhoDaPagina } from '@/lib/pagina-de-origem';
 import { lerUtm } from '@/lib/utm';
 import {
   BLOCO_SEGUNDOS,
@@ -195,7 +196,7 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       const lote: LotePlayer = {
         video: id,
         sessao: sessao(),
-        pagina: location.pathname,
+        pagina: caminhoDaPagina(location.pathname, location.hostname),
         eventos: fila.splice(0),
       };
       const utm: Record<string, string> = {};
