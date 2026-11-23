@@ -27,6 +27,16 @@ const SLUG_VALIDO = /^[a-z0-9-]{1,40}$/;
 const PAGINAS = new Set([SLUG_HOME, 'v3', 'antiga', 'quiz']);
 
 /** `/` → "home", `/v3` → "v3", `/v3/` → "v3". Fora do padrão vira "home". */
+/**
+ * Caminho "lógico" da página. No subdomínio do quiz (quiz.abdomeninsano.com.br)
+ * a raiz `/` mostra o quiz, mas o navegador continua em `/`: sem isto, toda venda
+ * e todo evento de lá sairiam como "home". Em qualquer outro lugar devolve o
+ * caminho como veio.
+ */
+export function caminhoDaPagina(pathname: string, hostname: string): string {
+  return pathname === '/' && hostname.toLowerCase().startsWith('quiz.') ? '/quiz' : pathname;
+}
+
 function slugDoCaminho(caminho: string): string {
   const slug = caminho.replace(/^\/+|\/+$/g, '').toLowerCase();
   return slug && SLUG_VALIDO.test(slug) ? slug : SLUG_HOME;
