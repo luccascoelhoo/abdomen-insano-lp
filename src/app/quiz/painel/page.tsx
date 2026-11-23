@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
+import { logado } from '@/lib/quiz-painel';
 
 type Linha = { indice: number; tela: string; sessoes: number; pct_inicio: number | null; pct_anterior: number | null; mediana_s: number | null };
 
@@ -10,6 +11,8 @@ const PERIODOS = [
 ];
 
 export default async function Funil({ searchParams }: { searchParams: Promise<{ dias?: string }> }) {
+  // O layout só esconde a tela: a página ainda seria executada. Sem sessão, não busca nada.
+  if (!(await logado())) return null;
   const { dias: d } = await searchParams;
   const dias = [1, 7, 30].includes(Number(d)) ? Number(d) : 7;
 
