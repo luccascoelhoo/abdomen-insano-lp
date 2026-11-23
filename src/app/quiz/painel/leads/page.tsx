@@ -1,4 +1,5 @@
 import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
+import { logado } from '@/lib/quiz-painel';
 
 type Linha = {
   nome: string | null;
@@ -29,6 +30,8 @@ const data = (iso: string | null) =>
 const pct = (n: number, t: number) => (t ? `${Math.round((100 * n) / t)}%` : '0%');
 
 export default async function Leads() {
+  // O layout só esconde a tela: a página ainda seria executada. Sem sessão, não busca nada.
+  if (!(await logado())) return null;
   let linhas: Linha[] = [];
   let erro = '';
   if (!supabaseConfigured()) erro = 'Supabase não configurado.';
