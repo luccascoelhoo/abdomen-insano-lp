@@ -7,7 +7,7 @@
 // (No Node 23.6+ a flag é dispensável.) Sem framework de teste: falhou, sai 1.
 
 import assert from 'node:assert/strict';
-import { cadastroDoApp, montarPayload } from '../src/components/quiz/motor.ts';
+import { cadastroDoApp, montarPayload } from '../src/components/quiz/calculos.ts';
 import { CHAVES_APP_PERMITIDAS, validarCorpoQuiz } from '../src/app/api/quiz/validar.ts';
 
 const utm = { utm_source: 'ig', utm_campaign: 'quiz-teste' };
@@ -30,7 +30,7 @@ const base = {
   peso: 98,
   pesoDesejado: 84,
   nascimento: '1990-03-21',
-  aspiracao: 'body',
+  aspiracoes: ['body', 'energy'],
   nome: 'João Pedro',
   email: 'Joao.Pedro@Exemplo.com ',
   aceiteEmail: true,
@@ -65,7 +65,7 @@ caso('amostra completa passa inteira pela validação', () => {
   assert.deepEqual(app.workout_focus, ['Abdômen']);
   assert.ok(app.weekly_pace_kg >= 0.05 && app.weekly_pace_kg <= 0.5, `ritmo ${app.weekly_pace_kg}`);
   assert.equal(dados.email, 'joao.pedro@exemplo.com');
-  assert.deepEqual(Object.keys(dados.extras).sort(), ['faixaIdade', 'fisico', 'jaTentou', 'objetivo', 'sono']);
+  assert.deepEqual(Object.keys(dados.extras).sort(), ['aspiracoes', 'faixaIdade', 'fisico', 'jaTentou', 'objetivo', 'sono']);
 });
 
 caso('ritmo nunca passa do teto de perda do app (0,5)', () => {
@@ -100,7 +100,7 @@ caso('todas as opções "→ app" do roteiro são aceitas', () => {
     rotina: ['sedentary', 'active', 'heavy'],
     refeicoes: ['3', '4', '5', '6'],
     obstaculo: ['consistency', 'habits', 'time', 'motivation'],
-    aspiracao: ['body', 'healthy', 'energy', 'motivation'],
+    aspiracoes: [['body'], ['healthy'], ['energy'], ['motivation'], ['energy', 'healthy']],
   };
   for (const [chave, valores] of Object.entries(opcoes)) {
     for (const v of valores) confereAceito({ ...base, [chave]: v }, `${chave}=${v}`);

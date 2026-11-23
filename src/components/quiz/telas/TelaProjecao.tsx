@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Rico } from '@/components/v2/Rico';
-import { AntesDepois } from '@/components/ui/AntesDepois';
+import { SlideshowAntesDepois } from '@/components/ui/SlideshowAntesDepois';
 import { depoimentosV2 } from '@/content/lp-v2';
 import { textosCapa } from '@/content/quiz';
 import { idade, imc, nivelDaCapa, nivelPelaFoto } from '../motor';
@@ -34,7 +34,12 @@ export function TelaProjecao({ respostas: r, avancar }: PropsTela) {
   const iAtual = IMG_ATUAL[String(r.fisico)] ?? 1;
   const iObjetivo = IMG_OBJETIVO[String(r.objetivo)] ?? 1;
   const evento = textoEvento(r);
-  const casoReal = depoimentosV2.casos.find((c) => c.id === depoimentosV2.destaques[0]);
+  // Os de mudança mais visível primeiro, depois os demais.
+  const ids: readonly number[] = depoimentosV2.destaques;
+  const alunos = [
+    ...depoimentosV2.destaques.flatMap((id) => depoimentosV2.casos.filter((c) => c.id === id)),
+    ...depoimentosV2.casos.filter((c) => !ids.includes(c.id)),
+  ];
 
   return (
     <div className="v2 qr">
@@ -114,11 +119,11 @@ export function TelaProjecao({ respostas: r, avancar }: PropsTela) {
             <p className="qr-nota">Imagens ilustrativas. O resultado de cada pessoa depende do corpo, da constância e da rotina.</p>
           </div>
 
-          {casoReal && (
+          {alunos.length > 0 && (
             <div className="qr-painel qr-real">
-              <h2 className="qr-painel__titulo">E esse é um aluno de verdade</h2>
+              <h2 className="qr-painel__titulo">Alunos de verdade</h2>
               <div className="qr-real__card">
-                <AntesDepois src={casoReal.src} alt={casoReal.alt} legenda={depoimentosV2.legendaDestaque} />
+                <SlideshowAntesDepois casos={alunos} legenda={depoimentosV2.legendaDestaque} />
               </div>
             </div>
           )}

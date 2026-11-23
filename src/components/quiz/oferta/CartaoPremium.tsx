@@ -1,7 +1,7 @@
 'use client';
 
 import { textosCapa } from '@/content/quiz';
-import { descontoPercentual } from '@/lib/desconto';
+import { cupomDaPessoa, descontoPercentual } from '@/lib/desconto';
 import type { Parcelamento } from '@/lib/parcelamento';
 import { nivelDaCapa, primeiroNome } from '../calculos';
 import { BlocoPreco } from './BlocoPreco';
@@ -43,7 +43,10 @@ export function CartaoPremium({ parcelamento }: { parcelamento: Parcelamento }) 
         {pct > 0 && (
           <p className="qo-banner">
             <IconeCheckRedondo className="qo-banner__icone" />
-            Desconto de {pct}% aplicado
+            <span>
+              Desconto de {pct}% aplicado
+              <span className="qo-banner__cupom"> · cupom {cupomDaPessoa(nome, pct)}</span>
+            </span>
           </p>
         )}
 

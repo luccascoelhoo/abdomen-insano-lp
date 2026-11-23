@@ -72,3 +72,58 @@
   font-weight: 700;
   opacity: 0.85;
 }
+
+/* Slideshow de antes e depois: passa de lado sozinho, com pontinhos. */
+.slideshow__trilho {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  border-radius: 18px;
+  outline-offset: 4px;
+}
+.slideshow__trilho::-webkit-scrollbar {
+  display: none;
+}
+.slideshow__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+.slideshow__pontos {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+/* Área de toque de 24 px, bolinha de 8 px. */
+.slideshow__ponto {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.slideshow__ponto::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.3;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.slideshow__ponto--ativo::after {
+  opacity: 1;
+  transform: scale(1.35);
+  background: #ff6b00;
+}
+.slideshow__legenda {
+  margin: 2px 0 0;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 700;
+  opacity: 0.85;
+}

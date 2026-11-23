@@ -17,3 +17,18 @@ export function descontoPercentual(avistaCentavos: number, referenciaCentavos = 
 
 export const brl = (centavos: number): string =>
   (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: centavos % 100 ? 2 : 0 });
+
+/**
+ * Nome do cupom mostrado no quiz: o primeiro nome da pessoa + o percentual
+ * (ex.: RAFAEL79). É só o rótulo do desconto, que já vem aplicado: ninguém
+ * digita nada. Sem nome, usa QUIZ.
+ */
+export function cupomDaPessoa(nome: string | undefined, pct: number): string {
+  const base = (nome ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Za-z]/g, '')
+    .toUpperCase()
+    .slice(0, 12);
+  return `${base || 'QUIZ'}${pct}`;
+}
