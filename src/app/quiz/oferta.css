@@ -429,3 +429,9 @@
   outline: 2px solid var(--v2-laranja);
   outline-offset: 2px;
 }
+
+/* Cupom no banner: quebra para a linha de baixo em telas estreitas. */
+.v2 .qo-banner__cupom {
+  white-space: nowrap;
+  opacity: 0.9;
+}

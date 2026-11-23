@@ -157,18 +157,18 @@ export function todasAsTravas(r: Respostas): Trava[] {
       titulo: r.alcool === 'semana' ? 'Bebida várias vezes na semana' : 'Bebida e petisco no fim de semana',
       texto:
         r.alcool === 'semana'
-          ? 'Cada saída soma calorias que apagam o déficit dos outros dias.'
-          : 'As calorias de 2 dias podem apagar o déficit dos outros 5.',
-      plano: 'O Guia Fim de Semana Sem Culpa mostra como sair, beber e continuar dentro do déficit, sem cortar a cerveja.',
+          ? 'Cada saída desfaz um pouco do que você cortou nos outros dias.'
+          : 'Dois dias de cerveja e petisco desfazem o que você cortou nos outros cinco.',
+      plano: 'O Guia Fim de Semana Sem Culpa te ensina a sair, beber e continuar no déficit. Sem precisar cortar a cerveja.',
     });
 
   if (habitos.includes('belisca'))
     t.push({
       titulo: 'Beliscar à noite',
-      texto: 'O que escapa depois do jantar soma calorias sem você contar e segura o déficit.',
+      texto: 'O que você belisca depois do jantar nem entra na conta, mas pesa.',
       plano: refeicoes
-        ? `O plano alimentar define o que comer em cada uma das suas ${refeicoes} refeições, então a noite deixa de ser sem regra.`
-        : 'O plano alimentar define o que comer em cada refeição, então a noite deixa de ser sem regra.',
+        ? `O plano diz o que comer em cada uma das suas ${refeicoes} refeições. A noite deixa de ser terra sem lei.`
+        : 'O plano diz o que comer em cada refeição. A noite deixa de ser terra sem lei.',
     });
 
   const liquidas = [
@@ -179,65 +179,61 @@ export function todasAsTravas(r: Respostas): Trava[] {
   if (liquidas.length)
     t.push({
       titulo: `Calorias de ${liquidas.join(' e ')}`,
-      texto: 'Somam muito e não matam a fome, então o déficit não fecha.',
+      texto: 'Enchem a conta de calorias e não matam a fome.',
       plano: habitos.includes('delivery')
-        ? 'O plano alimentar usa o que você gosta de comer, e o Guia Fim de Semana Sem Culpa mostra como encaixar o delivery sem perder a semana.'
-        : 'O plano alimentar é calculado com o que você gosta de comer, então não precisa cortar tudo de uma vez.',
+        ? 'O plano usa o que você gosta de comer, e o Guia Fim de Semana Sem Culpa mostra como encaixar o delivery.'
+        : 'O plano usa o que você gosta de comer. Não precisa cortar tudo de uma vez.',
     });
 
   const planoSanfona =
-    'O plano é calculado pro seu peso e a sua rotina, com o que você gosta de comer, pra você conseguir seguir os 42 dias.';
+    'O plano é feito pro seu peso, a sua rotina e o que você gosta de comer. Dá pra seguir os 42 dias.';
   if (r.dietaAntes === 'voltou')
-    t.push({ titulo: 'Peso que voltou depois da dieta', texto: 'Dieta radical que não dá pra manter faz o peso voltar.', plano: planoSanfona });
+    t.push({ titulo: 'Peso que voltou depois da dieta', texto: 'Dieta radical não dá pra manter, e o peso volta.', plano: planoSanfona });
   else if (r.dietaAntes === 'fome' || impediu.includes('fome'))
-    t.push({ titulo: 'Dieta com fome que você largou', texto: 'Passar fome faz largar no meio, e o peso volta.', plano: planoSanfona });
+    t.push({ titulo: 'Dieta com fome que você largou', texto: 'Passando fome ninguém aguenta, e o peso volta.', plano: planoSanfona });
   else if (impediu.includes('desisti'))
-    t.push({
-      titulo: 'Começar e desistir no meio',
-      texto: 'Um plano que não cabe na rotina costuma ser largado no meio do caminho.',
-      plano: planoSanfona,
-    });
+    t.push({ titulo: 'Começar e desistir no meio', texto: 'Plano que não cabe na rotina acaba largado.', plano: planoSanfona });
 
   if (impediu.includes('plano'))
     t.push({
-      titulo: 'Treinar e comer sem um plano claro',
-      texto: 'Sem saber o que fazer em cada dia, é fácil improvisar e perder o rumo.',
-      plano: 'O app entrega a trilha de treinos, a alimentação simplificada e a sua evolução registrada, passo a passo.',
+      titulo: 'Não saber o que fazer em cada dia',
+      texto: 'Sem um passo a passo, a gente improvisa e perde o rumo.',
+      plano: 'O app mostra os treinos, a alimentação e a sua evolução, passo a passo.',
     });
 
   if (impediu.includes('tempo'))
     t.push({
       titulo: 'Falta de tempo',
-      texto: 'Com a rotina corrida, o treino é o primeiro a cair.',
-      plano: 'Dá resultado com treino de abdômen e cardio calculado só 2x por semana.',
+      texto: 'Quando o dia aperta, o treino é o primeiro a cair.',
+      plano: 'Dá resultado com treino de abdômen e cardio só 2x por semana.',
     });
 
   if (impediu.includes('motivacao'))
     t.push({
       titulo: 'Falta de motivação',
-      texto: 'Sem resultado visível, a vontade some antes de o abdômen aparecer.',
-      plano: 'O app é gamificado, mostra a sua evolução semana a semana e tem a Comunidade Anti Falhas te puxando nos dias difíceis.',
+      texto: 'Sem ver resultado, a vontade some antes do abdômen aparecer.',
+      plano: 'O app mostra a sua evolução toda semana, e a Comunidade Anti Falhas te puxa nos dias ruins.',
     });
 
   if (lista(r.jaTentou).includes('abdominal'))
     t.push({
-      titulo: 'Abdominal sem tirar a gordura',
-      texto: 'Fortalece o músculo, mas não tira a capa de gordura que cobre ele.',
-      plano: 'O desafio ataca as 2 frentes juntas: alimentação calculada pra tirar a capa e treino de abdômen com sobrecarga progressiva.',
+      titulo: 'Só abdominal',
+      texto: 'Ele fortalece o músculo, mas não tira a gordura que cobre.',
+      plano: 'O desafio ataca as duas coisas: alimentação pra tirar a gordura e treino pra construir o abdômen.',
     });
 
   if (r.rotina === 'sedentary')
     t.push({
       titulo: 'Dia inteiro sentado',
-      texto: 'Você gasta pouca energia fora do treino, então a alimentação pesa ainda mais.',
+      texto: 'Você gasta pouca energia fora do treino, então a comida pesa mais.',
       plano: 'O plano inclui cardio calculado, além do treino de abdômen.',
     });
 
   if (impediu.includes('genetica'))
     t.push({
       titulo: 'Achar que é genética',
-      texto: 'A genética influencia o formato dos gomos, mas não decide sozinha se o abdômen aparece.',
-      plano: 'O que faz o abdômen aparecer são as 2 frentes juntas: tirar a capa com o déficit certo e construir o músculo com treino.',
+      texto: 'Ela influencia o formato dos gomos, mas não decide se o abdômen aparece.',
+      plano: 'O que faz ele aparecer é tirar a gordura e construir o músculo ao mesmo tempo.',
     });
 
   return t;
@@ -307,9 +303,13 @@ export function cadastroDoApp(r: Respostas, utm: Record<string, string>): Payloa
     ['rotina', 'daily_routine'],
     ['refeicoes', 'meals_count'],
     ['obstaculo', 'biggest_obstacle'],
-    ['aspiracao', 'aspiration'],
   ];
   for (const [quiz, campo] of diretos) if (s(quiz)) app[campo] = s(quiz)!;
+  // O app guarda UMA aspiração: a primeira, nesta ordem, entre as marcadas.
+  // Todas as marcadas seguem nos extras (`aspiracoes`).
+  const marcadas = Array.isArray(r.aspiracoes) ? (r.aspiracoes as string[]) : [];
+  const aspiracaoDoApp = ['body', 'healthy', 'energy', 'motivation'].find((v) => marcadas.includes(v));
+  if (aspiracaoDoApp) app.aspiration = aspiracaoDoApp;
   if (s('experiencia')) app.training_level = NIVEL_TREINO[s('experiencia')!] ?? 'beginner';
   app.discovery_source = origemDoApp(utm.utm_source);
   return app;
@@ -319,7 +319,7 @@ export function cadastroDoApp(r: Respostas, utm: Record<string, string>): Payloa
 const CHAVES_DO_APP = new Set([
   'nome', 'email', 'aceiteEmail', 'nascimento', 'altura', 'peso', 'pesoDesejado',
   'experiencia', 'frequencia', 'local', 'tempoTreino', 'cardio', 'rotina', 'refeicoes',
-  'obstaculo', 'aspiracao',
+  'obstaculo',
 ]);
 
 export function montarPayload(r: Respostas, utm: Record<string, string>, site = ''): PayloadQuiz {

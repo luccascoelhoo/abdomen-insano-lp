@@ -266,7 +266,7 @@ export function TelaDiagnostico({ respostas: r, avancar, recomecar }: PropsTela)
                   <span style={{ width: `${(lista.length / TOTAL_TRAVAS) * 100}%` }} />
                 </div>
                 <ul className="qr-sinais__lista">
-                  {lista.slice(0, 4).map((t) => (
+                  {lista.slice(0, 3).map((t) => (
                     <li key={t.titulo}>
                       <span className="qr-sinais__alerta" aria-hidden="true">
                         !

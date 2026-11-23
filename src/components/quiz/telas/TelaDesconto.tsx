@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { usePrecoCentavos } from '@/components/ui/Precos';
 import { ID_FRONT } from '@/lib/produtos';
-import { PRECO_REFERENCIA_CENTAVOS, brl, descontoPercentual } from '@/lib/desconto';
+import { PRECO_REFERENCIA_CENTAVOS, brl, cupomDaPessoa, descontoPercentual } from '@/lib/desconto';
+import { primeiroNome } from '../motor';
 import type { PropsTela } from '../tipos';
 
 /**
@@ -11,9 +12,10 @@ import type { PropsTela } from '../tipos';
  * dois preços que a página de vendas já mostra (riscado × à vista); a cifra
  * sobe de 0 até o valor, e só.
  */
-export function TelaDesconto({ avancar }: PropsTela) {
+export function TelaDesconto({ respostas: r, avancar }: PropsTela) {
   const avista = usePrecoCentavos(ID_FRONT);
   const alvo = avista ? descontoPercentual(avista) : 0;
+  const cupom = cupomDaPessoa(primeiroNome(r), alvo);
   const [valor, setValor] = useState(0);
 
   useEffect(() => {
@@ -60,10 +62,14 @@ export function TelaDesconto({ avancar }: PropsTela) {
                 de <s>{brl(PRECO_REFERENCIA_CENTAVOS)}</s> por <b>{brl(avista)}</b> à vista
               </p>
             ) : null}
+            <div className="qr-desconto__cupom">
+              <span>Código promocional</span>
+              <b>{cupom}</b>
+            </div>
           </div>
 
           <p className="qr-desconto__nota">
-            Toque em continuar para ver a sua oferta com o desconto já aplicado.
+            O código já está aplicado: você não precisa digitar nada. Toque em continuar para ver a sua oferta.
           </p>
           <button type="button" className="qr-botao" onClick={avancar}>
             Continuar

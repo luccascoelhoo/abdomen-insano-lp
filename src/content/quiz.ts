@@ -414,23 +414,24 @@ export const telasQuiz: Tela[] = [
     maxDias: 730,
   },
   {
-    k: 'lista', // → app: aspiration
+    k: 'multi', // → app: aspiration (a primeira da ordem body, healthy, energy, motivation); todas vão nos extras
     bloco: 5,
-    chave: 'aspiracao',
+    chave: 'aspiracoes',
     titulo: 'O que você mais quer com o desafio?',
-    opcoes: opcoes([
-      ['body', 'Ter o corpo que eu quero'],
-      ['healthy', 'Mais saúde'],
-      ['energy', 'Mais energia no dia a dia'],
-      ['motivation', 'Virar um cara mais disciplinado'],
-    ]),
+    sub: 'Escolha todas que se aplicam',
+    opcoes: [
+      { v: 'body', rotulo: 'Ter o corpo que eu quero' },
+      { v: 'healthy', rotulo: 'Mais saúde' },
+      { v: 'energy', rotulo: 'Mais energia no dia a dia' },
+      { v: 'motivation', rotulo: 'Virar um cara mais disciplinado' },
+    ],
   },
 
   {
     k: 'lista',
     bloco: 5,
     chave: 'confianca',
-    titulo: 'Quão confiante você está em terminar os 42 dias do desafio?',
+    titulo: 'Quão confiante você está em terminar os 42 dias do desafio e definir o abdômen?',
     opcoes: opcoes([
       ['sim', 'Acredito que consigo!'],
       ['incerto', 'Estou incerto, mas vou tentar'],
