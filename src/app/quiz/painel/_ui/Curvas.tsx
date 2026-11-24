@@ -11,7 +11,8 @@ const H = 180;
 const M = { t: 12, r: 12, b: 26, l: 34 };
 
 function escala(max: number) {
-  const topo = Math.max(1, Math.ceil(max * 1.15));
+  // O eixo diz o máximo de verdade: "4" num gráfico cujo pico é 3 parecia um dia que não existiu.
+  const topo = Math.max(1, Math.ceil(max));
   return { topo, y: (v: number) => M.t + (H - M.t - M.b) * (1 - v / topo) };
 }
 
@@ -21,7 +22,9 @@ export function CurvaPorDia({ dias }: { dias: { dia: string; n: number }[] }) {
   const x = (i: number) => M.l + i * passo;
   const linha = dias.map((d, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(d.n).toFixed(1)}`).join(' ');
   const area = `${linha} L${x(dias.length - 1)},${y(0)} L${x(0)},${y(0)} Z`;
-  const rotulos = dias.filter((_, i) => i % Math.ceil(dias.length / 7) === 0 || i === dias.length - 1);
+  const salto = Math.ceil(dias.length / 7);
+  // O penúltimo rótulo some quando cairia em cima do "hoje".
+  const rotulos = dias.filter((_, i) => (i % salto === 0 && dias.length - 1 - i >= salto / 2) || i === dias.length - 1);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="Leads por dia">
       <line x1={M.l} x2={W - M.r} y1={y(0)} y2={y(0)} stroke={SUPERFICIE.linha} />
@@ -30,16 +33,27 @@ export function CurvaPorDia({ dias }: { dias: { dia: string; n: number }[] }) {
       <text x={M.l - 6} y={y(0) + 4} textAnchor="end" fontSize="11" fill={TEXTO.t3}>0</text>
       <path d={area} fill={TEMA.marcaFraco} />
       <path d={linha} fill="none" stroke={TEMA.marca} strokeWidth="2" strokeLinejoin="round" />
-      {dias.map((d, i) => (
-        <circle key={d.dia} cx={x(i)} cy={y(d.n)} r={d.n ? 2.5 : 0} fill={TEMA.marcaClaro}>
-          <title>{`${d.dia.split('-').reverse().slice(0, 2).join('/')}: ${d.n} lead${d.n === 1 ? '' : 's'}`}</title>
-        </circle>
-      ))}
-      {rotulos.map((d) => (
-        <text key={d.dia} x={x(dias.indexOf(d))} y={H - 6} textAnchor="middle" fontSize="11" fill={TEXTO.t3}>
-          {d.dia.split('-').reverse().slice(0, 2).join('/')}
-        </text>
-      ))}
+      {dias.map((d, i) => {
+        const hoje = i === dias.length - 1;
+        return (
+          <g key={d.dia}>
+            {/* Alvo invisível maior: o ponto de 2,5 px era difícil de acertar com o mouse. */}
+            <circle cx={x(i)} cy={y(d.n)} r={9} fill="transparent">
+              <title>{`${hoje ? 'Hoje' : d.dia.split('-').reverse().slice(0, 2).join('/')}: ${d.n} lead${d.n === 1 ? '' : 's'}`}</title>
+            </circle>
+            <circle cx={x(i)} cy={y(d.n)} r={hoje ? 4 : d.n ? 2.5 : 0} fill={hoje ? TEMA.marca : TEMA.marcaClaro} stroke={hoje ? '#000' : 'none'} strokeWidth="2" pointerEvents="none" />
+          </g>
+        );
+      })}
+      {rotulos.map((d) => {
+        const i = dias.indexOf(d);
+        const ultimo = i === dias.length - 1;
+        return (
+          <text key={d.dia} x={x(i)} y={H - 6} textAnchor={ultimo ? 'end' : i === 0 ? 'start' : 'middle'} fontSize="11" fill={ultimo ? TEXTO.t2 : TEXTO.t3}>
+            {ultimo ? 'hoje' : d.dia.split('-').reverse().slice(0, 2).join('/')}
+          </text>
+        );
+      })}
     </svg>
   );
 }

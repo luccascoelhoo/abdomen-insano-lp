@@ -1,5 +1,5 @@
 import { logado } from '@/lib/quiz-painel';
-import { lerLeads } from '@/lib/painel/dados';
+import { desde, diasDoPeriodo, lerLeads } from '@/lib/painel/dados';
 import { PERGUNTAS, rotuloDaOpcao } from '@/lib/painel/respostas';
 import { dataHora } from '@/lib/painel/tempo';
 
@@ -8,9 +8,11 @@ export const dynamic = 'force-dynamic';
 /** Exportação dos leads (sem os de teste), com nota, jornada, origem e respostas legíveis. */
 export async function GET(req: Request) {
   if (!(await logado())) return new Response('Não autorizado', { status: 401 });
-  const faixa = new URL(req.url).searchParams.get('faixa') ?? 'todas';
+  const sp = new URL(req.url).searchParams;
+  const faixa = sp.get('faixa') ?? 'todas';
+  const inicio = desde(diasDoPeriodo(sp.get('dias') ?? '365')).getTime();
   const { leads } = await lerLeads();
-  const lista = leads.filter((l) => faixa === 'todas' || l.faixa === faixa);
+  const lista = leads.filter((l) => (faixa === 'todas' || l.faixa === faixa) && new Date(l.criadoEm).getTime() >= inicio);
 
   const cel = (v: unknown) => {
     const s = String(v ?? '');

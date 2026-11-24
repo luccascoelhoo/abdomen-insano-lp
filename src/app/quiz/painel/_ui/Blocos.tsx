@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { ELEVACAO_CARTAO, SUPERFICIE, TEMA, TEXTO } from '@/lib/painel/tema';
+import { calcularTaxa, MINIMO_PARA_TAXA } from '@/lib/painel/taxa';
+import { SeloAtualizacao } from './AutoAtualizar';
 
 /** Os tijolos visuais do painel, num lugar só (o bloco é o chão, o cartão sobe um degrau). */
 
@@ -62,14 +64,14 @@ export function Vazio({ children }: { children: ReactNode }) {
 
 /** Cabeçalho da aba: título, uma linha do que ela responde, e de quando é o número. */
 export function Cabeca({ titulo, sub, lidoEm, acoes }: { titulo: string; sub: string; lidoEm: Date; acoes?: ReactNode }) {
-  const hora = lidoEm.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="text-[22px] font-semibold tracking-[-0.01em]" style={{ color: TEXTO.t1 }}>{titulo}</h1>
-        <p className="mt-1 text-[13px]" style={{ color: TEXTO.t3 }}>
-          {sub} · <span title="Hora da leitura (Brasília)">lido às {hora}</span>
-        </p>
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-[22px] font-semibold tracking-[-0.01em]" style={{ color: TEXTO.t1 }}>{titulo}</h1>
+          <SeloAtualizacao lidoEm={lidoEm.toISOString()} />
+        </div>
+        <p className="mt-1 text-[13px]" style={{ color: TEXTO.t3 }}>{sub}</p>
       </div>
       {acoes}
     </div>
@@ -109,3 +111,62 @@ export function Barra({ fracao, cor = TEMA.marca }: { fracao: number; cor?: stri
 }
 
 export const num = (n: number) => n.toLocaleString('pt-BR');
+
+/**
+ * Taxa que não mente com amostra pequena: com base zero não há taxa, e abaixo
+ * de 30 o número aparece junto com o tamanho da amostra.
+ */
+export function textoDaTaxa(parte: number, base: number, sufixo = ''): string {
+  const t = calcularTaxa(parte, base);
+  if (!t.temBase) return 'sem base para comparar';
+  const v = `${t.valor.toFixed(t.valor >= 10 || t.valor === 0 ? 0 : 1).replace('.', ',')}%${sufixo}`;
+  return t.confiavel ? v : `${v} · amostra pequena (${base})`;
+}
+
+/**
+ * O funil em barras: cada degrau com a largura proporcional ao primeiro, o
+ * número de pessoas e quanto passou do degrau anterior. A passagem com a maior
+ * perda (com amostra suficiente) ganha a cor de atenção.
+ */
+export function FunilDeBarras({ degraus }: { degraus: { rotulo: string; valor: number }[] }) {
+  const topo = Math.max(1, ...degraus.map((d) => d.valor));
+  let pior = -1;
+  let piorTaxa = 101;
+  degraus.forEach((d, i) => {
+    if (i === 0) return;
+    const base = degraus[i - 1].valor;
+    if (base < MINIMO_PARA_TAXA) return;
+    const t = (100 * d.valor) / base;
+    if (t < piorTaxa) {
+      piorTaxa = t;
+      pior = i;
+    }
+  });
+  return (
+    <ol className="space-y-2">
+      {degraus.map((d, i) => {
+        const ehPior = i === pior;
+        return (
+          <li key={d.rotulo} className="grid grid-cols-[150px_1fr_64px] items-center gap-3 sm:grid-cols-[180px_1fr_72px_190px]">
+            <span className="text-[13px]" style={{ color: TEXTO.t2 }}>{d.rotulo}</span>
+            <span className="block h-7 overflow-hidden rounded-[6px]" style={{ background: SUPERFICIE.s2 }} aria-hidden="true">
+              <span
+                className="block h-full rounded-[6px]"
+                style={{
+                  width: `${(100 * d.valor) / topo}%`,
+                  minWidth: d.valor > 0 ? 4 : 0,
+                  background: ehPior ? TEMA.atencao : TEMA.marca,
+                  opacity: ehPior ? 1 : 0.35 + 0.65 * (1 - i / Math.max(1, degraus.length - 1)) ,
+                }}
+              />
+            </span>
+            <span className="text-right text-[18px] font-semibold tabular-nums" style={{ color: TEXTO.t1 }}>{num(d.valor)}</span>
+            <span className="col-span-3 -mt-1 text-[12px] sm:col-span-1 sm:mt-0" style={{ color: ehPior ? TEMA.atencao : TEXTO.t3 }}>
+              {i === 0 ? 'pessoas que abriram' : `${textoDaTaxa(d.valor, degraus[i - 1].valor)} do anterior`}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
