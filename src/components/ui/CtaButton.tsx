@@ -9,6 +9,7 @@ import { useMagnetico } from '@/components/ui/useMagnetico';
 import { usePreco } from '@/components/ui/Precos';
 import { caminhoDaPagina, origemPosCompra, sckDaCompra } from '@/lib/pagina-de-origem';
 import { anexarParametros, lerCookiesDoPixel, lerUtm } from '@/lib/utm';
+import { enviarEventoQuiz } from '@/lib/quiz-evento';
 
 type Props = {
   className?: string;
@@ -79,6 +80,9 @@ export function CtaButton({
       },
       ID_FRONT,
     );
+    // O degrau "clicou em comprar" do painel do quiz. O índice é fixo e alto
+    // de propósito: não é uma tela, e não pode entrar na curva de retenção.
+    if (origem.startsWith('quiz')) enviarEventoQuiz({ evento: 'checkout', indice: 199, tela: origem.slice(0, 40) });
     seguirAposMedir(evento);
   }
 

@@ -1,174 +1,194 @@
-import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
+import Link from 'next/link';
 import { logado } from '@/lib/quiz-painel';
-import { telasQuiz } from '@/content/quiz';
+import { CORTES } from '@/content/quiz-score';
+import { ErroDoPainel, lerLeads, type LeadDoPainel } from '@/lib/painel/dados';
+import { rotuloDaTela } from '@/lib/painel/funil';
+import { PERGUNTAS, rotuloDaOpcao } from '@/lib/painel/respostas';
+import type { Faixa } from '@/lib/painel/score';
+import { dataHora } from '@/lib/painel/tempo';
+import { SUPERFICIE, TEMA, TEXTO } from '@/lib/painel/tema';
+import { Bloco, Cabeca, Erro, Vazio, num } from '../_ui/Blocos';
 
-type Linha = {
-  nome: string | null;
-  email: string;
-  aceite_email: boolean | null;
-  aceite_email_confirmado_em: string | null;
-  plano_enviado_em: string | null;
-  consumido_em: string | null;
-  criado_em: string;
-  app: Record<string, unknown> | null;
-  extras: Record<string, unknown> | null;
-};
-
-/**
- * Perfil: de onde sai cada bloco. `de` = onde o valor foi gravado (`extras` do
- * quiz ou `app` = campo do app); `tela` = a tela do quiz cujas opções dão o
- * nome legível (quando o valor é o mesmo id da opção).
- */
-const PERGUNTAS: { rotulo: string; de: 'extras' | 'app'; chave: string; tela?: string }[] = [
-  { rotulo: 'Faixa de idade', de: 'extras', chave: 'faixaIdade', tela: 'faixaIdade' },
-  { rotulo: 'Objetivo principal', de: 'extras', chave: 'objetivo', tela: 'objetivo' },
-  { rotulo: 'O que impediu até hoje', de: 'extras', chave: 'impediu', tela: 'impediu' },
-  { rotulo: 'Confiança em terminar', de: 'extras', chave: 'confianca', tela: 'confianca' },
-  { rotulo: 'Como o corpo está', de: 'extras', chave: 'fisico', tela: 'fisico' },
-  { rotulo: 'Onde treina', de: 'app', chave: 'workout_place', tela: 'local' },
-  { rotulo: 'Maior obstáculo', de: 'app', chave: 'biggest_obstacle', tela: 'obstaculo' },
-  { rotulo: 'Meta do app', de: 'app', chave: 'goal' },
+const FAIXAS: { v: Faixa | 'todas'; rotulo: string }[] = [
+  { v: 'todas', rotulo: 'Todos' },
+  { v: 'quente', rotulo: 'Quentes' },
+  { v: 'morno', rotulo: 'Mornos' },
+  { v: 'frio', rotulo: 'Frios' },
 ];
 
-/** Valores do app que não vêm de uma opção do quiz (calculados pela meta de peso). */
-const ROTULOS_FIXOS: Record<string, Record<string, string>> = {
-  goal: { lose: 'Perder peso', gain: 'Ganhar peso', maintain: 'Manter o peso' },
-};
+const COR_FAIXA: Record<Faixa, string> = { quente: TEMA.positivo, morno: TEMA.atencao, frio: TEXTO.t3 };
 
-/** chave da tela → (id da opção → texto que a pessoa viu). */
-const NOMES: Record<string, Record<string, string>> = {};
-for (const t of telasQuiz) {
-  if ('chave' in t && 'opcoes' in t && Array.isArray(t.opcoes)) {
-    NOMES[t.chave] = Object.fromEntries(t.opcoes.map((o) => [o.v, o.rotulo]));
-  }
+const Selo = ({ faixa, nota }: { faixa: Faixa; nota: number }) => (
+  <span
+    className="inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[12px] font-semibold tabular-nums"
+    style={{ color: COR_FAIXA[faixa], borderColor: SUPERFICIE.linhaForte }}
+  >
+    {nota}
+    <span className="font-normal">{faixa}</span>
+  </span>
+);
+
+const passos = (l: LeadDoPainel) =>
+  [
+    ['Viu a oferta', l.jornada?.viuOferta],
+    ['Clicou em comprar', l.jornada?.clicouComprar],
+    ['Comprou', l.comprou],
+  ] as const;
+
+function Gaveta({ l }: { l: LeadDoPainel }) {
+  return (
+    <div className="grid gap-5 px-3 pb-4 pt-1 md:grid-cols-3">
+      <div>
+        <h4 className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: TEXTO.t3 }}>Nota por regras: {l.regras.nota}</h4>
+        <ul className="mt-2 space-y-1 text-[13px]">
+          {l.regras.itens.map((i) => (
+            <li key={i.rotulo} className="flex justify-between gap-3" style={{ color: i.bateu ? TEXTO.t1 : TEXTO.t4 }}>
+              <span>{i.bateu ? '✓' : '·'} {i.rotulo}</span>
+              <span className="tabular-nums">{i.bateu ? `+${i.pontos}` : '0'}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 text-[12px]" style={{ color: TEXTO.t3 }}>
+          Semelhança com quem comprou: {l.semelhanca === null ? 'sem sinal' : `${l.semelhanca} (50 = média)`}
+        </p>
+      </div>
+      <div>
+        <h4 className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: TEXTO.t3 }}>Jornada</h4>
+        {l.jornada ? (
+          <ul className="mt-2 space-y-1 text-[13px]">
+            <li style={{ color: TEXTO.t2 }}>{l.jornada.telasVistas} telas vistas · mais longe: {l.jornada.ultimaTela ? rotuloDaTela(l.jornada.ultimaTela) : '—'}</li>
+            {passos(l).map(([r, ok]) => (
+              <li key={r} style={{ color: ok ? TEMA.positivo : TEXTO.t4 }}>{ok ? '✓' : '·'} {r}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-2 text-[13px]" style={{ color: TEXTO.t3 }}>
+            Sem jornada ligada: cadastro de antes de o lead gravar a sessão (24/11/2026).{l.comprou ? ' Comprou.' : ''}
+          </p>
+        )}
+        <h4 className="mt-4 text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: TEXTO.t3 }}>E-mail</h4>
+        <p className="mt-1 text-[13px]" style={{ color: TEXTO.t2 }}>
+          {l.aceiteEmail ? (l.confirmouEmail ? 'Aceitou e confirmou' : 'Aceitou, não confirmou') : 'Não aceitou'} · plano{' '}
+          {l.recebeuPlano ? 'enviado' : 'não enviado'}
+          {l.noApp ? ' · já no app' : ''}
+        </p>
+        {Object.keys(l.utm).length ? (
+          <p className="mt-1 break-all text-[12px]" style={{ color: TEXTO.t3 }}>
+            Origem: {['utm_source', 'utm_campaign', 'utm_content'].map((k) => l.utm[k]).filter(Boolean).join(' · ') || (l.utm.fbclid ? 'anúncio ou link da Meta (só fbclid)' : '—')}
+          </p>
+        ) : null}
+      </div>
+      <div>
+        <h4 className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: TEXTO.t3 }}>Respostas</h4>
+        <dl className="mt-2 space-y-1 text-[12px]">
+          {PERGUNTAS.filter((p) => l.respostas[p.chave] !== undefined).map((p) => {
+            const v = l.respostas[p.chave];
+            return (
+              <div key={p.chave} className="grid grid-cols-[1fr_1fr] gap-2">
+                <dt className="truncate" title={p.titulo} style={{ color: TEXTO.t3 }}>{p.titulo}</dt>
+                <dd style={{ color: TEXTO.t1 }}>{(Array.isArray(v) ? v : [v]).map((x) => rotuloDaOpcao(p.chave, x)).join(', ')}</dd>
+              </div>
+            );
+          })}
+        </dl>
+      </div>
+    </div>
+  );
 }
-const nomeLegivel = (q: { chave: string; tela?: string }, v: string) =>
-  (q.tela && NOMES[q.tela]?.[v]) || ROTULOS_FIXOS[q.chave]?.[v] || v;
 
-const data = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }) : '-';
-const pct = (n: number, t: number) => (t ? `${Math.round((100 * n) / t)}%` : '0%');
-
-export default async function Leads() {
-  // O layout só esconde a tela: a página ainda seria executada. Sem sessão, não busca nada.
+export default async function Leads({ searchParams }: { searchParams: Promise<{ faixa?: string; q?: string }> }) {
   if (!(await logado())) return null;
-  let linhas: Linha[] = [];
-  let erro = '';
-  if (!supabaseConfigured()) erro = 'Supabase não configurado.';
-  else {
-    const { data: d, error } = await supabaseAdmin()
-      .from('quiz_respostas')
-      .select('nome,email,aceite_email,aceite_email_confirmado_em,plano_enviado_em,consumido_em,criado_em,app,extras')
-      .order('criado_em', { ascending: false })
-      .limit(2000);
-    if (error) erro = error.message;
-    else linhas = (d ?? []) as Linha[];
+  const { faixa: f, q } = await searchParams;
+  const faixa = (FAIXAS.some((x) => x.v === f) ? f : 'todas') as Faixa | 'todas';
+  const agora = new Date();
+
+  let base;
+  try {
+    base = await lerLeads();
+  } catch (e) {
+    return <Erro>Não consegui ler os leads: {e instanceof ErroDoPainel ? e.message : 'erro inesperado'}.</Erro>;
   }
-
-  const total = linhas.length;
-  const aceitaram = linhas.filter((l) => l.aceite_email).length;
-  const confirmados = linhas.filter((l) => l.aceite_email_confirmado_em).length;
-  const planos = linhas.filter((l) => l.plano_enviado_em).length;
-  const viraramConta = linhas.filter((l) => l.consumido_em).length;
-
-  const valores = (l: Linha, q: (typeof PERGUNTAS)[number]): string[] => {
-    const v = (l[q.de] ?? {})[q.chave];
-    if (Array.isArray(v)) return v.map(String);
-    return v === undefined || v === null || v === '' ? [] : [String(v)];
-  };
+  const busca = (q ?? '').trim().toLowerCase();
+  const todos = base.leads;
+  const lista = todos
+    .filter((l) => faixa === 'todas' || l.faixa === faixa)
+    .filter((l) => !busca || l.nome.toLowerCase().includes(busca) || l.email.includes(busca))
+    .sort((a, b) => b.nota - a.nota || b.criadoEm.localeCompare(a.criadoEm));
+  const contagem = (x: Faixa | 'todas') => (x === 'todas' ? todos.length : todos.filter((l) => l.faixa === x).length);
 
   return (
     <>
-      <div className="pn-cabeca">
-        <div>
-          <h1>Leads do quiz</h1>
-          <p className="pn-sub">Quem deixou o e-mail e o que respondeu.</p>
-        </div>
-      </div>
-
-      {erro ? <p className="pn-erro">Erro: {erro}</p> : null}
-      {total === 0 && !erro ? <div className="pn-vazio">Nenhum cadastro ainda.</div> : null}
-
-      {total > 0 ? (
-        <>
-          <section className="pn-kpis pn-kpis--5">
-            {[
-              ['Cadastros', total, ''],
-              ['Aceitaram e-mails', aceitaram, pct(aceitaram, total)],
-              ['Confirmaram', confirmados, pct(confirmados, total)],
-              ['Receberam o plano', planos, pct(planos, total)],
-              ['Já no app', viraramConta, pct(viraramConta, total)],
-            ].map(([r, n, p]) => (
-              <div className="pn-kpi" key={String(r)}>
-                <span>{r}</span>
-                <b>{n}</b>
-                <small>{p || ' '}</small>
-              </div>
-            ))}
-          </section>
-
-          <section className="pn-cartao">
-            <h2>Últimos cadastros</h2>
-            <div className="pn-rolagem">
-              <table className="pn-tabela">
-                <thead>
-                  <tr>
-                    <th>Quando</th>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Idade</th>
-                    <th>Objetivo</th>
-                    <th>E-mail confirmado</th>
-                    <th>Plano</th>
-                    <th>No app</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {linhas.slice(0, 100).map((l) => {
-                    const conf = l.aceite_email_confirmado_em ? ['sim', 'ok'] : l.aceite_email ? ['pendente', 'espera'] : ['não aceitou', 'nao'];
-                    return (
-                      <tr key={l.email}>
-                        <td>{data(l.criado_em)}</td>
-                        <td>{l.nome ?? '-'}</td>
-                        <td className="pn-email">{l.email}</td>
-                        <td>{l.extras?.faixaIdade ? nomeLegivel({ chave: 'faixaIdade', tela: 'faixaIdade' }, String(l.extras.faixaIdade)) : '-'}</td>
-                        <td>{l.extras?.objetivo ? nomeLegivel({ chave: 'objetivo', tela: 'objetivo' }, String(l.extras.objetivo)) : '-'}</td>
-                        <td><span className={`pn-pilula pn-pilula--${conf[1]}`}>{conf[0]}</span></td>
-                        <td>{l.plano_enviado_em ? <span className="pn-pilula pn-pilula--ok">enviado</span> : '-'}</td>
-                        <td>{l.consumido_em ? <span className="pn-pilula pn-pilula--ok">sim</span> : '-'}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+      <Cabeca
+        titulo="Leads"
+        sub={`${num(todos.length)} cadastros, sem os de teste · quente ${CORTES.quente}+, morno ${CORTES.morno}+`}
+        lidoEm={agora}
+        acoes={
+          <a
+            href={`/quiz/painel/leads/csv?faixa=${faixa}`}
+            className="rounded-[8px] border px-3 py-1.5 text-[12px] font-medium"
+            style={{ borderColor: SUPERFICIE.linha, color: TEXTO.t2 }}
+          >
+            Exportar CSV
+          </a>
+        }
+      />
+      <Bloco
+        titulo="Quem deixou o e-mail"
+        descricao="Ordenado pela nota. Toque na linha para ver a nota, a jornada e as respostas."
+        acoes={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex overflow-hidden rounded-[9px] border text-[12px]" style={{ borderColor: SUPERFICIE.linha }}>
+              {FAIXAS.map((x) => (
+                <Link
+                  key={x.v}
+                  href={`/quiz/painel/leads?faixa=${x.v}${busca ? `&q=${encodeURIComponent(busca)}` : ''}`}
+                  className="px-3 py-1.5"
+                  style={{ background: faixa === x.v ? SUPERFICIE.s3 : 'transparent', color: faixa === x.v ? TEXTO.t1 : TEXTO.t3 }}
+                >
+                  {x.rotulo} {contagem(x.v)}
+                </Link>
+              ))}
             </div>
-            <p className="pn-nota">Mostrando os {Math.min(100, total)} mais recentes de {total}.</p>
-          </section>
-
-          <section className="pn-perfil">
-            {PERGUNTAS.map((q) => {
-              const cont = new Map<string, number>();
-              for (const l of linhas) for (const v of valores(l, q)) cont.set(v, (cont.get(v) ?? 0) + 1);
-              if (cont.size === 0) return null;
-              const maior = Math.max(...cont.values());
-              return (
-                <div className="pn-cartao" key={q.rotulo}>
-                  <h2>{q.rotulo}</h2>
-                  <ul className="pn-barras">
-                    {[...cont.entries()].sort((a, b) => b[1] - a[1]).map(([v, n]) => (
-                      <li key={v}>
-                        <span className="pn-barras__rotulo">{nomeLegivel(q, v)}</span>
-                        <span className="pn-barras__trilho"><span style={{ width: `${(100 * n) / maior}%` }} /></span>
-                        <span className="pn-barras__n">{n} <small>{pct(n, total)}</small></span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </section>
-        </>
-      ) : null}
+            <form className="flex">
+              <input type="hidden" name="faixa" value={faixa} />
+              <input
+                name="q"
+                defaultValue={busca}
+                placeholder="Buscar nome ou e-mail"
+                className="h-[30px] w-[190px] rounded-[8px] border px-2 text-[12px]"
+                style={{ background: SUPERFICIE.s2, borderColor: SUPERFICIE.linha, color: TEXTO.t1 }}
+              />
+            </form>
+          </div>
+        }
+      >
+        {lista.length === 0 ? (
+          <Vazio>Nenhum lead {faixa === 'todas' ? '' : `${faixa} `}{busca ? `com "${busca}"` : 'ainda'}.</Vazio>
+        ) : (
+          <div className="overflow-x-auto">
+            <div className="min-w-[760px]">
+              <div className="grid grid-cols-[110px_1.2fr_1.6fr_90px_1fr_90px] gap-3 px-3 py-2 text-[11px] uppercase tracking-[0.06em]" style={{ color: TEXTO.t3, background: SUPERFICIE.s2 }}>
+                <span>Nota</span><span>Nome</span><span>E-mail</span><span>Quando</span><span>Jornada</span><span>E-mail mkt</span>
+              </div>
+              {lista.map((l) => (
+                <details key={l.email} className="border-b" style={{ borderColor: SUPERFICIE.linhaFina }}>
+                  <summary className="grid grid-cols-[110px_1.2fr_1.6fr_90px_1fr_90px] items-center gap-3 px-3 py-2.5 text-[13px] hover:bg-[#1e1e1e]">
+                    <span><Selo faixa={l.faixa} nota={l.nota} /></span>
+                    <span className="truncate" style={{ color: TEXTO.t1 }}>{l.nome || '—'}</span>
+                    <span className="truncate" style={{ color: TEXTO.t2 }}>{l.email}</span>
+                    <span style={{ color: TEXTO.t3 }}>{dataHora(l.criadoEm).replace(/\/\d{4}/, '')}</span>
+                    <span style={{ color: l.comprou ? TEMA.positivo : l.jornada?.clicouComprar ? TEMA.atencao : TEXTO.t3 }}>
+                      {l.comprou ? 'Comprou' : l.jornada?.clicouComprar ? 'Clicou em comprar' : l.jornada?.viuOferta ? 'Viu a oferta' : l.jornada ? 'Deixou o e-mail' : '—'}
+                    </span>
+                    <span style={{ color: l.aceiteEmail ? TEXTO.t2 : TEXTO.t4 }}>{l.aceiteEmail ? (l.confirmouEmail ? 'confirmou' : 'aceitou') : 'não'}</span>
+                  </summary>
+                  <Gaveta l={l} />
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
+      </Bloco>
     </>
   );
 }

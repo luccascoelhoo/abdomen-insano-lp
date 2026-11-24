@@ -24,6 +24,10 @@ export interface CorpoQuizValido {
   app: Record<string, string | number | string[]>;
   extras: Record<string, string | number | boolean | string[]>;
   utm: Record<string, string>;
+  /** Sessão do funil por tela (`quiz_eventos.sessao`): liga o lead à jornada dele. */
+  sessao: string | null;
+  /** Marcado no navegador por `?teste=1`. A lista do time é aplicada no servidor. */
+  teste: boolean;
 }
 
 export type ResultadoValidacao =
@@ -295,6 +299,9 @@ export function validarCorpoQuiz(corpo: unknown): ResultadoValidacao {
       app: validarApp(corpo.app, descartados),
       extras: validarExtras(corpo.extras, descartados),
       utm: validarUtm(corpo.utm, descartados),
+      sessao:
+        typeof corpo.sessao === 'string' && /^[A-Za-z0-9-]{8,64}$/.test(corpo.sessao) ? corpo.sessao : null,
+      teste: corpo.teste === true,
     },
   };
 }

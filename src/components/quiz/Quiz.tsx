@@ -6,7 +6,7 @@ import { telasQuiz } from '@/content/quiz';
 import { progressoPersuasivo } from './calculos';
 import { useQuiz } from './motor';
 import { TELAS } from './telas';
-import { enviarEventoQuiz } from '@/lib/quiz-evento';
+import { enviarEventoQuiz, jornadaDeTeste } from '@/lib/quiz-evento';
 
 /**
  * Casca do quiz: voltar redondo + barra de progresso em cápsula (como o
@@ -18,13 +18,19 @@ export function Quiz({ oferta }: { oferta: ReactNode }) {
 
   // Funil: uma tela vista = um evento anônimo, com o tempo gasto na anterior.
   const ultima = useRef<{ i: number; t: number } | null>(null);
+  // `?teste=1` só existe na chegada: marca a sessão antes de qualquer evento.
+  useEffect(() => {
+    jornadaDeTeste();
+  }, []);
   useEffect(() => {
     if (!q.pronto) return;
     const agora = Date.now();
     const ant = ultima.current;
     if (ant && ant.i === q.i) return;
     const t = telasQuiz[q.i];
-    const id = 'chave' in t && t.chave ? String(t.chave) : t.k;
+    // Tela sem pergunta (`info`, são várias) leva a posição no nome: sem isso
+    // as oito telas `info` viravam uma só no funil e somavam as sessões.
+    const id = 'chave' in t && t.chave ? String(t.chave) : t.k === 'info' ? `info-${q.i}` : t.k;
     enviarEventoQuiz({
       evento: ant && q.i < ant.i ? 'voltar' : 'view',
       indice: q.i,

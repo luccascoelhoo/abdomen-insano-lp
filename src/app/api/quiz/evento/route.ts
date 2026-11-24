@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
 
 /**
- * Evento anônimo do funil do quiz (uma tela vista). Grava em `quiz_eventos`
+ * Evento anônimo do funil do quiz (uma tela vista, ou o clique em comprar). Grava em `quiz_eventos`
  * pela service role. Responde sempre 204: quem mede não precisa saber o que
  * deu certo, e nada sobre o que está gravado volta pela rede.
  */
@@ -41,8 +41,8 @@ export async function POST(req: Request) {
     const tela = texto(b.tela, 40);
     const indice = int(b.indice, 200);
     if (!sessao || sessao.length < 8 || !tela || indice === null) return vazio;
-    if (b.evento !== 'view' && b.evento !== 'voltar') return vazio;
-    await supabaseAdmin().from('quiz_eventos').insert({
+    if (b.evento !== 'view' && b.evento !== 'voltar' && b.evento !== 'checkout') return vazio;
+    const { error } = await supabaseAdmin().from('quiz_eventos').insert({
       sessao,
       evento: b.evento,
       indice,
@@ -50,7 +50,11 @@ export async function POST(req: Request) {
       indice_anterior: int(b.indiceAnterior, 200),
       ms_anterior: int(b.msAnterior, 86_400_000),
       origem: texto(b.origem, 60),
+      teste: b.teste === true,
     });
+    // Quem mede segue recebendo 204; o log não pode ficar mudo. Sem isto, um
+    // insert recusado (coluna nova sem migração) perdia todo evento sem rastro.
+    if (error) console.error('[api/quiz/evento] insert recusado', { code: error.code, message: error.message });
   } catch {}
   return vazio;
 }

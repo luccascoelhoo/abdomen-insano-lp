@@ -9,6 +9,7 @@ import { Rico } from '@/components/v2/Rico';
 import { rodape } from '@/content/desafio';
 import { rastrear } from '@/lib/pixel';
 import { lerUtm } from '@/lib/utm';
+import { jornadaDeTeste, sessaoDoQuiz } from '@/lib/quiz-evento';
 import { enviarQuiz } from '../envio';
 import { montarPayload, texto } from '../motor';
 import type { PropsTela, TelaEmail as TelaEmailT } from '../tipos';
@@ -50,7 +51,11 @@ export function TelaEmail({ tela, respostas, responder }: PropsTela<TelaEmailT>)
     const valores = { email: m, aceiteEmail: aceite };
     rastrear('Lead');
     // Sem `await`: a pessoa segue para o diagnóstico enquanto o cadastro viaja.
-    enviarQuiz(montarPayload({ ...respostas, ...valores }, utmDoNavegador(), site)).catch(() => {});
+    enviarQuiz({
+      ...montarPayload({ ...respostas, ...valores }, utmDoNavegador(), site),
+      sessao: sessaoDoQuiz(),
+      teste: jornadaDeTeste(),
+    }).catch(() => {});
     responder(valores);
   };
 
