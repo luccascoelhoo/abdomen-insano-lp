@@ -4,6 +4,7 @@ import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
 import { emailConfigurado, enviarEmail } from '@/lib/email/brevo';
 import { BASE, emailPlano, respostasDaLinha } from '@/lib/email/quiz-emails';
 import { assinar } from '@/lib/email/token';
+import { ehContatoDeTeste } from '@/lib/contatos-de-teste';
 import { validarCorpoQuiz, type CorpoQuizValido } from './validar';
 
 /**
@@ -109,6 +110,9 @@ async function salvar(d: CorpoQuizValido, ua: string): Promise<void> {
         app: d.app,
         extras: d.extras,
         utm: d.utm,
+        // Refez o quiz: a sessão nova substitui a antiga, que é a jornada atual.
+        ...(d.sessao ? { sessao: d.sessao } : {}),
+        teste: d.teste || ehContatoDeTeste(d.email),
         atualizado_em: agora,
       },
       { onConflict: 'email' },
@@ -119,6 +123,13 @@ async function salvar(d: CorpoQuizValido, ua: string): Promise<void> {
   if (error) {
     console.error('[api/quiz] falha ao gravar', { code: error.code, message: error.message });
     return;
+  }
+  // Lead do time marca a jornada dele no próprio evento. O lead guarda só a
+  // última sessão: sem isto, quem refaz o quiz deixava as jornadas anteriores
+  // contando como gente de verdade no funil.
+  if ((d.teste || ehContatoDeTeste(d.email)) && d.sessao) {
+    const r = await supabaseAdmin().from('quiz_eventos').update({ teste: true }).eq('sessao', d.sessao);
+    if (r.error) console.error('[api/quiz] jornada de teste não marcada', { code: r.error.code });
   }
   await enviarPlano(data as LinhaQuiz);
 }

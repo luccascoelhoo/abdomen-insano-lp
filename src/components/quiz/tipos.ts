@@ -241,4 +241,8 @@ export interface PayloadQuiz {
   utm: Record<string, string>;
   /** Campo-isca anti-robô: tem que chegar vazio. */
   site?: string;
+  /** Sessão do funil por tela, para ligar o lead à jornada no painel. */
+  sessao?: string;
+  /** Jornada de teste (`?teste=1`): fica fora dos números do painel. */
+  teste?: boolean;
 }

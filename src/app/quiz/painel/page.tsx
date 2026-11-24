@@ -1,104 +1,183 @@
 import Link from 'next/link';
-import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
 import { logado } from '@/lib/quiz-painel';
+import { CORTES } from '@/content/quiz-score';
+import { DEGRAUS, maiorQueda, retencaoPorTela, trechoMedido } from '@/lib/painel/funil';
+import { ErroDoPainel, PERIODOS, desde, diasDoPeriodo, lerFunil, lerLeads } from '@/lib/painel/dados';
+import { calcularTaxa, pct1 } from '@/lib/painel/taxa';
+import { serieDiaria } from '@/lib/painel/tempo';
+import { SUPERFICIE, TEMA, TEXTO } from '@/lib/painel/tema';
+import { Barra, Bloco, Cabeca, Cartao, Erro, Periodo, Vazio, num } from './_ui/Blocos';
+import { CurvaPorDia, CurvaRetencao } from './_ui/Curvas';
 
-type Linha = { indice: number; tela: string; sessoes: number; pct_inicio: number | null; pct_anterior: number | null; mediana_s: number | null };
-
-const PERIODOS = [
-  { dias: 1, rotulo: 'Hoje' },
-  { dias: 7, rotulo: '7 dias' },
-  { dias: 30, rotulo: '30 dias' },
-];
-
-export default async function Funil({ searchParams }: { searchParams: Promise<{ dias?: string }> }) {
-  // O layout só esconde a tela: a página ainda seria executada. Sem sessão, não busca nada.
+export default async function Painel({ searchParams }: { searchParams: Promise<{ dias?: string }> }) {
+  // O layout só esconde a tela: a página ainda seria executada. Sem sessão, não lê nada.
   if (!(await logado())) return null;
-  const { dias: d } = await searchParams;
-  const dias = [1, 7, 30].includes(Number(d)) ? Number(d) : 7;
+  const dias = diasDoPeriodo((await searchParams).dias);
+  const agora = new Date();
 
-  let linhas: Linha[] = [];
-  let erro = '';
-  if (!supabaseConfigured()) erro = 'Supabase não configurado.';
-  else {
-    const { data, error } = await supabaseAdmin().rpc('quiz_funil', { p_dias: dias });
-    if (error) erro = error.message;
-    else linhas = (data ?? []) as Linha[];
+  let dados;
+  try {
+    const [funil, base] = await Promise.all([lerFunil(dias), lerLeads()]);
+    dados = { ...funil, ...base };
+  } catch (e) {
+    return <Erro>Não consegui ler o painel: {e instanceof ErroDoPainel ? e.message : 'erro inesperado'}.</Erro>;
   }
 
-  const inicio = linhas[0]?.sessoes ?? 0;
-  const fim = linhas[linhas.length - 1];
-  const maiorQueda = [...linhas]
-    .filter((l) => l.indice > 0 && l.pct_anterior !== null)
-    .sort((a, b) => a.pct_anterior! - b.pct_anterior!)[0];
+  const { degraus, telas: linhas, leads, perfil } = dados;
+  const inicio = desde(dias, agora).getTime();
+  const doPeriodo = leads.filter((l) => new Date(l.criadoEm).getTime() >= inicio);
+  const hoje = leads.filter((l) => new Date(l.criadoEm).getTime() >= desde(1, agora).getTime()).length;
+  const quentes = doPeriodo.filter((l) => l.faixa === 'quente').length;
+  const mornos = doPeriodo.filter((l) => l.faixa === 'morno').length;
+  const frios = doPeriodo.length - quentes - mornos;
+  const naoCompraram = doPeriodo.filter((l) => !l.comprou);
+  const alcancaveis = naoCompraram.filter((l) => l.aceiteEmail).length;
+  const diasDaCurva = Math.min(Math.max(dias, 14), 30);
+  // "Tudo" divide pelos dias desde o primeiro lead, não por 365.
+  const primeiro = leads.length ? Math.min(...leads.map((l) => new Date(l.criadoEm).getTime())) : agora.getTime();
+  const diasDeBase = dias === 365 ? Math.max(1, Math.ceil((agora.getTime() - primeiro) / 86_400_000)) : dias;
+  const serie = serieDiaria(leads.map((l) => l.criadoEm), diasDaCurva, agora);
+
+  const telas = retencaoPorTela(linhas);
+  const { curva, base, omitidas } = trechoMedido(telas);
+  const queda = maiorQueda(telas);
+  const condicionais = telas.filter((t) => t.condicional);
+
+  const decide = perfil.confianca === 'ok' ? 'semelhança com quem comprou' : 'regras (v1)';
 
   return (
     <>
-      <div className="pn-cabeca">
-        <div>
-          <h1>Funil do quiz</h1>
-          <p className="pn-sub">Quantas pessoas chegam em cada tela e onde elas saem.</p>
-        </div>
-        <div className="pn-seg" role="group" aria-label="Período">
-          {PERIODOS.map((p) => (
-            <Link key={p.dias} href={`/quiz/painel?dias=${p.dias}`} className={p.dias === dias ? 'pn-seg--ativo' : undefined}>
-              {p.rotulo}
-            </Link>
-          ))}
-        </div>
-      </div>
+      <Cabeca
+        titulo="Painel"
+        sub={`Quiz do Desafio Abdômen Insano · ${PERIODOS.find((p) => p.dias === dias)?.rotulo}`}
+        lidoEm={agora}
+        acoes={<Periodo base="/quiz/painel" atual={dias} opcoes={PERIODOS} />}
+      />
 
-      {erro ? <p className="pn-erro">Erro: {erro}</p> : null}
-      {linhas.length === 0 && !erro ? <div className="pn-vazio">Ainda sem dados neste período.</div> : null}
+      <div className="space-y-4 sm:space-y-6">
+        <Bloco titulo="Leads" descricao="Quantos deixaram o e-mail, e quantos já viraram compra">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <Cartao titulo="No período" valor={num(doPeriodo.length)} detalhe="deixaram o e-mail" />
+            <Cartao titulo="Hoje" valor={num(hoje)} detalhe="desde a meia-noite (Brasília)" />
+            <Cartao
+              titulo="Ritmo"
+              valor={(doPeriodo.length / diasDeBase).toFixed(1).replace('.', ',')}
+              detalhe="leads por dia no período"
+            />
+            <Cartao
+              titulo="Compraram"
+              valor={num(doPeriodo.filter((l) => l.comprou).length)}
+              detalhe={`${pct1(calcularTaxa(doPeriodo.filter((l) => l.comprou).length, doPeriodo.length))} dos leads do período`}
+              tom={doPeriodo.some((l) => l.comprou) ? 'positivo' : 'neutro'}
+            />
+          </div>
+        </Bloco>
 
-      {linhas.length > 0 ? (
-        <>
-          <section className="pn-kpis">
-            <div className="pn-kpi">
-              <span>Abriram o quiz</span>
-              <b>{inicio}</b>
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+          <Bloco titulo="Qualidade da base" descricao="Quem entrou vale a conversa?">
+            <div className="grid grid-cols-3 gap-3">
+              <Cartao titulo="Quentes" valor={num(quentes)} detalhe={`nota ${CORTES.quente}+`} tom={quentes ? 'positivo' : 'neutro'} />
+              <Cartao titulo="Mornos" valor={num(mornos)} detalhe={`nota ${CORTES.morno} a ${CORTES.quente - 1}`} />
+              <Cartao titulo="Frios" valor={num(frios)} detalhe={`abaixo de ${CORTES.morno}`} />
             </div>
-            <div className="pn-kpi">
-              <span>Chegaram ao fim</span>
-              <b>{fim.sessoes}</b>
-              <small>{fim.pct_inicio}% do total · {fim.tela}</small>
-            </div>
-            <div className="pn-kpi pn-kpi--alerta">
-              <span>Maior queda</span>
-              <b>{maiorQueda ? `${Math.round(100 - maiorQueda.pct_anterior!)}%` : '-'}</b>
-              <small>{maiorQueda ? `saem na tela ${maiorQueda.indice} (${maiorQueda.tela})` : 'sem dados'}</small>
-            </div>
-          </section>
-
-          <section className="pn-cartao">
-            <h2>Tela por tela</h2>
-            <ol className="pn-funil">
-              {linhas.map((l) => {
-                const queda = l.pct_anterior !== null && l.pct_anterior < 85;
-                return (
-                  <li key={l.indice} className={queda ? 'pn-funil__linha pn-funil__linha--queda' : 'pn-funil__linha'}>
-                    <span className="pn-funil__n">{l.indice}</span>
-                    <span className="pn-funil__tela">{l.tela}</span>
-                    <span className="pn-funil__barra" aria-hidden="true">
-                      <span style={{ width: `${Math.max(1, l.pct_inicio ?? 0)}%` }} />
-                    </span>
-                    <span className="pn-funil__num"><b>{l.sessoes}</b> <small>{l.pct_inicio ?? 0}%</small></span>
-                    <span className="pn-funil__ret" title="Quantos seguiram da tela anterior">
-                      {l.pct_anterior === null ? '' : `${l.pct_anterior}% seguem`}
-                    </span>
-                    <span className="pn-funil__tempo" title="Tempo mediano na tela">
-                      {l.mediana_s === null ? '' : `${l.mediana_s}s`}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-            <p className="pn-nota">
-              Em vermelho: menos de 85% seguiram da tela anterior. Telas puladas conforme as respostas aparecem com
-              menos gente sem ser abandono.
+            <p className="mt-3 text-[12px]" style={{ color: TEXTO.t3 }}>
+              Nota decidida por <b style={{ color: TEXTO.t2 }}>{decide}</b>.{' '}
+              {perfil.confianca === 'ok'
+                ? `${perfil.compradores} compradores vindos do quiz formam o perfil.`
+                : `A semelhança liga sozinha com 8 compradores vindos do quiz (hoje: ${perfil.compradores}).`}{' '}
+              <Link href="/quiz/painel/leads" className="underline" style={{ color: TEMA.marcaClaro }}>Ver os leads</Link>
             </p>
-          </section>
-        </>
-      ) : null}
+          </Bloco>
+
+          <Bloco titulo="Leads por dia" descricao={`Últimos ${diasDaCurva} dias: o ritmo está subindo ou caindo?`}>
+            {leads.length ? <CurvaPorDia dias={serie} /> : <Vazio>Nenhum lead ainda.</Vazio>}
+          </Bloco>
+        </div>
+
+        <Bloco titulo="Onde o funil perde" descricao="Em que degrau a gente some, e quem dá para buscar de volta">
+          {degraus.abriram === 0 ? (
+            <Vazio>Ninguém abriu o quiz neste período (jornadas de teste não contam).</Vazio>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+                {DEGRAUS.map((d, i) => {
+                  const anterior = i ? degraus[DEGRAUS[i - 1].chave] : 0;
+                  const t = calcularTaxa(degraus[d.chave], anterior);
+                  return (
+                    <Cartao
+                      key={d.chave}
+                      titulo={d.rotulo}
+                      valor={num(degraus[d.chave])}
+                      detalhe={i === 0 ? 'sessões distintas' : `${pct1(t)} do degrau anterior${t.temBase && !t.confiavel ? ' · amostra pequena' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+              {naoCompraram.length > 0 ? (
+                <div className="mt-3">
+                  <Cartao
+                    titulo="Deixaram o e-mail e não compraram"
+                    valor={num(naoCompraram.length)}
+                    detalhe={`${num(alcancaveis)} aceitaram receber e-mail: dá para buscar de volta. Lista na aba Leads.`}
+                    tom="atencao"
+                  />
+                </div>
+              ) : null}
+              <p className="mt-2 text-[12px]" style={{ color: TEXTO.t3 }}>
+                Abriram, chegaram ao e-mail, viram a oferta e clicaram são pessoas no período; deixaram o e-mail são cadastros do período;
+                compraram são e-mails de lead do quiz com compra aprovada no período, ou vendas com origem no quiz.
+              </p>
+
+              <h3 className="mt-6 text-[13px] font-semibold" style={{ color: TEXTO.t2 }}>Retenção tela a tela</h3>
+              {curva.length >= 2 ? (
+                <>
+                  <div className="mt-2">
+                    <CurvaRetencao curva={curva} base={base} queda={queda} />
+                  </div>
+                  <p className="mt-2 text-[13px]" style={{ color: TEXTO.t2 }}>
+                    {queda ? (
+                      <>
+                        A maior queda é em <b style={{ color: TEMA.atencao }}>{queda.rotulo}</b>: só {queda.daAnterior}% de quem viu a tela anterior
+                        chegou nela ({num(queda.perderam)} saíram ali).
+                      </>
+                    ) : (
+                      'Sem queda para apontar: falta gente (mínimo de 10 na tela anterior) ou ninguém saiu entre duas telas seguidas.'
+                    )}
+                  </p>
+                  <ol className="mt-4 divide-y text-[13px]" style={{ borderColor: SUPERFICIE.linhaFina }}>
+                    {curva.map((t, i) => (
+                      <li key={t.id} className="grid grid-cols-[28px_1fr_120px_64px_80px_48px] items-center gap-3 py-1.5" style={{ borderColor: SUPERFICIE.linhaFina }}>
+                        <span style={{ color: TEXTO.t3 }}>{i + 1}</span>
+                        <span className="truncate" title={t.rotulo} style={{ color: queda?.id === t.id ? TEMA.atencao : TEXTO.t1 }}>{t.rotulo}</span>
+                        <Barra fracao={t.chegaram / base} cor={queda?.id === t.id ? TEMA.atencao : TEMA.marca} />
+                        <span className="text-right" style={{ color: TEXTO.t1 }}>{num(t.chegaram)}</span>
+                        <span className="text-right" style={{ color: t.daAnterior !== null && t.daAnterior < 85 ? TEMA.atencao : TEXTO.t3 }}>
+                          {t.daAnterior === null ? '' : `${t.daAnterior}%`}
+                        </span>
+                        <span className="text-right" style={{ color: TEXTO.t3 }} title="Tempo mediano na tela">
+                          {t.medianaS === null ? '' : `${t.medianaS}s`}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                  <p className="mt-2 text-[12px]" style={{ color: TEXTO.t3 }}>
+                    Colunas: pessoas que viram a tela · % de quem viu a tela comum anterior (âmbar abaixo de 85%) · tempo mediano na tela.
+                    {omitidas.length ? ` ${omitidas.length} tela(s) antes do pico ficaram fora: rastro de antes da medição completa.` : ''}
+                  </p>
+                  {condicionais.length ? (
+                    <p className="mt-2 text-[12px]" style={{ color: TEXTO.t3 }}>
+                      Telas que dependem da resposta (fora da curva, menos gente nelas não é abandono):{' '}
+                      {condicionais.map((t) => `${t.rotulo} (${num(t.chegaram)})`).join(' · ')}.
+                    </p>
+                  ) : null}
+                </>
+              ) : (
+                <Vazio>Ainda não há telas suficientes medidas neste período para desenhar a curva.</Vazio>
+              )}
+            </>
+          )}
+        </Bloco>
+      </div>
     </>
   );
 }
