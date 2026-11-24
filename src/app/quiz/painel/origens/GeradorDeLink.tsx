@@ -17,8 +17,11 @@ export function GeradorDeLink() {
   const [campanha, setCampanha] = useState('bio');
   const [conteudo, setConteudo] = useState('');
   const [copiado, setCopiado] = useState('');
-  const p = new URLSearchParams({ utm_source: fonte.trim(), utm_medium: 'organico', utm_campaign: campanha.trim() });
-  if (conteudo.trim()) p.set('utm_content', conteudo.trim());
+  // Minúsculas e sem espaço: "Instagram Bio" e "instagram-bio" virariam duas origens no painel.
+  const limpo = (v: string) => v.trim().toLowerCase().replace(/\s+/g, '-');
+  const faltando = !limpo(fonte) || !limpo(campanha);
+  const p = new URLSearchParams({ utm_source: limpo(fonte), utm_medium: 'organico', utm_campaign: limpo(campanha) });
+  if (limpo(conteudo)) p.set('utm_content', limpo(conteudo));
   const link = `${BASE}?${p.toString()}`;
   const copiar = async (texto: string, qual: string) => {
     try {
@@ -56,7 +59,22 @@ export function GeradorDeLink() {
           {campo('Conteúdo (opcional)', conteudo, setConteudo)}
         </div>
         <code className="mt-2 block break-all rounded-[8px] border p-2 text-[12px]" style={{ background: SUPERFICIE.s2, borderColor: SUPERFICIE.linha, color: TEXTO.t1 }}>{link}</code>
-        <div className="mt-2">{botao(link, 'org')}</div>
+        {faltando ? (
+          <p className="mt-2 text-[12px]" style={{ color: TEMA.atencao }}>Preencha a fonte e a campanha: sem elas, o lead chega como &ldquo;sem origem&rdquo;.</p>
+        ) : null}
+        <div className="mt-2 flex items-center gap-2">
+          {botao(link, 'org')}
+          <a
+            href={`${link}&teste=1`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-[8px] border px-3 py-1.5 text-[12px]"
+            style={{ borderColor: SUPERFICIE.linha, color: TEXTO.t2 }}
+            title="Abre com ?teste=1: a sua passagem não entra nos números"
+          >
+            Abrir para testar
+          </a>
+        </div>
       </div>
     </div>
   );

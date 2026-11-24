@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { logado } from '@/lib/quiz-painel';
 import { CORTES } from '@/content/quiz-score';
-import { ErroDoPainel, lerLeads, type LeadDoPainel } from '@/lib/painel/dados';
+import { mensagemDoErro, PERIODOS, desde, diasDoPeriodo, lerLeads, type LeadDoPainel } from '@/lib/painel/dados';
 import { rotuloDaTela } from '@/lib/painel/funil';
 import { PERGUNTAS, rotuloDaOpcao } from '@/lib/painel/respostas';
 import type { Faixa } from '@/lib/painel/score';
 import { dataHora } from '@/lib/painel/tempo';
 import { SUPERFICIE, TEMA, TEXTO } from '@/lib/painel/tema';
-import { Bloco, Cabeca, Erro, Vazio, num } from '../_ui/Blocos';
+import { Bloco, Cabeca, Erro, Periodo, Vazio, num } from '../_ui/Blocos';
+import { CopiarEmail } from './CopiarEmail';
 
 const FAIXAS: { v: Faixa | 'todas'; rotulo: string }[] = [
   { v: 'todas', rotulo: 'Todos' },
@@ -42,7 +43,7 @@ function Gaveta({ l }: { l: LeadDoPainel }) {
         <h4 className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: TEXTO.t3 }}>Nota por regras: {l.regras.nota}</h4>
         <ul className="mt-2 space-y-1 text-[13px]">
           {l.regras.itens.map((i) => (
-            <li key={i.rotulo} className="flex justify-between gap-3" style={{ color: i.bateu ? TEXTO.t1 : TEXTO.t4 }}>
+            <li key={i.rotulo} className="flex justify-between gap-3" style={{ color: i.bateu ? TEXTO.t1 : TEXTO.t3 }}>
               <span>{i.bateu ? '✓' : '·'} {i.rotulo}</span>
               <span className="tabular-nums">{i.bateu ? `+${i.pontos}` : '0'}</span>
             </li>
@@ -58,7 +59,7 @@ function Gaveta({ l }: { l: LeadDoPainel }) {
           <ul className="mt-2 space-y-1 text-[13px]">
             <li style={{ color: TEXTO.t2 }}>{l.jornada.telasVistas} telas vistas · mais longe: {l.jornada.ultimaTela ? rotuloDaTela(l.jornada.ultimaTela) : '—'}</li>
             {passos(l).map(([r, ok]) => (
-              <li key={r} style={{ color: ok ? TEMA.positivo : TEXTO.t4 }}>{ok ? '✓' : '·'} {r}</li>
+              <li key={r} style={{ color: ok ? TEMA.positivo : TEXTO.t3 }}>{ok ? '✓' : '·'} {r}</li>
             ))}
           </ul>
         ) : (
@@ -96,40 +97,58 @@ function Gaveta({ l }: { l: LeadDoPainel }) {
   );
 }
 
-export default async function Leads({ searchParams }: { searchParams: Promise<{ faixa?: string; q?: string }> }) {
+const POR_PAGINA = 100;
+const curto = (chave: string, v: string | string[] | undefined) =>
+  v === undefined ? '—' : (Array.isArray(v) ? v : [v]).map((x) => rotuloDaOpcao(chave, x)).join(', ');
+
+const COLUNAS = 'grid-cols-[96px_1.1fr_1.7fr_74px_1fr_82px_1.1fr_86px]';
+
+export default async function Leads({ searchParams }: { searchParams: Promise<{ faixa?: string; q?: string; dias?: string; n?: string }> }) {
   if (!(await logado())) return null;
-  const { faixa: f, q } = await searchParams;
-  const faixa = (FAIXAS.some((x) => x.v === f) ? f : 'todas') as Faixa | 'todas';
+  const sp = await searchParams;
+  const faixa = (FAIXAS.some((x) => x.v === sp.faixa) ? sp.faixa : 'todas') as Faixa | 'todas';
+  const dias = diasDoPeriodo(sp.dias ?? '365');
+  const mostrar = Math.max(POR_PAGINA, Math.min(5000, Number(sp.n) || POR_PAGINA));
   const agora = new Date();
 
   let base;
   try {
     base = await lerLeads();
   } catch (e) {
-    return <Erro>Não consegui ler os leads: {e instanceof ErroDoPainel ? e.message : 'erro inesperado'}.</Erro>;
+    return <Erro>Não consegui ler os leads: {mensagemDoErro(e)}.</Erro>;
   }
-  const busca = (q ?? '').trim().toLowerCase();
-  const todos = base.leads;
-  const lista = todos
+  const busca = (sp.q ?? '').trim().toLowerCase();
+  const inicio = desde(dias, agora).getTime();
+  const doPeriodo = base.leads.filter((l) => new Date(l.criadoEm).getTime() >= inicio);
+  const filtrados = doPeriodo
     .filter((l) => faixa === 'todas' || l.faixa === faixa)
     .filter((l) => !busca || l.nome.toLowerCase().includes(busca) || l.email.includes(busca))
     .sort((a, b) => b.nota - a.nota || b.criadoEm.localeCompare(a.criadoEm));
-  const contagem = (x: Faixa | 'todas') => (x === 'todas' ? todos.length : todos.filter((l) => l.faixa === x).length);
+  const lista = filtrados.slice(0, mostrar);
+  const contagem = (x: Faixa | 'todas') => (x === 'todas' ? doPeriodo.length : doPeriodo.filter((l) => l.faixa === x).length);
+  const url = (mudar: Record<string, string | number>) => {
+    const p = new URLSearchParams({ faixa, dias: String(dias), ...(busca ? { q: busca } : {}) });
+    for (const [k, v] of Object.entries(mudar)) p.set(k, String(v));
+    return `/quiz/painel/leads?${p.toString()}`;
+  };
 
   return (
     <>
       <Cabeca
         titulo="Leads"
-        sub={`${num(todos.length)} cadastros, sem os de teste · quente ${CORTES.quente}+, morno ${CORTES.morno}+`}
+        sub={`${num(doPeriodo.length)} cadastros no período, sem os de teste · quente ${CORTES.quente}+, morno ${CORTES.morno}+`}
         lidoEm={agora}
         acoes={
-          <a
-            href={`/quiz/painel/leads/csv?faixa=${faixa}`}
-            className="rounded-[8px] border px-3 py-1.5 text-[12px] font-medium"
-            style={{ borderColor: SUPERFICIE.linha, color: TEXTO.t2 }}
-          >
-            Exportar CSV
-          </a>
+          <div className="flex flex-wrap items-center gap-2">
+            <Periodo base="/quiz/painel/leads" atual={dias} opcoes={PERIODOS} extra={`&faixa=${faixa}${busca ? `&q=${encodeURIComponent(busca)}` : ''}`} />
+            <a
+              href={`/quiz/painel/leads/csv?faixa=${faixa}&dias=${dias}`}
+              className="rounded-[8px] border px-3 py-1.5 text-[12px] font-medium"
+              style={{ borderColor: SUPERFICIE.linha, color: TEXTO.t2 }}
+            >
+              Exportar CSV
+            </a>
+          </div>
         }
       />
       <Bloco
@@ -141,20 +160,23 @@ export default async function Leads({ searchParams }: { searchParams: Promise<{ 
               {FAIXAS.map((x) => (
                 <Link
                   key={x.v}
-                  href={`/quiz/painel/leads?faixa=${x.v}${busca ? `&q=${encodeURIComponent(busca)}` : ''}`}
+                  href={url({ faixa: x.v })}
                   className="px-3 py-1.5"
                   style={{ background: faixa === x.v ? SUPERFICIE.s3 : 'transparent', color: faixa === x.v ? TEXTO.t1 : TEXTO.t3 }}
                 >
-                  {x.rotulo} {contagem(x.v)}
+                  {x.rotulo} <span className="tabular-nums">{contagem(x.v)}</span>
                 </Link>
               ))}
             </div>
             <form className="flex">
               <input type="hidden" name="faixa" value={faixa} />
+              <input type="hidden" name="dias" value={dias} />
               <input
                 name="q"
+                type="search"
                 defaultValue={busca}
                 placeholder="Buscar nome ou e-mail"
+                aria-label="Buscar nome ou e-mail"
                 className="h-[30px] w-[190px] rounded-[8px] border px-2 text-[12px]"
                 style={{ background: SUPERFICIE.s2, borderColor: SUPERFICIE.linha, color: TEXTO.t1 }}
               />
@@ -163,30 +185,45 @@ export default async function Leads({ searchParams }: { searchParams: Promise<{ 
         }
       >
         {lista.length === 0 ? (
-          <Vazio>Nenhum lead {faixa === 'todas' ? '' : `${faixa} `}{busca ? `com "${busca}"` : 'ainda'}.</Vazio>
+          <Vazio>Nenhum lead {faixa === 'todas' ? '' : `${faixa} `}{busca ? `com "${busca}" ` : ''}neste período.</Vazio>
         ) : (
-          <div className="overflow-x-auto">
-            <div className="min-w-[760px]">
-              <div className="grid grid-cols-[110px_1.2fr_1.6fr_90px_1fr_90px] gap-3 px-3 py-2 text-[11px] uppercase tracking-[0.06em]" style={{ color: TEXTO.t3, background: SUPERFICIE.s2 }}>
-                <span>Nota</span><span>Nome</span><span>E-mail</span><span>Quando</span><span>Jornada</span><span>E-mail mkt</span>
+          <>
+            <div className="overflow-x-auto">
+              <div className="min-w-[980px]">
+                <div className={`grid ${COLUNAS} gap-3 px-3 py-2 text-[11px] uppercase tracking-[0.06em]`} style={{ color: TEXTO.t3, background: SUPERFICIE.s2 }}>
+                  <span>Nota</span><span>Nome</span><span>E-mail</span><span>Idade</span><span>Objetivo</span><span>Quando</span><span>Jornada</span><span>Aceite</span>
+                </div>
+                {lista.map((l) => (
+                  <details key={l.email} className="group border-b" style={{ borderColor: SUPERFICIE.linhaFina }}>
+                    <summary className={`grid ${COLUNAS} items-center gap-3 px-3 py-2.5 text-[13px] hover:bg-[#1a1a1a] group-open:bg-[#151515]`}>
+                      <span><Selo faixa={l.faixa} nota={l.nota} /></span>
+                      <span className="truncate" style={{ color: TEXTO.t1 }}>{l.nome || '—'}</span>
+                      <span className="flex min-w-0 items-center gap-1">
+                        <span className="truncate" style={{ color: TEXTO.t2 }}>{l.email}</span>
+                        <CopiarEmail email={l.email} />
+                      </span>
+                      <span style={{ color: TEXTO.t2 }}>{curto('faixaIdade', l.respostas.faixaIdade).replace(' a ', '–')}</span>
+                      <span className="truncate" style={{ color: TEXTO.t2 }}>{curto('objetivo', l.respostas.objetivo)}</span>
+                      <span style={{ color: TEXTO.t3 }} title={dataHora(l.criadoEm)}>{dataHora(l.criadoEm).replace(/\/\d{4}/, '')}</span>
+                      <span style={{ color: l.comprou ? TEMA.positivo : l.jornada?.clicouComprar ? TEMA.atencao : TEXTO.t3 }}>
+                        {l.comprou ? 'Comprou' : l.jornada?.clicouComprar ? 'Clicou em comprar' : l.jornada?.viuOferta ? 'Viu a oferta' : l.jornada ? 'Deixou o e-mail' : 'antes da medição'}
+                      </span>
+                      <span style={{ color: l.aceiteEmail ? TEXTO.t2 : TEXTO.t3 }}>{l.aceiteEmail ? (l.confirmouEmail ? 'confirmou' : 'aceitou') : 'não'}</span>
+                    </summary>
+                    <Gaveta l={l} />
+                  </details>
+                ))}
               </div>
-              {lista.map((l) => (
-                <details key={l.email} className="border-b" style={{ borderColor: SUPERFICIE.linhaFina }}>
-                  <summary className="grid grid-cols-[110px_1.2fr_1.6fr_90px_1fr_90px] items-center gap-3 px-3 py-2.5 text-[13px] hover:bg-[#1e1e1e]">
-                    <span><Selo faixa={l.faixa} nota={l.nota} /></span>
-                    <span className="truncate" style={{ color: TEXTO.t1 }}>{l.nome || '—'}</span>
-                    <span className="truncate" style={{ color: TEXTO.t2 }}>{l.email}</span>
-                    <span style={{ color: TEXTO.t3 }}>{dataHora(l.criadoEm).replace(/\/\d{4}/, '')}</span>
-                    <span style={{ color: l.comprou ? TEMA.positivo : l.jornada?.clicouComprar ? TEMA.atencao : TEXTO.t3 }}>
-                      {l.comprou ? 'Comprou' : l.jornada?.clicouComprar ? 'Clicou em comprar' : l.jornada?.viuOferta ? 'Viu a oferta' : l.jornada ? 'Deixou o e-mail' : '—'}
-                    </span>
-                    <span style={{ color: l.aceiteEmail ? TEXTO.t2 : TEXTO.t4 }}>{l.aceiteEmail ? (l.confirmouEmail ? 'confirmou' : 'aceitou') : 'não'}</span>
-                  </summary>
-                  <Gaveta l={l} />
-                </details>
-              ))}
             </div>
-          </div>
+            <div className="mt-3 flex items-center justify-between text-[12px]" style={{ color: TEXTO.t3 }}>
+              <span>Mostrando {num(lista.length)} de {num(filtrados.length)}</span>
+              {filtrados.length > lista.length ? (
+                <Link href={url({ n: mostrar + POR_PAGINA })} className="rounded-[8px] border px-3 py-1.5" style={{ borderColor: SUPERFICIE.linha, color: TEXTO.t2 }}>
+                  Mostrar mais {num(Math.min(POR_PAGINA, filtrados.length - lista.length))}
+                </Link>
+              ) : null}
+            </div>
+          </>
         )}
       </Bloco>
     </>

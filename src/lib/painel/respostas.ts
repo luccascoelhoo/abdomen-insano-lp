@@ -36,8 +36,19 @@ export function respostasDaLinha(l: { app: Record<string, unknown> | null; extra
   return r;
 }
 
+/** Os blocos do quiz, com os nomes de `content/quiz.ts`. */
+export const BLOCOS: Record<number, string> = {
+  1: 'Seu corpo',
+  2: 'Seu histórico',
+  3: 'Seu treino',
+  4: 'Rotina e alimentação',
+  5: 'Seus números e metas',
+  6: 'Seu plano',
+};
+
 export type Pergunta = {
   chave: string;
+  bloco: number;
   /** Título da tela, sem a marcação de negrito. */
   titulo: string;
   multipla: boolean;
@@ -55,6 +66,7 @@ export const PERGUNTAS: Pergunta[] = telasQuiz.flatMap((t) => {
   return [
     {
       chave,
+      bloco: 'bloco' in t && typeof t.bloco === 'number' ? t.bloco : 0,
       titulo: semMarcacao(titulo),
       multipla: t.k === 'multi',
       opcoes: Object.fromEntries(t.opcoes.map((o) => [o.v, semMarcacao(o.rotulo)])),

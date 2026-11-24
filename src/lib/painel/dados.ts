@@ -1,3 +1,5 @@
+import { emailConfigurado } from '@/lib/email/brevo';
+import { PIXEL_ID } from '@/lib/pixel';
 import { supabaseAdmin, supabaseConfigured } from '@/lib/supabase';
 import { type Degraus, type LinhaTela } from './funil';
 import { respostasDaLinha, type RespostasDoQuiz } from './respostas';
@@ -30,6 +32,17 @@ export function desde(dias: number, agora = new Date()): Date {
 }
 
 export class ErroDoPainel extends Error {}
+
+/**
+ * O texto de erro para a tela, sem ponto final (a tela põe o dela). Erro que
+ * não é do painel vai para o log da Vercel: na tela ele vira "erro inesperado",
+ * e sem o log ninguém descobriria o que foi.
+ */
+export function mensagemDoErro(e: unknown): string {
+  if (e instanceof ErroDoPainel) return e.message.replace(/[.\s]+$/, '');
+  console.error('[painel] erro inesperado', e);
+  return 'erro inesperado';
+}
 
 function banco() {
   if (!supabaseConfigured()) throw new ErroDoPainel('Supabase não configurado neste ambiente.');
@@ -273,4 +286,35 @@ export async function lerMedicao(agora = new Date()): Promise<SaudeDaMedicao> {
     eventosDoQuiz24h: ev24.count,
     servidor: [...porEvento.values()].sort((a, b) => b.total - a.total),
   };
+}
+
+/* ----------------------------------------------------------- configuração */
+
+export type ItemDeConfiguracao = { rotulo: string; ligado: boolean; detalhe: string; critico: boolean };
+
+/**
+ * O que o ambiente de produção tem ligado. Só sim ou não: nenhum valor de
+ * segredo sai daqui. Existe para que uma peça desligada (como o e-mail do plano
+ * na auditoria de 24/11) apareça na tela de quem opera, e não só numa auditoria.
+ */
+export function lerConfiguracao(): ItemDeConfiguracao[] {
+  const listaTeste = (process.env.QUIZ_EMAILS_TESTE ?? '').split(',').filter((e) => e.trim()).length;
+  return [
+    { rotulo: 'Gravação do quiz', ligado: process.env.QUIZ_GRAVAR === '1' && supabaseConfigured(), detalhe: 'telas e leads indo para o banco', critico: true },
+    { rotulo: 'Pixel da Meta', ligado: !!PIXEL_ID, detalhe: PIXEL_ID ? `id ${PIXEL_ID}` : 'sem id', critico: true },
+    { rotulo: 'API de Conversões (servidor)', ligado: !!process.env.META_CAPI_TOKEN, detalhe: 'cópia dos eventos que o bloqueador não derruba', critico: true },
+    { rotulo: 'Aviso de venda da Cakto', ligado: !!process.env.CAKTO_WEBHOOK_SECRET, detalhe: 'Purchase e a compra no banco', critico: true },
+    {
+      rotulo: 'E-mail do plano (Brevo)',
+      ligado: emailConfigurado(),
+      detalhe: emailConfigurado() ? 'o plano prometido na tela do e-mail é enviado' : 'o quiz promete o plano por e-mail e ele não sai',
+      critico: true,
+    },
+    {
+      rotulo: 'Lista de e-mails do time',
+      ligado: listaTeste > 0,
+      detalhe: listaTeste > 0 ? `${listaTeste} e-mail(s) tratados como teste` : 'teste do time só sai dos números com ?teste=1',
+      critico: false,
+    },
+  ];
 }

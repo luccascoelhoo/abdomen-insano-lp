@@ -1,7 +1,7 @@
 import { logado } from '@/lib/quiz-painel';
-import { ErroDoPainel, lerMedicao } from '@/lib/painel/dados';
+import { mensagemDoErro, lerConfiguracao, lerMedicao } from '@/lib/painel/dados';
 import { tempoRelativo, dataHora } from '@/lib/painel/tempo';
-import { SUPERFICIE, TEXTO } from '@/lib/painel/tema';
+import { SUPERFICIE, TEMA, TEXTO } from '@/lib/painel/tema';
 import { Bloco, Cabeca, Cartao, Erro, Vazio, num, type TomDoCartao } from '../_ui/Blocos';
 
 /**
@@ -22,13 +22,38 @@ export default async function Medicao() {
   try {
     m = await lerMedicao(agora);
   } catch (e) {
-    return <Erro>Não consegui ler a medição: {e instanceof ErroDoPainel ? e.message : 'erro inesperado'}.</Erro>;
+    return <Erro>Não consegui ler a medição: {mensagemDoErro(e)}.</Erro>;
   }
   const falhas = m.servidor.reduce((s, e) => s + e.falhas, 0);
+  const config = lerConfiguracao();
+  // O resumo de uma linha: o que está quebrado primeiro, depois o que está parado.
+  const alertas = [
+    ...config.filter((c) => c.critico && !c.ligado).map((c) => `${c.rotulo} desligado`),
+    ...(falhas ? [`${falhas} envio(s) recusado(s) pela Meta`] : []),
+    ...(tomPorIdade(m.ultimoEventoDoQuiz, agora, 6) === 'atencao' ? ['nenhuma tela gravada nas últimas 6 h'] : []),
+  ];
   return (
     <>
       <Cabeca titulo="Medição" sub="A medição está viva? Leia antes de confiar em qualquer número do painel" lidoEm={agora} />
       <div className="space-y-4 sm:space-y-6">
+        <div
+          className="flex items-start gap-3 rounded-[12px] border px-4 py-3 text-[14px]"
+          role="status"
+          style={{
+            borderColor: alertas.length ? TEMA.atencaoBorda : TEMA.positivoBorda,
+            background: alertas.length ? TEMA.atencaoFraco : TEMA.positivoFraco,
+            color: TEXTO.t1,
+          }}
+        >
+          <span className="mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: alertas.length ? TEMA.atencao : TEMA.positivo }} aria-hidden="true" />
+          <span>
+            <b>{alertas.length ? 'Atenção' : 'Tudo vivo'}</b>
+            {alertas.length ? `: ${alertas.join(' · ')}.` : ': quiz gravando, servidor entregando e configuração completa.'}
+            {alertas.some((a) => a.startsWith('nenhuma tela')) ? (
+              <span style={{ color: TEXTO.t2 }}> Sem anúncio no ar isso é esperado.</span>
+            ) : null}
+          </span>
+        </div>
         <Bloco titulo="Quiz" descricao="Com anúncio no ar, os dois devem ter menos de algumas horas">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Cartao
@@ -73,6 +98,24 @@ export default async function Medicao() {
               </p>
             </>
           )}
+        </Bloco>
+        <Bloco titulo="Configuração de produção" descricao="O que está ligado no ambiente do site. Só sim ou não: nenhum segredo aparece aqui">
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {config.map((c) => {
+              const cor = c.ligado ? TEMA.positivo : c.critico ? TEMA.erro : TEMA.atencao;
+              return (
+                <li key={c.rotulo} className="flex items-start gap-3 rounded-[10px] border px-3 py-2.5" style={{ borderColor: SUPERFICIE.linha, background: SUPERFICIE.s2 }}>
+                  <span className="mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: cor }} aria-hidden="true" />
+                  <span className="min-w-0">
+                    <span className="block text-[13px]" style={{ color: TEXTO.t1 }}>
+                      {c.rotulo} <span style={{ color: cor }}>· {c.ligado ? 'ligado' : 'desligado'}</span>
+                    </span>
+                    <span className="block text-[12px]" style={{ color: TEXTO.t3 }}>{c.detalhe}</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
         </Bloco>
       </div>
     </>

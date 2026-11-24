@@ -2,11 +2,10 @@ import Link from 'next/link';
 import { logado } from '@/lib/quiz-painel';
 import { CORTES } from '@/content/quiz-score';
 import { DEGRAUS, maiorQueda, retencaoPorTela, trechoMedido } from '@/lib/painel/funil';
-import { ErroDoPainel, PERIODOS, desde, diasDoPeriodo, lerFunil, lerLeads } from '@/lib/painel/dados';
-import { calcularTaxa, pct1 } from '@/lib/painel/taxa';
+import { mensagemDoErro, PERIODOS, desde, diasDoPeriodo, lerFunil, lerLeads } from '@/lib/painel/dados';
 import { serieDiaria } from '@/lib/painel/tempo';
 import { SUPERFICIE, TEMA, TEXTO } from '@/lib/painel/tema';
-import { Barra, Bloco, Cabeca, Cartao, Erro, Periodo, Vazio, num } from './_ui/Blocos';
+import { Barra, Bloco, Cabeca, Cartao, Erro, FunilDeBarras, Periodo, Vazio, num, textoDaTaxa } from './_ui/Blocos';
 import { CurvaPorDia, CurvaRetencao } from './_ui/Curvas';
 
 export default async function Painel({ searchParams }: { searchParams: Promise<{ dias?: string }> }) {
@@ -20,7 +19,7 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
     const [funil, base] = await Promise.all([lerFunil(dias), lerLeads()]);
     dados = { ...funil, ...base };
   } catch (e) {
-    return <Erro>Não consegui ler o painel: {e instanceof ErroDoPainel ? e.message : 'erro inesperado'}.</Erro>;
+    return <Erro>Não consegui ler o painel: {mensagemDoErro(e)}.</Erro>;
   }
 
   const { degraus, telas: linhas, leads, perfil } = dados;
@@ -31,6 +30,7 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   const mornos = doPeriodo.filter((l) => l.faixa === 'morno').length;
   const frios = doPeriodo.length - quentes - mornos;
   const naoCompraram = doPeriodo.filter((l) => !l.comprou);
+  const semJornada = doPeriodo.filter((l) => !l.jornada).length;
   const alcancaveis = naoCompraram.filter((l) => l.aceiteEmail).length;
   const diasDaCurva = Math.min(Math.max(dias, 14), 30);
   // "Tudo" divide pelos dias desde o primeiro lead, não por 365.
@@ -49,7 +49,7 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
     <>
       <Cabeca
         titulo="Painel"
-        sub={`Quiz do Desafio Abdômen Insano · ${PERIODOS.find((p) => p.dias === dias)?.rotulo}`}
+        sub={`Quiz do Desafio Abdômen Insano · ${PERIODOS.find((p) => p.dias === dias)?.rotulo.toLowerCase()}`}
         lidoEm={agora}
         acoes={<Periodo base="/quiz/painel" atual={dias} opcoes={PERIODOS} />}
       />
@@ -67,7 +67,7 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
             <Cartao
               titulo="Compraram"
               valor={num(doPeriodo.filter((l) => l.comprou).length)}
-              detalhe={`${pct1(calcularTaxa(doPeriodo.filter((l) => l.comprou).length, doPeriodo.length))} dos leads do período`}
+              detalhe={`${textoDaTaxa(doPeriodo.filter((l) => l.comprou).length, doPeriodo.length)} dos leads do período`}
               tom={doPeriodo.some((l) => l.comprou) ? 'positivo' : 'neutro'}
             />
           </div>
@@ -99,20 +99,14 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
             <Vazio>Ninguém abriu o quiz neste período (jornadas de teste não contam).</Vazio>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-                {DEGRAUS.map((d, i) => {
-                  const anterior = i ? degraus[DEGRAUS[i - 1].chave] : 0;
-                  const t = calcularTaxa(degraus[d.chave], anterior);
-                  return (
-                    <Cartao
-                      key={d.chave}
-                      titulo={d.rotulo}
-                      valor={num(degraus[d.chave])}
-                      detalhe={i === 0 ? 'sessões distintas' : `${pct1(t)} do degrau anterior${t.temBase && !t.confiavel ? ' · amostra pequena' : ''}`}
-                    />
-                  );
-                })}
-              </div>
+              <FunilDeBarras degraus={DEGRAUS.map((d) => ({ rotulo: d.rotulo, valor: degraus[d.chave] }))} />
+              {semJornada > 0 ? (
+                <p className="mt-3 rounded-[8px] border px-3 py-2 text-[12px]" style={{ borderColor: SUPERFICIE.linha, color: TEXTO.t2 }}>
+                  {num(semJornada)} {semJornada === 1 ? 'lead do período é' : 'leads do período são'} de antes de a medição por tela ligar o
+                  lead à jornada (24/11/2026): {semJornada === 1 ? 'conta' : 'contam'} em &ldquo;Deixaram o e-mail&rdquo; mas não nos degraus
+                  anteriores nem nos seguintes.
+                </p>
+              ) : null}
               {naoCompraram.length > 0 ? (
                 <div className="mt-3">
                   <Cartao
@@ -123,10 +117,15 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
                   />
                 </div>
               ) : null}
-              <p className="mt-2 text-[12px]" style={{ color: TEXTO.t3 }}>
-                Abriram, chegaram ao e-mail, viram a oferta e clicaram são pessoas no período; deixaram o e-mail são cadastros do período;
-                compraram são e-mails de lead do quiz com compra aprovada no período, ou vendas com origem no quiz.
-              </p>
+              <details className="mt-3 text-[12px]" style={{ color: TEXTO.t3 }}>
+                <summary className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-2">Como contamos</summary>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  <li>Abriram, chegaram ao e-mail, viram a oferta e clicaram: pessoas (sessões) distintas no período.</li>
+                  <li>Deixaram o e-mail: cadastros do período.</li>
+                  <li>Compraram: compra aprovada no período que saiu do botão do quiz, ou de lead que comprou depois de responder. Cliente antigo que refaz o quiz não conta.</li>
+                  <li>Jornadas de teste (do time ou com ?teste=1) ficam fora de tudo.</li>
+                </ul>
+              </details>
 
               <h3 className="mt-6 text-[13px] font-semibold" style={{ color: TEXTO.t2 }}>Retenção tela a tela</h3>
               {curva.length >= 2 ? (
