@@ -19,6 +19,8 @@ import { validarLotePlayer, type LoteValido } from './validar';
  *    não identifica a pessoa;
  *  - a resposta é sempre vazia (204). O beacon nem lê a resposta;
  *  - limite de requisições por IP, em memória.
+ *
+ * `GET` devolve só o país da visita (filtro de tráfego do player).
  */
 export const runtime = 'nodejs';
 
@@ -93,6 +95,7 @@ async function salvar(d: LoteValido): Promise<void> {
     tipo: e.tipo,
     segundo: e.segundo,
     utm: d.utm,
+    variante: d.variante,
   }));
   const { error } = await supabaseAdmin().from('player_eventos').insert(linhas);
   if (error) {
@@ -136,8 +139,22 @@ export async function POST(request: Request) {
     console.info('[api/player] válido, não gravado (PLAYER_GRAVAR != 1 ou Supabase ausente)', {
       video: r.dados.video,
       pagina: r.dados.pagina,
+      variante: r.dados.variante,
       eventos: r.dados.eventos.map((e) => `${e.tipo}@${e.segundo}`).join(' '),
     });
   }
   return vazio();
+}
+
+/**
+ * País da visita para o filtro de tráfego do player (`filtro.paises`). A
+ * Vercel põe o cabeçalho na borda; fora dela (dev), `null` e o filtro deixa
+ * passar. Não lê nem guarda IP.
+ */
+export function GET(request: Request) {
+  const pais = request.headers.get('x-vercel-ip-country');
+  return NextResponse.json(
+    { pais: pais && /^[A-Z]{2}$/.test(pais) ? pais : null },
+    { headers: { 'cache-control': 'private, no-store' } },
+  );
 }

@@ -132,3 +132,68 @@ som**), `pct_dos_com_som` (a curva clássica de VSL: % de quem ligou o som),
 `pct_do_total` (% de todas as visitas) e `pct_som` (% das visitas que ligaram o
 som — igual em todas as linhas). A função só roda com a service role; pelo
 servidor: `supabaseAdmin().rpc('player_retencao', { video, desde })`.
+
+## 5. Recursos extras (catálogo do VTurb)
+
+Levantados em 26/11/2026 no editor do VTurb (só o comportamento, nunca o
+código). **Tudo desligado por padrão**: sem opção nova, o player é o de antes.
+Contrato completo em `src/components/player/tipos.ts`; para testar todos de uma
+vez, `/player-teste?modo=completo` (e `?modo=filtro` para o filtro de tráfego).
+
+No funil, as opções vão em `vsl.proprio` (`src/content/desafio.ts`):
+
+```ts
+proprio: {
+  base: 'https://…/downsell/v1',
+  proporcao: 404 / 720,
+  duracao: 108.5,
+  pixels: true, // VSL_25, VSL_50, VSL_75, VSL_100 (eventos personalizados)
+  opcoes: {
+    pausaInteligente: true,
+    rolarAte: { segundos: 61, seletor: '.funil__acoes' },
+    jaAssistiu: true,
+    ganchos: [{ de: 40, ate: 48, texto: 'O preço vem agora' }],
+    miniPlayer: true,
+  },
+},
+```
+
+| VTurb | Opção do Player Insano |
+| --- | --- |
+| Smart Autoplay (textos) | `textosAutoplay` |
+| Continuar assistindo (textos, "já assistiu") | `textosRetomar`, `jaAssistiu` |
+| Smart Pause | `pausaInteligente` |
+| Desativar pause | `bloquearPausa` |
+| Recomeçar o vídeo após o fim | `repetirAoTerminar` |
+| Ir para seu elemento | `rolarAte: { segundos, seletor }` |
+| Qualidade inicial | `qualidadeInicial` (só hls.js) |
+| Headlines / Mini-Ganchos | `ganchos` (`lugar: 'acima'` ou `'video'`) |
+| ThumbSniper | `thumbs` (faixa de tempo ou `noFim`) |
+| Controles (tempo, volume, ±10 s, velocidade, barra, tela cheia) | `controles` |
+| Capítulos | `capitulos` (marcas na barra real + menu) |
+| Legendas | `legendas` (WebVTT; CORS se for outro domínio) |
+| Experiência Fullscreen | `imersivo` (celular/desktop, expandir ao tocar, minimizar ao pausar) |
+| Picture in Picture | `miniPlayer` |
+| Pixels | `pixels: true` no funil, ou `marcosDePixel()` (só com som, uma vez por visita) |
+| Teste A/B (autoplay, velocidade…) | `teste: { id, variantes, vencedora? }` |
+| Filtro de Tráfego | `filtro: { dispositivos, idiomas, paises, chaveUrl, alternativo }` |
+
+Cuidados:
+
+- **Barra real, ±10 s e capítulos deixam a pessoa pular para a oferta.** É por
+  isso que o VTurb (e o funil) usam a barra falsa. Só ligar sabendo disso.
+- **Filtro de tráfego**: quem é bloqueado vê o `alternativo` (ou nenhum vídeo)
+  e os botões da oferta aparecem **na hora**: o filtro nunca prende quem pagou.
+  País vem do cabeçalho da Vercel (`GET /api/player`); em dev é desconhecido e
+  passa. Ficaram de fora o "Bloquear Proxy/VPN" e o "Token de Acesso" do VTurb:
+  o primeiro precisa de um serviço pago de reputação de IP; o segundo, de
+  assinatura no servidor.
+- **Teste A/B**: o VTurb escolhe o vencedor sozinho; aqui, compare com
+  `player_variantes` e fixe com `teste.vencedora`:
+
+  ```sql
+  select * from public.player_variantes('vsl-downsell', now() - interval '14 days');
+  ```
+
+- **Pixels** usam `trackSingleCustom` no nosso pixel (compartilhado com outro
+  funil, ver `lib/pixel.ts`): evento personalizado, nunca padrão.
