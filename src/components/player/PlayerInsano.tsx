@@ -1,15 +1,26 @@
 'use client';
 
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 import type HlsType from 'hls.js';
 import { caminhoDaPagina } from '@/lib/pagina-de-origem';
 import { lerUtm } from '@/lib/utm';
+import { dispositivo, escolherVariante, juntarOpcoes, passaNoFiltro, type VarianteEscolhida } from './escolha';
 import {
   BLOCO_SEGUNDOS,
   type EventoPlayer,
   type LotePlayer,
+  type MarcoPlayer,
+  type OpcoesPlayer,
   type PropsPlayer,
   type TipoEventoPlayer,
+  type VideoInsano,
 } from './tipos';
 import './player.css';
 
@@ -21,22 +32,38 @@ import './player.css';
  *  - `preview`: tocando mudo com o aviso "Seu vídeo já começou / Clique para ouvir";
  *  - `parado`: botão grande de play (autoplay desligado ou bloqueado pelo navegador);
  *  - `retomar`: "Você já começou a assistir esse vídeo" (continuar / do início);
- *  - `som`: assistindo com som — toque pausa/continua, sem barra de avanço.
+ *  - `assistido`: "Você já assistiu" + "Assistir novamente" (opção `jaAssistiu`);
+ *  - `som`: assistindo com som — toque pausa/continua, sem barra de avanço
+ *    (a não ser que `controles.barra` ligue a barra real).
  *
  * Nada acontece antes de o player chegar perto da tela: nem hls.js, nem
  * metadados, nem métricas. O tempo do vídeo vive em refs; o React só
- * re-renderiza quando a fase muda ou quando pausa/continua.
+ * re-renderiza quando algo da tela muda (fase, pausa, ganchos, modos).
+ *
+ * Estrutura: `.pi-lugar` guarda o espaço na página (é ele que os
+ * IntersectionObservers olham); `.pi` é a caixa do vídeo, que pode sair do
+ * lugar para o mini player (canto da tela) ou para o modo imersivo (janela toda).
  */
 
-type Fase = 'inicial' | 'preview' | 'parado' | 'retomar' | 'som';
+type Fase = 'inicial' | 'preview' | 'parado' | 'retomar' | 'assistido' | 'som';
 
 interface Acoes {
   ouvir: () => void;
   tocarDoZero: () => void;
   continuar: () => void;
   doInicio: () => void;
+  deNovo: () => void;
   alternar: () => void;
   telaCheia: () => void;
+  sairImersivo: () => void;
+  mudo: () => void;
+  pular: (segundos: number) => void;
+  irPara: (segundo: number) => void;
+  irParaFracao: (fracao: number) => void;
+  velocidade: () => void;
+  legendas: () => void;
+  fecharMini: () => void;
+  voltarAoLugar: () => void;
 }
 
 type VideoIos = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
@@ -54,6 +81,19 @@ const INTERVALO_SALVAR_MS = 2000;
 const RETOMAR_MINIMO_S = 5;
 const RETOMAR_MAXIMO = 0.95;
 const ENDPOINT = '/api/player';
+const VELOCIDADES_PADRAO = [1, 1.25, 1.5, 2];
+/** Espera para rolar até a oferta: deixa o marco do mesmo segundo revelar o botão antes. */
+const ESPERA_ROLAGEM_MS = 350;
+
+const TEXTOS = {
+  autoplayTitulo: 'Seu vídeo já começou',
+  autoplayAcao: 'Clique para ouvir',
+  retomarTitulo: 'Você já começou a assistir esse vídeo',
+  retomarContinuar: 'Continuar assistindo',
+  retomarReiniciar: 'Assistir do início',
+  assistidoTitulo: 'Você já assistiu a este vídeo!',
+  assistidoBotao: 'Assistir novamente',
+};
 
 /* ------------------------------------------------------------ utilidades */
 
@@ -98,44 +138,180 @@ function erroDeAutoplay(erro: unknown): boolean {
   return erro instanceof DOMException && erro.name === 'NotAllowedError';
 }
 
-/* ------------------------------------------------------------ componente */
-
-export function PlayerInsano(props: PropsPlayer) {
-  // Trocar de vídeo = player novo do zero (fase, fonte, marcos, métricas).
-  const { id, hls, mp4 } = props.video;
-  return <Nucleo key={`${id}|${hls}|${mp4 ?? ''}`} {...props} />;
+function relogio(s: number): string {
+  const t = Math.max(0, Math.floor(Number.isFinite(s) ? s : 0));
+  const h = Math.floor(t / 3600);
+  const m = Math.floor((t % 3600) / 60);
+  const seg = String(t % 60).padStart(2, '0');
+  return h ? `${h}:${String(m).padStart(2, '0')}:${seg}` : `${m}:${seg}`;
 }
 
-function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
+function listaDeVelocidades(op?: OpcoesPlayer): number[] {
+  const v = op?.controles?.velocidade;
+  if (!v) return [];
+  const lista = (Array.isArray(v) ? v : VELOCIDADES_PADRAO).filter((x) => Number.isFinite(x) && x > 0);
+  return lista.length ? lista : VELOCIDADES_PADRAO;
+}
+
+/** O modo imersivo vale neste aparelho? */
+function imersivoPermitido(op?: OpcoesPlayer): boolean {
+  const im = op?.imersivo;
+  if (!im) return false;
+  return dispositivo() === 'desktop' ? Boolean(im.desktop) : Boolean(im.celular);
+}
+
+/* ------------------------------------------------------------ componente */
+
+interface Decisao {
+  passa: boolean;
+  variante: VarianteEscolhida | null;
+}
+
+export function PlayerInsano(props: PropsPlayer) {
+  const { teste, filtro } = props;
+  const precisaDecidir = Boolean(teste || filtro);
+  // Chave estável do que decide: os objetos mudam de identidade a cada render do pai.
+  const chaveDecisao = precisaDecidir
+    ? JSON.stringify([teste?.id, teste?.vencedora, teste?.variantes.map((v) => [v.id, v.peso]), filtro])
+    : '';
+  const [decisao, setDecisao] = useState<Decisao | null>(null);
+  const propsRef = useRef(props);
+
+  useEffect(() => {
+    propsRef.current = props;
+  });
+
+  useEffect(() => {
+    if (!chaveDecisao) return;
+    let vivo = true;
+    const { teste: t, filtro: f } = propsRef.current;
+    const variante = t ? escolherVariante(t) : null;
+    (f ? passaNoFiltro(f) : Promise.resolve(true)).then((passa) => {
+      if (vivo) setDecisao({ passa, variante });
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [chaveDecisao]);
+
+  if (!precisaDecidir) {
+    // Trocar de vídeo = player novo do zero (fase, fonte, marcos, métricas).
+    const { id, hls, mp4 } = props.video;
+    return <Nucleo key={`${id}|${hls}|${mp4 ?? ''}`} {...props} />;
+  }
+
+  if (!decisao) return <Espera video={props.video} titulo={props.titulo} />;
+
+  const opcoes = juntarOpcoes(props.opcoes, decisao.variante?.opcoes);
+  const rotulo = decisao.variante?.rotulo;
+
+  if (decisao.passa) {
+    const { id, hls, mp4 } = props.video;
+    return <Nucleo key={`${id}|${hls}|${mp4 ?? ''}|${rotulo ?? ''}`} {...props} opcoes={opcoes} variante={rotulo} />;
+  }
+
+  // Bloqueado pelo filtro: a oferta aparece na hora (nunca prender quem pagou).
+  const alt = props.filtro?.alternativo;
+  return (
+    <>
+      <LiberarMarcos marcos={props.marcos} />
+      {alt ? (
+        <Nucleo
+          key={`${alt.id}|${alt.hls}|${alt.mp4 ?? ''}`}
+          video={alt}
+          opcoes={opcoes}
+          titulo={props.titulo}
+          variante={rotulo}
+        />
+      ) : (
+        <Espera video={props.video} titulo={props.titulo} semVideo />
+      )}
+    </>
+  );
+}
+
+/** Espaço do player enquanto decide (teste/filtro), ou sem vídeo nenhum. */
+function Espera({ video, titulo, semVideo }: { video: VideoInsano; titulo: string; semVideo?: boolean }) {
+  return (
+    <div className="pi-envoltorio" style={{ '--pi-cor': COR_PADRAO } as CSSProperties}>
+      <div
+        className={video.proporcao < 1 ? 'pi-lugar pi-lugar--vertical' : 'pi-lugar'}
+        style={{ aspectRatio: String(video.proporcao) }}
+      >
+        <div className="pi" role="region" aria-label={titulo} aria-busy={!semVideo}>
+          {!semVideo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="pi-video" src={video.poster} alt="" />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LiberarMarcos({ marcos }: { marcos?: MarcoPlayer[] }) {
+  const ref = useRef(marcos);
+  const feito = useRef(false);
+  useEffect(() => {
+    // Uma vez só (o StrictMode roda o efeito duas vezes em dev).
+    if (feito.current) return;
+    feito.current = true;
+    ref.current?.forEach((m) => {
+      try {
+        m.aoChegar();
+      } catch (erro) {
+        console.error('[player] marco falhou', erro);
+      }
+      if (m.lembrar) gravar(m.lembrar, '1');
+    });
+  }, []);
+  return null;
+}
+
+function Nucleo({ video, opcoes, marcos, titulo, variante }: PropsPlayer & { variante?: string }) {
   const [fase, setFase] = useState<Fase>((opcoes?.autoplayMudo ?? true) ? 'inicial' : 'parado');
   const [pausado, setPausado] = useState(false);
+  const [ganchos, setGanchos] = useState<number[]>([]);
+  const [thumb, setThumb] = useState(-1);
+  const [mini, setMini] = useState(false);
+  const [imersivo, setImersivo] = useState(false);
+  const [mudo, setMudo] = useState(false);
+  const [velocidade, setVelocidade] = useState<number | null>(null);
+  const [legendasOn, setLegendasOn] = useState(Boolean(opcoes?.legendas?.ligadas));
+  const [menuCapitulos, setMenuCapitulos] = useState(false);
+  const [duracaoTela, setDuracaoTela] = useState(video.duracao ?? 0);
 
+  const lugarRef = useRef<HTMLDivElement>(null);
   const caixaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const barraRef = useRef<HTMLDivElement>(null);
-  const propsRef = useRef({ video, opcoes, marcos });
+  const tempoRef = useRef<HTMLSpanElement>(null);
+  const propsRef = useRef({ video, opcoes, marcos, variante });
   const acoes = useRef<Acoes | null>(null);
   const faseRef = useRef<Fase>(fase);
 
   // Os objetos de props mudam de identidade a cada render do pai; o player lê
   // sempre a versão mais nova sem reiniciar nada.
   useEffect(() => {
-    propsRef.current = { video, opcoes, marcos };
+    propsRef.current = { video, opcoes, marcos, variante };
   });
 
   useEffect(() => {
     const elVideo = videoRef.current;
     const elCaixa = caixaRef.current;
+    const elLugar = lugarRef.current;
     const barra = barraRef.current;
-    if (!elVideo || !elCaixa) return;
+    if (!elVideo || !elCaixa || !elLugar) return;
     // Tipos sem `null`: as funções abaixo são declarações (hoisted) e o TS
     // não estreitaria o tipo dentro delas.
     const v: HTMLVideoElement = elVideo;
     const caixa: HTMLDivElement = elCaixa;
+    const lugar: HTMLDivElement = elLugar;
 
     const { id, hls: urlHls, mp4 } = propsRef.current.video;
     const op = () => propsRef.current.opcoes;
     const chavePos = `pi_pos_${id}`;
+    const chaveFim = `pi_fim_${id}`;
     const limpar: (() => void)[] = [];
 
     let faseAtual: Fase = faseRef.current;
@@ -149,12 +325,20 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
     let autoplayRegistrado = false;
     let comSom = false;
     let pausadoPorRolagem = false;
+    let pausadoPelaAba = false;
     let falhouDeVez = false;
+    let rolou = false;
     let retomarDe = 0;
     let ultimoSalvo = 0;
     let raf = 0;
     let timerEnvio = 0;
     let desmontado = false;
+    let ganchosChave = '';
+    let velocidadeEscolhida: number | null = null;
+    let miniAtivo = false;
+    let miniFechado = false;
+    let imersivoAtivo = false;
+    let overflowAntes = '';
     const disparados = new Set<number>();
     const blocos = new Set<number>();
     const fila: EventoPlayer[] = [];
@@ -179,7 +363,7 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
     }
 
     function aplicarVelocidade() {
-      const r = op()?.velocidade ?? 1;
+      const r = velocidadeEscolhida ?? op()?.velocidade ?? 1;
       v.defaultPlaybackRate = r;
       if (v.playbackRate !== r) v.playbackRate = r;
     }
@@ -202,6 +386,7 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       const utm: Record<string, string> = {};
       for (const [k, valor] of Object.entries(lerUtm())) if (valor) utm[k] = valor;
       if (Object.keys(utm).length) lote.utm = utm;
+      if (propsRef.current.variante) lote.variante = propsRef.current.variante;
       const corpo = JSON.stringify(lote);
       try {
         if (navigator.sendBeacon?.(ENDPOINT, new Blob([corpo], { type: 'application/json' }))) return;
@@ -239,6 +424,14 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
 
     /* ------------------------------------------------------------ marcos */
 
+    /** Segundo do marco; `undefined` se for por porcentagem e a duração ainda não for conhecida. */
+    function alvo(m: MarcoPlayer): number | undefined {
+      if (typeof m.segundos === 'number') return m.segundos;
+      const d = duracao();
+      if (typeof m.porcento === 'number' && d > 0) return (Math.min(100, Math.max(0, m.porcento)) / 100) * d;
+      return undefined;
+    }
+
     /**
      * Ordem importa: `aoChegar` roda ANTES de gravar `lembrar`, então quem
      * cuida do marco sabe se é a primeira vez (ver `marcosDoFunil`).
@@ -253,13 +446,86 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
         console.error('[player] marco falhou', erro);
       }
       if (lembrar && m.lembrar) gravar(m.lembrar, '1');
-      if (evento) registrar('marco', m.segundos);
+      if (evento) registrar('marco', alvo(m) ?? v.currentTime);
     }
 
+    /** `ate = Infinity` (fim do vídeo) dispara todos, inclusive os de porcentagem. */
     function conferirMarcos(ate: number) {
       propsRef.current.marcos?.forEach((m, i) => {
-        if (m.segundos <= ate) disparar(i);
+        const a = alvo(m);
+        if (ate === Infinity || (a !== undefined && a <= ate)) disparar(i);
       });
+    }
+
+    /* ---------------------------------------------- telas por cima do vídeo */
+
+    function atualizarGanchos(t: number) {
+      const lista = op()?.ganchos ?? [];
+      const ativos = lista.flatMap((g, i) => (t >= g.de && t <= g.ate ? [i] : [])).join(',');
+      if (ativos === ganchosChave) return;
+      ganchosChave = ativos;
+      setGanchos(ativos ? ativos.split(',').map(Number) : []);
+    }
+
+    function thumbDaPausa(t: number): number {
+      return (op()?.thumbs ?? []).findIndex(
+        (x) => !x.noFim && typeof x.de === 'number' && typeof x.ate === 'number' && t >= x.de && t <= x.ate,
+      );
+    }
+
+    function atualizarTempo() {
+      const el = tempoRef.current;
+      if (el) el.textContent = `${relogio(v.currentTime)} / ${relogio(duracao())}`;
+    }
+
+    /* ------------------------------------------------- imersivo e mini */
+
+    function entrarImersivo() {
+      if (imersivoAtivo || !imersivoPermitido(op())) return;
+      if (miniAtivo) sairMini();
+      imersivoAtivo = true;
+      overflowAntes = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      setImersivo(true);
+    }
+
+    function sairImersivo() {
+      if (!imersivoAtivo) return;
+      imersivoAtivo = false;
+      document.documentElement.style.overflow = overflowAntes;
+      setImersivo(false);
+    }
+
+    function sairTelaCheiaNativa() {
+      const d = document as DocFs;
+      if (d.fullscreenElement) d.exitFullscreen?.().catch(() => {});
+      else if (d.webkitFullscreenElement) d.webkitExitFullscreen?.();
+    }
+
+    function entrarMini() {
+      if (miniAtivo || imersivoAtivo) return;
+      miniAtivo = true;
+      setMini(true);
+    }
+
+    function sairMini() {
+      if (!miniAtivo) return;
+      miniAtivo = false;
+      setMini(false);
+    }
+
+    function conferirRolagem(t: number) {
+      const r = op()?.rolarAte;
+      if (rolou || !r || t < r.segundos) return;
+      rolou = true;
+      sairImersivo();
+      sairTelaCheiaNativa();
+      window.setTimeout(() => {
+        const alvoEl = document.querySelector(r.seletor);
+        if (!alvoEl) return;
+        const suave = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        alvoEl.scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'center' });
+      }, ESPERA_ROLAGEM_MS);
     }
 
     /* ------------------------------------------------------------- barra */
@@ -268,7 +534,7 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       if (!barra) return;
       const d = duracao();
       const p = d > 0 ? Math.min(1, Math.max(0, v.currentTime / d)) : 0;
-      const alpha = op()?.alphaBarra ?? 2;
+      const alpha = op()?.controles?.barra ? 1 : (op()?.alphaBarra ?? 2);
       barra.style.transform = `scaleX(${1 - Math.pow(1 - p, alpha)})`;
     }
 
@@ -344,6 +610,14 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
           h.on(Hls.Events.ERROR, (_evento, dados) => {
             if (dados.fatal && hls === h) trocarParaMp4();
           });
+          const q = op()?.qualidadeInicial;
+          if (q && q !== 'auto') {
+            // Os níveis do hls.js vêm do menor para o maior bitrate.
+            h.on(Hls.Events.MANIFEST_PARSED, (_evento, dados) => {
+              const n = dados.levels.length;
+              if (n) h.startLevel = q === 'baixa' ? 0 : q === 'alta' ? n - 1 : Math.floor((n - 1) / 2);
+            });
+          }
           h.loadSource(urlHls);
           h.attachMedia(v);
         })
@@ -376,11 +650,15 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       comSom = true;
       retomarDe = 0;
       pausadoPorRolagem = false;
+      pausadoPelaAba = false;
       v.muted = false;
+      setMudo(false);
+      setThumb(-1);
       mudarFase('som');
       setPausado(false);
       posicionar(desde);
       if (evento) registrar(evento, evento === 'som' ? antes : desde);
+      if (op()?.imersivo?.expandirAoTocar) entrarImersivo();
       const ir = () =>
         tocar().catch((erro) => {
           if (erroDeAutoplay(erro)) setPausado(true);
@@ -393,6 +671,17 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
         });
       iniciarBarra();
       desenhar();
+      atualizarGanchos(desde);
+      atualizarTempo();
+    }
+
+    /** Pula para `t` (controles, barra real, capítulos). Marcos no caminho disparam pelo `timeupdate`. */
+    function irPara(t: number) {
+      const d = duracao();
+      const alvoT = Math.max(0, d > 0 ? Math.min(t, d - 0.25) : t);
+      posicionar(alvoT);
+      desenhar();
+      atualizarTempo();
     }
 
     acoes.current = {
@@ -409,27 +698,71 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
         tocarComSom(0, null);
         registrar('do_inicio', 0);
       },
+      deNovo: () => tocarComSom(0, 'play'),
       alternar: () => {
+        pausadoPelaAba = false;
         if (v.paused || v.ended) {
+          if (v.ended) posicionar(0);
           tocar().catch(() => setPausado(true));
           registrar('play');
+          if (op()?.imersivo?.expandirAoTocar) entrarImersivo();
         } else {
+          if (op()?.bloquearPausa) return;
           v.pause();
           registrar('pausa');
         }
       },
       telaCheia: () => {
-        const d = document as DocFs;
-        if (d.fullscreenElement || d.webkitFullscreenElement) {
-          if (d.exitFullscreen) d.exitFullscreen().catch(() => {});
-          else d.webkitExitFullscreen?.();
+        if (imersivoPermitido(op())) {
+          if (imersivoAtivo) sairImersivo();
+          else entrarImersivo();
           return;
         }
+        const d = document as DocFs;
+        if (d.fullscreenElement || d.webkitFullscreenElement) return sairTelaCheiaNativa();
         const c = caixa as CaixaFs;
         const vi = v as VideoIos;
         if (c.requestFullscreen) c.requestFullscreen().catch(() => vi.webkitEnterFullscreen?.());
         else if (c.webkitRequestFullscreen) c.webkitRequestFullscreen();
         else vi.webkitEnterFullscreen?.(); // iPhone: só o vídeo vai para tela cheia.
+      },
+      sairImersivo,
+      mudo: () => {
+        v.muted = !v.muted;
+        setMudo(v.muted);
+      },
+      pular: (s) => irPara(v.currentTime + s),
+      irPara,
+      irParaFracao: (f) => {
+        const d = duracao();
+        if (d > 0) irPara(Math.min(1, Math.max(0, f)) * d);
+      },
+      velocidade: () => {
+        const lista = listaDeVelocidades(op());
+        if (!lista.length) return;
+        const atual = velocidadeEscolhida ?? op()?.velocidade ?? 1;
+        // A próxima maior que a atual (a de partida, ex.: 1,2x, pode não estar na lista); depois da maior, volta à menor.
+        const ordenada = [...lista].sort((a, b) => a - b);
+        velocidadeEscolhida = ordenada.find((x) => x > atual + 0.01) ?? ordenada[0];
+        aplicarVelocidade();
+        setVelocidade(velocidadeEscolhida);
+      },
+      legendas: () => {
+        const trilha = v.textTracks[0];
+        if (!trilha) return;
+        trilha.mode = trilha.mode === 'showing' ? 'hidden' : 'showing';
+        setLegendasOn(trilha.mode === 'showing');
+      },
+      fecharMini: () => {
+        miniFechado = true;
+        sairMini();
+        if (!v.paused) {
+          v.pause();
+          registrar('pausa');
+        }
+      },
+      voltarAoLugar: () => {
+        lugar.scrollIntoView({ behavior: 'smooth', block: 'center' });
       },
     };
 
@@ -448,12 +781,17 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
         mudarFase((op()?.autoplayMudo ?? true) ? 'inicial' : 'parado');
         if (visivel) iniciarPreview();
       }
+      setDuracaoTela(duracao());
       desenhar();
+      atualizarTempo();
     });
 
     ouvirEvento('play', () => {
       aplicarVelocidade();
-      if (faseAtual === 'som') setPausado(false);
+      if (faseAtual === 'som') {
+        setPausado(false);
+        setThumb(-1);
+      }
       iniciarBarra();
     });
 
@@ -469,17 +807,30 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       if (faseAtual === 'som') {
         setPausado(true);
         salvarPosicao();
+        if (!v.ended) setThumb(thumbDaPausa(v.currentTime));
+        if (imersivoAtivo && op()?.imersivo?.minimizarAoPausar && !pausadoPelaAba) sairImersivo();
       }
       desenhar();
     });
 
-    ouvirEvento('seeked', desenhar);
+    ouvirEvento('seeked', () => {
+      desenhar();
+      atualizarTempo();
+      if (comSom) atualizarGanchos(v.currentTime);
+    });
+
+    ouvirEvento('volumechange', () => {
+      if (comSom) setMudo(v.muted);
+    });
 
     ouvirEvento('timeupdate', () => {
       // Só conta com som: o preview mudo nunca revela a oferta.
       if (!comSom) return;
       const t = v.currentTime;
       conferirMarcos(t);
+      conferirRolagem(t);
+      atualizarGanchos(t);
+      atualizarTempo();
       if (!v.paused && !v.seeking) {
         const bloco = Math.floor(t / BLOCO_SEGUNDOS);
         if (bloco > 0 && !blocos.has(bloco)) {
@@ -494,9 +845,19 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       if (comSom) {
         registrar('fim', duracao());
         apagar(chavePos);
+        gravar(chaveFim, '1');
         // O último `timeupdate` pode não alcançar um marco cravado no fim.
         conferirMarcos(Infinity);
-        setPausado(true);
+        conferirRolagem(Infinity);
+        if (op()?.repetirAoTerminar) {
+          posicionar(0);
+          tocar().catch(() => setPausado(true));
+        } else {
+          setPausado(true);
+          sairImersivo();
+          setThumb((op()?.thumbs ?? []).findIndex((x) => x.noFim));
+          if (op()?.jaAssistiu) mudarFase('assistido');
+        }
       }
       desenhar();
     });
@@ -514,13 +875,28 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       enviar();
     };
     const aoMudarVisibilidade = () => {
-      if (document.visibilityState === 'hidden') aoSair();
+      if (document.visibilityState === 'hidden') {
+        // Pausa inteligente: a aba sumiu com o vídeo tocando com som.
+        if (op()?.pausaInteligente && comSom && !v.paused) {
+          pausadoPelaAba = true;
+          v.pause();
+        }
+        aoSair();
+      } else if (pausadoPelaAba) {
+        pausadoPelaAba = false;
+        tocar().catch(() => setPausado(true));
+      }
+    };
+    const aoTeclarNaPagina = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape' && imersivoAtivo) sairImersivo();
     };
     window.addEventListener('pagehide', aoSair);
     document.addEventListener('visibilitychange', aoMudarVisibilidade);
+    document.addEventListener('keydown', aoTeclarNaPagina);
     limpar.push(() => {
       window.removeEventListener('pagehide', aoSair);
       document.removeEventListener('visibilitychange', aoMudarVisibilidade);
+      document.removeEventListener('keydown', aoTeclarNaPagina);
     });
 
     /* ----------------------------------------------------------- montagem */
@@ -535,6 +911,11 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       if (posicaoValida(t, propsRef.current.video.duracao ?? 0)) retomarDe = t;
       else if (t) apagar(chavePos);
     }
+
+    // Manchetes que valem no segundo 0 aparecem antes do play.
+    atualizarGanchos(0);
+
+    if (retomarDe === 0 && op()?.jaAssistiu && ler(chaveFim)) mudarFase('assistido');
 
     const ioPerto = new IntersectionObserver(
       (entradas) => {
@@ -556,6 +937,10 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
           registrar('carregou', 0);
         }
         visivel = fracao >= FRACAO_VISIVEL;
+        if (fracao > 0) {
+          sairMini();
+          miniFechado = false;
+        }
         if (visivel) {
           if (faseAtual === 'inicial') iniciarPreview();
           else if (faseAtual === 'preview' && pausadoPorRolagem) {
@@ -566,13 +951,15 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
           // O preview mudo para fora da tela; com som, segue tocando (padrão de VSL).
           pausadoPorRolagem = true;
           v.pause();
+        } else if (fracao === 0 && comSom && !v.paused && op()?.miniPlayer && !miniFechado) {
+          entrarMini();
         }
       },
       { threshold: [0, 0.5] },
     );
 
-    ioPerto.observe(caixa);
-    ioVisivel.observe(caixa);
+    ioPerto.observe(lugar);
+    ioVisivel.observe(lugar);
 
     return () => {
       desmontado = true;
@@ -582,6 +969,7 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
       ioVisivel.disconnect();
       window.clearInterval(timerEnvio);
       if (raf) cancelAnimationFrame(raf);
+      if (imersivoAtivo) document.documentElement.style.overflow = overflowAntes;
       limpar.forEach((fn) => fn());
       if (hls) {
         hls.destroy();
@@ -601,112 +989,311 @@ function Nucleo({ video, opcoes, marcos, titulo }: PropsPlayer) {
     if (!a) return;
     if (fase === 'som') a.alternar();
     else if (fase === 'preview') a.ouvir();
+    else if (fase === 'assistido') a.deNovo();
     else if (fase === 'inicial' || fase === 'parado') a.tocarDoZero();
   }
 
+  function aoTocarBarra(e: PointerEvent<HTMLDivElement>) {
+    const r = e.currentTarget.getBoundingClientRect();
+    if (r.width > 0) acoes.current?.irParaFracao((e.clientX - r.left) / r.width);
+  }
+
+  const ctl = opcoes?.controles;
+  const barraReal = Boolean(ctl?.barra);
+  const velocidades = listaDeVelocidades(opcoes);
+  const capitulos = (opcoes?.capitulos ?? []).filter((c) => Number.isFinite(c.segundos) && c.titulo);
+  const legendas = opcoes?.legendas;
+  const ta = opcoes?.textosAutoplay;
+  const tr = opcoes?.textosRetomar;
+  const ja = typeof opcoes?.jaAssistiu === 'object' ? opcoes.jaAssistiu : undefined;
+  const listaGanchos = opcoes?.ganchos ?? [];
+  const manchetes = ganchos.map((i) => listaGanchos[i]).filter((g) => g && g.lugar === 'acima');
+  const minis = ganchos.map((i) => listaGanchos[i]).filter((g) => g && (g.lugar ?? 'video') === 'video');
+  const imagemThumb = thumb >= 0 ? opcoes?.thumbs?.[thumb] : undefined;
+  const temControles = Boolean(
+    ctl?.tempo || ctl?.volume || ctl?.pular10 || velocidades.length || capitulos.length || legendas,
+  );
+
+  const vertical = video.proporcao < 1;
   const estilo = {
-    aspectRatio: String(video.proporcao),
     '--pi-cor': opcoes?.cor ?? COR_PADRAO,
+    '--pi-proporcao': String(video.proporcao),
   } as CSSProperties;
 
+  const classes = ['pi'];
+  if (vertical) classes.push('pi--vertical');
+  if (mini) classes.push('pi--mini');
+  if (imersivo) classes.push('pi--imersivo');
+  if (barraReal) classes.push('pi--barra-real');
+
   return (
-    <div
-      ref={caixaRef}
-      className={video.proporcao < 1 ? 'pi pi--vertical' : 'pi'}
-      data-fase={fase}
-      style={estilo}
-      role="region"
-      aria-label={titulo}
-      tabIndex={0}
-      onKeyDown={aoTeclar}
-    >
-      <video
-        ref={videoRef}
-        className="pi-video"
-        poster={video.poster}
-        playsInline
-        preload="none"
-        disablePictureInPicture
-        tabIndex={-1}
-      />
-
-      <div className="pi-barra" aria-hidden="true">
-        <div ref={barraRef} className="pi-barra-fill" />
-      </div>
-
-      {fase === 'inicial' && (
-        <button
-          type="button"
-          className="pi-camada"
-          aria-label="Assistir ao vídeo"
-          onClick={() => acoes.current?.tocarDoZero()}
-        />
-      )}
-
-      {fase === 'parado' && (
-        <button
-          type="button"
-          className="pi-camada pi-camada--escura"
-          aria-label="Assistir ao vídeo"
-          onClick={() => acoes.current?.tocarDoZero()}
-        >
-          <IconePlay />
-        </button>
-      )}
-
-      {fase === 'preview' && (
-        <button
-          type="button"
-          className="pi-camada pi-camada--aviso"
-          aria-label="Seu vídeo já começou. Clique para ouvir"
-          onClick={() => acoes.current?.ouvir()}
-        >
-          <span className="pi-aviso">
-            <span className="pi-aviso-titulo">Seu vídeo já começou</span>
-            <IconeSom />
-            <span className="pi-aviso-acao">Clique para ouvir</span>
-          </span>
-        </button>
-      )}
-
-      {fase === 'retomar' && (
-        <div className="pi-camada pi-camada--escura pi-retomar">
-          <p className="pi-retomar-titulo">Você já começou a assistir esse vídeo</p>
-          <button type="button" className="pi-botao" onClick={() => acoes.current?.continuar()}>
-            Continuar assistindo
-          </button>
-          <button
-            type="button"
-            className="pi-botao pi-botao--secundario"
-            onClick={() => acoes.current?.doInicio()}
-          >
-            Assistir do início
-          </button>
+    <div className="pi-envoltorio" style={estilo}>
+      {manchetes.length > 0 && (
+        <div className="pi-manchetes" aria-live="polite">
+          {manchetes.map((g) => (
+            <p key={`${g.de}-${g.texto}`} className="pi-manchete">
+              {g.texto}
+            </p>
+          ))}
         </div>
       )}
 
-      {fase === 'som' && (
-        <>
-          <button
-            type="button"
-            className={pausado ? 'pi-camada pi-camada--pausado' : 'pi-camada'}
-            aria-label={pausado ? 'Continuar o vídeo' : 'Pausar o vídeo'}
-            onClick={() => acoes.current?.alternar()}
+      <div
+        ref={lugarRef}
+        className={vertical ? 'pi-lugar pi-lugar--vertical' : 'pi-lugar'}
+        style={{ aspectRatio: String(video.proporcao) }}
+      >
+        {mini && <p className="pi-lugar-aviso">O vídeo continua tocando no canto da tela</p>}
+
+        <div
+          ref={caixaRef}
+          className={classes.join(' ')}
+          data-fase={fase}
+          role="region"
+          aria-label={titulo}
+          tabIndex={0}
+          onKeyDown={aoTeclar}
+        >
+          <video
+            ref={videoRef}
+            className="pi-video"
+            poster={video.poster}
+            playsInline
+            preload="none"
+            disablePictureInPicture
+            crossOrigin={legendas ? 'anonymous' : undefined}
+            tabIndex={-1}
           >
-            {pausado && <IconePlay />}
-          </button>
-          <button
-            type="button"
-            className="pi-tela-cheia"
-            aria-label="Tela cheia"
-            onClick={() => acoes.current?.telaCheia()}
+            {legendas && (
+              <track
+                kind="subtitles"
+                src={legendas.src}
+                srcLang={legendas.idioma ?? 'pt'}
+                label={legendas.rotulo ?? 'Português'}
+                default={legendas.ligadas}
+              />
+            )}
+          </video>
+
+          <div
+            className="pi-barra"
+            aria-hidden={!barraReal}
+            onPointerDown={barraReal && fase === 'som' ? aoTocarBarra : undefined}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
-            </svg>
-          </button>
-        </>
-      )}
+            <div ref={barraRef} className="pi-barra-fill" />
+            {barraReal &&
+              duracaoTela > 0 &&
+              capitulos.map((c) => (
+                <span
+                  key={c.segundos}
+                  className="pi-barra-capitulo"
+                  style={{ left: `${Math.min(100, (c.segundos / duracaoTela) * 100)}%` }}
+                />
+              ))}
+          </div>
+
+          {fase === 'inicial' && (
+            <button
+              type="button"
+              className="pi-camada"
+              aria-label="Assistir ao vídeo"
+              onClick={() => acoes.current?.tocarDoZero()}
+            />
+          )}
+
+          {fase === 'parado' && (
+            <button
+              type="button"
+              className="pi-camada pi-camada--escura"
+              aria-label="Assistir ao vídeo"
+              onClick={() => acoes.current?.tocarDoZero()}
+            >
+              <IconePlay />
+            </button>
+          )}
+
+          {fase === 'preview' && (
+            <button
+              type="button"
+              className="pi-camada pi-camada--aviso"
+              aria-label={`${ta?.titulo ?? TEXTOS.autoplayTitulo}. ${ta?.acao ?? TEXTOS.autoplayAcao}`}
+              onClick={() => acoes.current?.ouvir()}
+            >
+              <span className="pi-aviso">
+                <span className="pi-aviso-titulo">{ta?.titulo ?? TEXTOS.autoplayTitulo}</span>
+                <IconeSom />
+                <span className="pi-aviso-acao">{ta?.acao ?? TEXTOS.autoplayAcao}</span>
+              </span>
+            </button>
+          )}
+
+          {fase === 'retomar' && (
+            <div className="pi-camada pi-camada--escura pi-retomar">
+              <p className="pi-retomar-titulo">{tr?.titulo ?? TEXTOS.retomarTitulo}</p>
+              <button type="button" className="pi-botao" onClick={() => acoes.current?.continuar()}>
+                {tr?.continuar ?? TEXTOS.retomarContinuar}
+              </button>
+              <button
+                type="button"
+                className="pi-botao pi-botao--secundario"
+                onClick={() => acoes.current?.doInicio()}
+              >
+                {tr?.reiniciar ?? TEXTOS.retomarReiniciar}
+              </button>
+            </div>
+          )}
+
+          {fase === 'assistido' && (
+            <div className="pi-camada pi-camada--escura pi-retomar">
+              <p className="pi-retomar-titulo">{ja?.titulo ?? TEXTOS.assistidoTitulo}</p>
+              <button type="button" className="pi-botao" onClick={() => acoes.current?.deNovo()}>
+                {ja?.botao ?? TEXTOS.assistidoBotao}
+              </button>
+            </div>
+          )}
+
+          {fase === 'som' && (
+            <>
+              {imagemThumb && pausado && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="pi-thumb" src={imagemThumb.imagem} alt={imagemThumb.alt ?? ''} />
+              )}
+
+              {minis.length > 0 && (
+                <div className="pi-ganchos" aria-live="polite">
+                  {minis.map((g) => (
+                    <p key={`${g.de}-${g.texto}`} className="pi-gancho">
+                      {g.texto}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              <button
+                type="button"
+                className={pausado ? 'pi-camada pi-camada--pausado' : 'pi-camada'}
+                aria-label={
+                  mini ? 'Voltar para o vídeo' : pausado ? 'Continuar o vídeo' : 'Pausar o vídeo'
+                }
+                onClick={() => (mini ? acoes.current?.voltarAoLugar() : acoes.current?.alternar())}
+              >
+                {pausado && !imagemThumb && <IconePlay />}
+              </button>
+
+              {mini && (
+                <button
+                  type="button"
+                  className="pi-fechar"
+                  aria-label="Fechar o mini player"
+                  onClick={() => acoes.current?.fecharMini()}
+                >
+                  <IconeFechar />
+                </button>
+              )}
+
+              {imersivo && (
+                <button
+                  type="button"
+                  className="pi-fechar"
+                  aria-label="Sair da tela cheia"
+                  onClick={() => acoes.current?.sairImersivo()}
+                >
+                  <IconeFechar />
+                </button>
+              )}
+
+              {!mini && temControles && (
+                <div className="pi-controles">
+                  {ctl?.pular10 && (
+                    <button type="button" className="pi-ctl" onClick={() => acoes.current?.pular(-10)}>
+                      −10s
+                    </button>
+                  )}
+                  {ctl?.pular10 && (
+                    <button type="button" className="pi-ctl" onClick={() => acoes.current?.pular(10)}>
+                      +10s
+                    </button>
+                  )}
+                  {ctl?.volume && (
+                    <button
+                      type="button"
+                      className="pi-ctl"
+                      aria-label={mudo ? 'Ligar o som' : 'Tirar o som'}
+                      aria-pressed={mudo}
+                      onClick={() => acoes.current?.mudo()}
+                    >
+                      <IconeVolume mudo={mudo} />
+                    </button>
+                  )}
+                  {velocidades.length > 0 && (
+                    <button
+                      type="button"
+                      className="pi-ctl"
+                      aria-label="Mudar a velocidade"
+                      onClick={() => acoes.current?.velocidade()}
+                    >
+                      {`${velocidade ?? opcoes?.velocidade ?? 1}x`.replace('.', ',')}
+                    </button>
+                  )}
+                  {legendas && (
+                    <button
+                      type="button"
+                      className="pi-ctl"
+                      aria-label="Legendas"
+                      aria-pressed={legendasOn}
+                      onClick={() => acoes.current?.legendas()}
+                    >
+                      CC
+                    </button>
+                  )}
+                  {capitulos.length > 0 && (
+                    <button
+                      type="button"
+                      className="pi-ctl"
+                      aria-expanded={menuCapitulos}
+                      onClick={() => setMenuCapitulos((x) => !x)}
+                    >
+                      Capítulos
+                    </button>
+                  )}
+                  {ctl?.tempo && <span ref={tempoRef} className="pi-tempo" aria-hidden="true" />}
+                </div>
+              )}
+
+              {!mini && menuCapitulos && capitulos.length > 0 && (
+                <ul className="pi-capitulos">
+                  {capitulos.map((c) => (
+                    <li key={c.segundos}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          acoes.current?.irPara(c.segundos);
+                          setMenuCapitulos(false);
+                        }}
+                      >
+                        <span className="pi-capitulos-tempo">{relogio(c.segundos)}</span> {c.titulo}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {!mini && (ctl?.telaCheia ?? true) && (
+                <button
+                  type="button"
+                  className="pi-tela-cheia"
+                  aria-label="Tela cheia"
+                  onClick={() => acoes.current?.telaCheia()}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                  </svg>
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -727,6 +1314,23 @@ function IconeSom() {
       <path className="pi-som-corpo" d="M8 18h8l11-9v30l-11-9H8z" />
       <path className="pi-som-onda pi-som-onda--1" d="M32 18a8 8 0 0 1 0 12" />
       <path className="pi-som-onda pi-som-onda--2" d="M36 13a15 15 0 0 1 0 22" />
+    </svg>
+  );
+}
+
+function IconeFechar() {
+  return (
+    <svg className="pi-icone" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
+function IconeVolume({ mudo }: { mudo: boolean }) {
+  return (
+    <svg className="pi-icone" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 9h4l5-4v14l-5-4H4z" />
+      {mudo ? <path d="M17 9l4 6M21 9l-4 6" /> : <path d="M17 8.5a5 5 0 0 1 0 7" />}
     </svg>
   );
 }

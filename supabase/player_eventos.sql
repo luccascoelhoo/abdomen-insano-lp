@@ -35,8 +35,14 @@ create table if not exists public.player_eventos (
     -- Segundo de CONTEÚDO (video.currentTime), não de relógio.
     segundo    integer     not null check (segundo between 0 and 36000),
     utm        jsonb       not null default '{}'::jsonb check (jsonb_typeof(utm) = 'object'),
+    -- `teste:variante` do teste A/B do player; null sem teste.
+    variante   text        check (variante ~ '^[a-z0-9_-]{1,32}:[a-z0-9_-]{1,32}$'),
     criado_em  timestamptz not null default now()
 );
+
+-- Para quem criou a tabela antes da coluna existir.
+alter table public.player_eventos
+    add column if not exists variante text check (variante ~ '^[a-z0-9_-]{1,32}:[a-z0-9_-]{1,32}$');
 
 create index if not exists player_eventos_video_criado_em on public.player_eventos (video, criado_em);
 create index if not exists player_eventos_video_sessao    on public.player_eventos (video, sessao);
@@ -137,6 +143,62 @@ $$;
 
 comment on function public.player_retencao(text, timestamptz) is
     'Curva de retenção com som do Player Insano, por bloco de 5 s. Só service_role.';
+
+-- ---------------------------------------------------------------- teste A/B
+--
+-- player_variantes(video, desde): uma linha por variante do teste A/B.
+--   sessoes          sessões da variante no período;
+--   pct_som          % que ligou o som;
+--   pct_marco        % que chegou a algum marco (ex.: o botão da oferta);
+--   pct_fim          % que assistiu até o fim;
+--   media_segundos   média do maior segundo assistido com som (quem ligou o som).
+-- O VTurb escolhe o vencedor sozinho; aqui a decisão é de quem olha os números
+-- (e espera volume): depois, fixe com `teste.vencedora` no código.
+--
+-- Exemplo: select * from public.player_variantes('vsl-downsell', now() - interval '14 days');
+
+create or replace function public.player_variantes(video text, desde timestamptz)
+returns table (
+    variante        text,
+    sessoes         bigint,
+    pct_som         numeric,
+    pct_marco       numeric,
+    pct_fim         numeric,
+    media_segundos  numeric
+)
+language sql
+stable
+set search_path = ''
+as $$
+    with por_sessao as (
+        select e.variante,
+               e.sessao,
+               bool_or(e.tipo in ('som', 'progresso'))                         as som,
+               bool_or(e.tipo = 'marco')                                      as marco,
+               bool_or(e.tipo = 'fim')                                        as fim,
+               max(e.segundo) filter (where e.tipo in ('progresso', 'fim'))   as ate
+        from public.player_eventos e
+        where e.video = player_variantes.video
+          and e.criado_em >= player_variantes.desde
+          and e.variante is not null
+        group by e.variante, e.sessao
+    )
+    select p.variante,
+           count(*),
+           round(100.0 * count(*) filter (where p.som)   / nullif(count(*), 0), 1),
+           round(100.0 * count(*) filter (where p.marco) / nullif(count(*), 0), 1),
+           round(100.0 * count(*) filter (where p.fim)   / nullif(count(*), 0), 1),
+           round(avg(coalesce(p.ate, 0)) filter (where p.som), 1)
+    from por_sessao p
+    group by p.variante
+    order by p.variante;
+$$;
+
+comment on function public.player_variantes(text, timestamptz) is
+    'Comparação das variantes do teste A/B do Player Insano. Só service_role.';
+
+revoke all on function public.player_variantes(text, timestamptz) from public, anon, authenticated;
+grant execute on function public.player_variantes(text, timestamptz) to service_role;
 
 -- Funções nascem executáveis por PUBLIC; no Supabase, anon/authenticated
 -- também ganham grant padrão no schema public. Tira tudo e dá só à service role.

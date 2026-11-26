@@ -27,6 +27,8 @@ export interface LoteValido {
   pagina: string;
   eventos: EventoValido[];
   utm: Record<string, string>;
+  /** `teste:variante` do teste A/B; `null` sem teste. */
+  variante: string | null;
 }
 
 export type ResultadoValidacao =
@@ -65,6 +67,8 @@ const RE_VIDEO = /^[a-z0-9_-]{1,64}$/;
 const RE_SESSAO = /^[A-Za-z0-9_-]{8,64}$/;
 /** Só o pathname (já codificado pelo navegador): sem query, hash ou espaço. */
 const RE_PAGINA = /^\/[A-Za-z0-9\-._~!$&'()*+,;=:@%/]*$/;
+/** `teste:variante` (ids de `escolha.ts`). Fora do formato vira `null`, sem recusar o lote. */
+const RE_VARIANTE = /^[a-z0-9_-]{1,32}:[a-z0-9_-]{1,32}$/;
 
 /* ------------------------------------------------------------------- helpers */
 
@@ -125,6 +129,13 @@ export function validarLotePlayer(corpo: unknown): ResultadoValidacao {
   return {
     ok: true,
     descartados: eventos.length - validos.length,
-    dados: { video, sessao, pagina, eventos: validos, utm: validarUtm(corpo.utm) },
+    dados: {
+      video,
+      sessao,
+      pagina,
+      eventos: validos,
+      utm: validarUtm(corpo.utm),
+      variante: typeof corpo.variante === 'string' && RE_VARIANTE.test(corpo.variante) ? corpo.variante : null,
+    },
   };
 }

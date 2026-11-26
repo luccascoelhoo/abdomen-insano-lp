@@ -6,6 +6,7 @@
  */
 
 import type { ProdutoId } from '@/lib/produtos';
+import type { FiltroPlayer, OpcoesPlayer, TestePlayer } from '@/components/player/tipos';
 
 export type Pilar = {
   numero: string;
@@ -448,6 +449,16 @@ export type Vsl = {
     duracao?: number;
     /** Velocidade (o VTurb tocava a 1,2x). */
     velocidade?: number;
+    /**
+     * Recursos extras do player (pausa inteligente, rolar até a oferta,
+     * ganchos, mini player...). Ver `OpcoesPlayer` em
+     * `src/components/player/tipos.ts`. Tudo desligado por padrão.
+     */
+    opcoes?: OpcoesPlayer;
+    /** Pixels por tempo assistido (eventos personalizados `VSL_25`...`VSL_100`). */
+    pixels?: boolean;
+    teste?: TestePlayer;
+    filtro?: FiltroPlayer;
   };
 };
 

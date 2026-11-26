@@ -3,13 +3,42 @@
    A cor da marca chega por `--pi-cor` (opcoes.cor, padrão #ff6b00).
    ============================================================ */
 
-.pi {
+/* `.pi-envoltorio` recebe as variáveis (cor, proporção) para a manchete e o
+   mini player herdarem; `.pi-lugar` guarda o espaço na página; `.pi` é a
+   caixa do vídeo, que pode sair do lugar (mini player, modo imersivo). */
+.pi-envoltorio {
   --pi-cor: #ff6b00;
   --pi-raio: 16px;
+  --pi-proporcao: 0.5625;
+  width: 100%;
+}
+
+.pi-lugar {
   position: relative;
-  display: block;
   width: 100%;
   margin-inline: auto;
+  border-radius: var(--pi-raio);
+  background: #0a0a0a;
+}
+.pi-lugar--vertical {
+  max-width: 420px;
+}
+.pi-lugar-aviso {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.pi {
+  position: absolute;
+  inset: 0;
+  display: block;
   overflow: hidden;
   border-radius: var(--pi-raio);
   background: #0a0a0a;
@@ -17,9 +46,6 @@
   isolation: isolate;
   -webkit-tap-highlight-color: transparent;
   outline: none;
-}
-.pi--vertical {
-  max-width: 420px;
 }
 .pi:focus-visible {
   box-shadow: 0 0 0 3px var(--pi-cor);
@@ -45,6 +71,37 @@
 .pi:fullscreen .pi-video {
   object-fit: contain;
   background: #000;
+}
+
+/* ---------- modo imersivo (tela cheia própria) ---------- */
+.pi--imersivo {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  border-radius: 0;
+  background: #000;
+}
+.pi--imersivo .pi-video {
+  object-fit: contain;
+  background: #000;
+}
+
+/* ---------- mini player ---------- */
+.pi--mini {
+  position: fixed;
+  inset: auto 12px 12px auto;
+  z-index: 2147482000;
+  width: 300px;
+  height: auto;
+  aspect-ratio: var(--pi-proporcao);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+.pi--mini.pi--vertical {
+  width: 150px;
+}
+.pi--mini .pi-barra {
+  height: 4px;
 }
 
 /* ---------- camadas (todas são botões ou contêm botões) ---------- */
@@ -251,7 +308,192 @@
   outline-offset: 2px;
 }
 
+/* ---------- barra real (controles.barra) ---------- */
+.pi--barra-real .pi-barra {
+  height: 12px;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+}
+.pi-barra-capitulo {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  margin-left: -1px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- fechar (mini player e modo imersivo) ---------- */
+.pi-fechar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+.pi-fechar:focus-visible {
+  outline: 2px solid var(--pi-cor);
+  outline-offset: 2px;
+}
+.pi-icone {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- controles extras ---------- */
+.pi-controles {
+  position: absolute;
+  left: 10px;
+  right: 56px;
+  bottom: 16px;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.pi-ctl {
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.pi-ctl[aria-pressed='true'] {
+  background: var(--pi-cor);
+}
+.pi-ctl:focus-visible {
+  outline: 2px solid var(--pi-cor);
+  outline-offset: 2px;
+}
+.pi-tempo {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pi-capitulos {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 60px;
+  z-index: 5;
+  max-height: 60%;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.85);
+}
+.pi-capitulos button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+}
+.pi-capitulos button:hover,
+.pi-capitulos button:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+.pi-capitulos-tempo {
+  margin-right: 6px;
+  color: var(--pi-cor);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- ganchos e manchetes ---------- */
+.pi-ganchos {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.pi-gancho {
+  max-width: 100%;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--pi-cor) 90%, transparent);
+  font-size: clamp(0.9rem, 3.8vw, 1.05rem);
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  animation: pi-entra 0.25s ease-out;
+}
+.pi-manchetes {
+  margin: 0 auto 12px;
+  text-align: center;
+}
+.pi-manchete {
+  margin: 0;
+  color: var(--pi-cor);
+  font-size: clamp(1.1rem, 4.8vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+@keyframes pi-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* ---------- ThumbSniper ---------- */
+.pi-thumb {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .pi-gancho {
+    animation: none;
+  }
   .pi-som-onda {
     animation: none;
     opacity: 1;
